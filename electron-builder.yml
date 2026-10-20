@@ -8,8 +8,8 @@ copyright: Copyright © 2026 Chaitanya Giri
 # knows which repo to poll.
 publish:
   provider: github
-  owner: chaitanyagiri
-  repo: munder-difflin
+  owner: heliab125
+  repo: munder-difflin-PTBR
 
 # Bake the update toast's "What's new" list straight into latest*.yml.
 #

@@ -8,7 +8,7 @@
   "homepage": "https://munderdiffl.in/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/chaitanyagiri/munder-difflin.git"
+    "url": "https://github.com/heliab125/munder-difflin-PTBR.git"
   },
   "scripts": {
     "dev": "electron-vite dev",
