@@ -404,21 +404,21 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                   <span>
                     {plain ? (
                       <Trans i18nKey="onboarding.orchestrator.cliAgentPlain" components={{ strong: <strong /> }}>
-                        A <strong>CLI agent</strong> is an AI coding assistant that runs on your
-                        computer — popular ones are Claude Code (Anthropic), Codex (OpenAI) and
-                        Antigravity (Google Gemini). <strong>Your clone</strong> is the always-on
-                        one that runs your whole office. We recommend Claude Code on Opus 4.8 (1M).
-                        You can add or switch the others later.
+                        Um <strong>agente CLI</strong> é um assistente de código de IA que roda no seu
+                        computador — os mais populares são Claude Code (Anthropic), Codex (OpenAI) e
+                        Antigravity (Google Gemini). <strong>Seu clone</strong> é o que fica sempre
+                        ativo e comanda todo o escritório. Recomendamos Claude Code no Opus 4.8 (1M).
+                        Você pode adicionar ou trocar os outros depois.
                       </Trans>
                     ) : (
                       <Trans i18nKey="onboarding.orchestrator.cliAgent" components={{ strong: <strong /> }}>
-                        Each option is a <strong>CLI engine</strong> (Claude Code, Codex,
-                        Antigravity/Gemini, or a local proxy like Qwen). Engines marked
-                        INSTALLED are already on this machine; INSTALLS ON FIRST RUN means the app
-                        sets it up when Michael first starts.
-                        <strong> Your clone</strong> (Michael) is the engine that orchestrates the whole
-                        hive. Recommended: Claude Code · Opus 4.8 · 1M. Other providers can be wired
-                        per agent later.
+                        Cada opção é um <strong>motor CLI</strong> (Claude Code, Codex,
+                        Antigravity/Gemini ou um proxy local como Qwen). Motores marcados
+                        INSTALADO já estão nesta máquina; INSTALA NA PRIMEIRA EXECUÇÃO significa que o app
+                        o configura quando Michael iniciar pela primeira vez.
+                        <strong> Seu clone</strong> (Michael) é o motor que orquestra a colmeia
+                        inteira. Recomendado: Claude Code · Opus 4.8 · 1M. Outros provedores podem ser
+                        conectados por agente depois.
                       </Trans>
                     )}
                   </span>
@@ -535,11 +535,11 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                     <span>{engineAvailabilityMessage(selectedEngine, providerPreset(godProvider).label)}</span>
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                       <PixelButton variant="secondary" size="sm" onClick={() => { void probeEngines(); }} disabled={probing}>
-                        {probing ? 'checking...' : 'check again'}
+                        {probing ? 'verificando...' : 'verificar novamente'}
                       </PixelButton>
                       {selectedEngine.docsUrl && (
                         <PixelButton variant="ghost" size="sm" onClick={() => { void window.cth.openExternal(selectedEngine.docsUrl!); }}>
-                          install instructions
+                          instruções de instalação
                         </PixelButton>
                       )}
                     </div>
@@ -773,7 +773,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                       // screen, instead of letting a pick that cannot boot through
                       // to a Michael that never starts.
                       if (step === 'orchestrator' && engineBlocked) {
-                        setError(`${providerPreset(godProvider).label} is not installed. Install it and press "check again", or pick another engine.`);
+                        setError(`${providerPreset(godProvider).label} não está instalado. Instale-o e pressione "verificar novamente", ou escolha outro motor.`);
                         return;
                       }
                       setError(undefined);

@@ -36,7 +36,7 @@ const CAN_PICK_SPEAKER =
  *  real label is hidden (no mic permission granted yet this session). */
 async function listDevices(kind: 'audioinput' | 'audiooutput'): Promise<AudioDevice[]> {
   if (typeof navigator === 'undefined' || !navigator.mediaDevices?.enumerateDevices) return [];
-  const fallback = kind === 'audioinput' ? 'Microphone' : 'Speaker';
+  const fallback = kind === 'audioinput' ? 'Microfone' : 'Alto-falante';
   const devices = await navigator.mediaDevices.enumerateDevices();
   return devices
     .filter((d) => d.kind === kind)
@@ -62,7 +62,7 @@ const selectStyle: React.CSSProperties = {
 export function RealtimeDevicePicker(): React.ReactElement {
   const { t } = useTranslation();
   const { deviceId, setDeviceId, outputDeviceId, setOutputDeviceId } = useRealtimeMichael();
-  const godName = useStore((s) => s.agents.find((a) => a.isGod)?.name) ?? 'the orchestrator';
+  const godName = useStore((s) => s.agents.find((a) => a.isGod)?.name) ?? 'o orquestrador';
   const [mics, setMics] = useState<AudioDevice[]>([]);
   const [speakers, setSpeakers] = useState<AudioDevice[]>([]);
   /** True once at least one device exposes a real label ⇒ mic permission granted. */
@@ -75,7 +75,7 @@ export function RealtimeDevicePicker(): React.ReactElement {
     ]);
     setMics(ins);
     setSpeakers(outs);
-    setLabelled(ins.some((m) => m.label && !/^Microphone \d+$/.test(m.label)));
+    setLabelled(ins.some((m) => m.label && !/^Microfone \d+$/.test(m.label)));
   }, []);
 
   useEffect(() => {

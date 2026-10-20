@@ -20,34 +20,34 @@ interface ToolSample {
 
 const TOOL_SAMPLES: ToolSample[] = [
   {
-    tool: 'Read', what: 'reading SPEC.md',
+    tool: 'Read', what: 'lendo SPEC.md',
     lines: ['\x1b[36m● Read\x1b[0m SPEC.md', '   read 412 lines.'],
-    thought: "Pulling up the spec so I can confirm the state machine before touching the implementation."
+    thought: "Abrindo a especificação para confirmar a máquina de estados antes de mexer na implementação."
   },
   {
-    tool: 'Edit', what: 'editing PixelPanel.tsx',
+    tool: 'Edit', what: 'editando PixelPanel.tsx',
     lines: ['\x1b[36m● Edit\x1b[0m src/renderer/src/components/PixelPanel.tsx', '   +14 / -3'],
-    thought: "Tightening up the panel border math — the inner stroke was a pixel off in inset mode."
+    thought: "Ajustando o cálculo da borda do painel — o traço interno estava um pixel fora no modo inset."
   },
   {
-    tool: 'Bash', what: 'running tests',
+    tool: 'Bash', what: 'executando testes',
     lines: ['\x1b[36m● Bash\x1b[0m npm test', '   ✓ 24 passed'],
-    thought: "Running the renderer suite to make sure nothing regressed before I move on."
+    thought: "Executando a suíte do renderer para garantir que nada regrediu antes de seguir."
   },
   {
-    tool: 'WebFetch', what: 'fetching docs',
+    tool: 'WebFetch', what: 'buscando documentação',
     lines: ['\x1b[36m● WebFetch\x1b[0m https://docs.example.com/hooks', '   ok 200 (1.2kb)'],
-    thought: "Grabbing the hooks doc to double-check the PreToolUse payload shape — my memory of the field names is hazy."
+    thought: "Consultando a documentação de hooks para conferir o formato do payload do PreToolUse — não lembro bem os nomes dos campos."
   },
   {
-    tool: 'Glob', what: 'searching for skill files',
+    tool: 'Glob', what: 'procurando arquivos de skill',
     lines: ['\x1b[36m● Glob\x1b[0m **/*.skill.md', '   23 matches'],
-    thought: "Enumerating all the skill files so I can walk each one and look for stale script paths."
+    thought: "Listando todos os arquivos de skill para revisar cada um e procurar caminhos de script desatualizados."
   },
   {
-    tool: 'TodoWrite', what: 'updating the todo board',
+    tool: 'TodoWrite', what: 'atualizando o quadro de tarefas',
     lines: ['\x1b[36m● TodoWrite\x1b[0m 4 items'],
-    thought: "Splitting the remaining work into four discrete tasks so I can track them as I go."
+    thought: "Dividindo o trabalho restante em quatro tarefas para acompanhar cada uma."
   }
 ];
 
@@ -73,7 +73,7 @@ function stepAgent(agent: Agent) {
       const station = STATION_BY_TOOL[sample.tool];
       updateAgent(agent.id, {
         status: 'thinking',
-        action: `heading to ${station}`,
+        action: `indo para ${station}`,
         currentStation: station,
         progress: 1
       });
@@ -108,7 +108,7 @@ function stepAgent(agent: Agent) {
     if (Math.random() < 0.5) {
       updateAgent(agent.id, {
         status: 'thinking',
-        action: 'heading back to desk',
+        action: 'voltando para a mesa',
         currentStation: 'desk',
         progress: Math.min(agent.progress + 1, 8)
       });
@@ -118,7 +118,7 @@ function stepAgent(agent: Agent) {
       const station = STATION_BY_TOOL[sample.tool];
       updateAgent(agent.id, {
         status: 'thinking',
-        action: `heading to ${station}`,
+        action: `indo para ${station}`,
         currentStation: station,
         progress: Math.min(agent.progress + 1, 8)
       });
@@ -160,9 +160,9 @@ export function startMockLoop() {
       if (a.status === 'thinking' && a.currentStation === 'desk' && Math.random() < 0.4) {
         updateAgent(a.id, {
           status: 'idle',
-          action: 'awaiting',
+          action: 'aguardando',
           carrying: undefined,
-          recentAssistantText: 'Done with that one. What next?',
+          recentAssistantText: 'Terminei essa. Qual é a próxima?',
           recentTextTs: Date.now()
         });
       }

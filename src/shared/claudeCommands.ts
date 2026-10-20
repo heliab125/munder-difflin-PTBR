@@ -29,125 +29,125 @@ export interface CmdGroup {
 
 export const COMMAND_GROUPS: CmdGroup[] = [
   {
-    title: 'SESSION',
+    title: 'SESSÃO',
     items: [
-      { cmd: '/clear', kind: 'slash', desc: 'Start a fresh conversation and reclaim the full context window. The old one stays in /resume.' },
-      { cmd: '/resume', kind: 'slash', desc: 'Pick or search a past session to continue.', usage: '/resume auth refactor' },
-      { cmd: '/rewind', kind: 'slash', desc: 'Roll code AND conversation back to an earlier checkpoint.' },
-      { cmd: '/compact', kind: 'slash', desc: 'Summarize the conversation so far to free context without losing the thread.', usage: '/compact keep the auth decisions' },
-      { cmd: 'claude -c', kind: 'cli', desc: 'Continue the most recent session in this directory.' },
-      { cmd: 'claude -r', kind: 'cli', desc: 'Resume — pick or search a past session.', usage: 'claude -r auth' },
-      { cmd: 'claude --fork-session', kind: 'cli', desc: 'When resuming, branch into a new session id instead of reusing the original.' }
+      { cmd: '/clear', kind: 'slash', desc: 'Inicia uma conversa nova e recupera toda a janela de contexto. A anterior continua em /resume.' },
+      { cmd: '/resume', kind: 'slash', desc: 'Escolha ou pesquise uma sessão anterior para continuar.', usage: '/resume refatoracao-auth' },
+      { cmd: '/rewind', kind: 'slash', desc: 'Volta o código E a conversa para um checkpoint anterior.' },
+      { cmd: '/compact', kind: 'slash', desc: 'Resume a conversa até agora para liberar contexto sem perder o fio.', usage: '/compact mantenha as decisões de auth' },
+      { cmd: 'claude -c', kind: 'cli', desc: 'Continua a sessão mais recente neste diretório.' },
+      { cmd: 'claude -r', kind: 'cli', desc: 'Retoma — escolha ou pesquise uma sessão anterior.', usage: 'claude -r auth' },
+      { cmd: 'claude --fork-session', kind: 'cli', desc: 'Ao retomar, cria uma ramificação com um novo id de sessão em vez de reutilizar o original.' }
     ]
   },
   {
-    title: 'CONTEXT & MEMORY',
+    title: 'CONTEXTO E MEMÓRIA',
     items: [
-      { cmd: '/context', kind: 'slash', desc: 'Visualize what is filling the context window, with optimization hints.' },
-      { cmd: '/memory', kind: 'slash', desc: 'Open the project & user CLAUDE.md memory files for editing.' },
-      { cmd: '/init', kind: 'slash', desc: 'Scan the repo and generate a CLAUDE.md capturing its conventions.' },
-      { cmd: '# ', kind: 'slash', desc: 'Quick memory: start a line with # to append a durable note to memory.', usage: '# always run prettier before committing' },
-      { cmd: 'claude --add-dir ../other-repo', kind: 'cli', desc: 'Grant the session read/write access to an extra directory.' }
+      { cmd: '/context', kind: 'slash', desc: 'Visualiza o que está ocupando a janela de contexto, com dicas de otimização.' },
+      { cmd: '/memory', kind: 'slash', desc: 'Abre os arquivos de memória CLAUDE.md do projeto e do usuário para edição.' },
+      { cmd: '/init', kind: 'slash', desc: 'Examina o repositório e gera um CLAUDE.md capturando suas convenções.' },
+      { cmd: '# ', kind: 'slash', desc: 'Memória rápida: comece a linha com # para acrescentar uma nota durável à memória.', usage: '# rode prettier antes de commitar' },
+      { cmd: 'claude --add-dir ../outro-repo', kind: 'cli', desc: 'Concede à sessão acesso de leitura/escrita a um diretório extra.' }
     ]
   },
   {
-    title: 'MODELS & EFFORT',
+    title: 'MODELOS E ESFORÇO',
     items: [
-      { cmd: '/model', kind: 'slash', desc: 'Switch the model for this session (saved as default); arrows tune effort.', usage: '/model opus' },
-      { cmd: '/effort', kind: 'slash', desc: 'Set reasoning effort: low / medium / high / xhigh / max.', usage: '/effort high' },
-      { cmd: '/fast', kind: 'slash', desc: 'Toggle fast mode — Opus with faster output, no model downgrade.' },
-      { cmd: 'claude --model claude-sonnet-4-6[1m]', kind: 'cli', desc: 'Launch on a specific model. The [1m] suffix selects the 1M-token window (Dwight).' },
-      { cmd: 'claude --fallback-model sonnet', kind: 'cli', desc: 'Auto-fall back to another model when the primary is unavailable.' }
+      { cmd: '/model', kind: 'slash', desc: 'Troca o modelo desta sessão (salvo como padrão); as setas ajustam o esforço.', usage: '/model opus' },
+      { cmd: '/effort', kind: 'slash', desc: 'Define o esforço de raciocínio: low / medium / high / xhigh / max.', usage: '/effort high' },
+      { cmd: '/fast', kind: 'slash', desc: 'Liga/desliga o modo rápido — Opus com saída mais veloz, sem rebaixar o modelo.' },
+      { cmd: 'claude --model claude-sonnet-4-6[1m]', kind: 'cli', desc: 'Inicia em um modelo específico. O sufixo [1m] seleciona a janela de 1M tokens (Dwight).' },
+      { cmd: 'claude --fallback-model sonnet', kind: 'cli', desc: 'Recorre automaticamente a outro modelo quando o principal está indisponível.' }
     ]
   },
   {
-    title: 'PLAN & EXECUTE',
+    title: 'PLANEJAR E EXECUTAR',
     items: [
-      { cmd: '/plan', kind: 'slash', desc: 'Enter plan mode — design the change before any edits.', usage: '/plan refactor the auth module' },
-      { cmd: '/goal', kind: 'slash', desc: 'Set a goal condition; Claude keeps working across turns until it is met.', usage: '/goal all tests pass' },
-      { cmd: '/batch', kind: 'slash', desc: 'Decompose a large change into parallel units in git worktrees.', usage: '/batch migrate components to v2' },
-      { cmd: '/diff', kind: 'slash', desc: 'Open the interactive diff viewer for the current changes.' },
-      { cmd: '/run', kind: 'slash', desc: 'Launch and drive the project app to see a change actually working.' },
-      { cmd: '/verify', kind: 'slash', desc: 'Build, run, and observe to confirm a change does what it should.' },
-      { cmd: 'claude --worktree feat/x', kind: 'cli', desc: 'Start the session in an isolated git worktree.' }
+      { cmd: '/plan', kind: 'slash', desc: 'Entra no modo plano — projeta a mudança antes de qualquer edição.', usage: '/plan refatorar o módulo de auth' },
+      { cmd: '/goal', kind: 'slash', desc: 'Define uma condição de objetivo; o Claude continua trabalhando entre turnos até cumpri-la.', usage: '/goal todos os testes passarem' },
+      { cmd: '/batch', kind: 'slash', desc: 'Decompõe uma mudança grande em unidades paralelas em worktrees git.', usage: '/batch migrar componentes para v2' },
+      { cmd: '/diff', kind: 'slash', desc: 'Abre o visualizador interativo de diff das mudanças atuais.' },
+      { cmd: '/run', kind: 'slash', desc: 'Inicia e opera o app do projeto para ver a mudança funcionando de verdade.' },
+      { cmd: '/verify', kind: 'slash', desc: 'Compila, executa e observa para confirmar que a mudança faz o que deveria.' },
+      { cmd: 'claude --worktree feat/x', kind: 'cli', desc: 'Inicia a sessão em uma worktree git isolada.' }
     ]
   },
   {
-    title: 'REVIEW & GIT',
+    title: 'REVISÃO E GIT',
     items: [
-      { cmd: '/code-review', kind: 'slash', desc: 'Hunt correctness bugs in the diff. --fix applies them, --comment posts inline; "ultra" runs a cloud deep review.', usage: '/code-review high --fix' },
-      { cmd: '/simplify', kind: 'slash', desc: 'Cleanup-only pass over changed code (reuse/simplify) — no bug hunt.' },
-      { cmd: '/review', kind: 'slash', desc: 'Review a pull request in this session.', usage: '/review 123' },
-      { cmd: '/security-review', kind: 'slash', desc: 'Scan pending changes for security vulnerabilities.' },
-      { cmd: '/ultrareview', kind: 'slash', desc: 'Multi-agent cloud review of the current branch / a PR.' }
+      { cmd: '/code-review', kind: 'slash', desc: 'Caça bugs de correção no diff. --fix aplica as correções, --comment publica comentários inline; "ultra" roda uma revisão profunda na nuvem.', usage: '/code-review high --fix' },
+      { cmd: '/simplify', kind: 'slash', desc: 'Passada apenas de limpeza no código alterado (reuso/simplificação) — sem caça a bugs.' },
+      { cmd: '/review', kind: 'slash', desc: 'Revisa um pull request nesta sessão.', usage: '/review 123' },
+      { cmd: '/security-review', kind: 'slash', desc: 'Verifica mudanças pendentes em busca de vulnerabilidades de segurança.' },
+      { cmd: '/ultrareview', kind: 'slash', desc: 'Revisão multiagente na nuvem do branch atual ou de um PR.' }
     ]
   },
   {
-    title: 'SUBAGENTS & BACKGROUND',
+    title: 'SUBAGENTES E SEGUNDO PLANO',
     items: [
-      { cmd: 'claude agents', kind: 'cli', desc: 'Open the agent view across your live + background Claude sessions.' },
-      { cmd: 'claude agents --json', kind: 'cli', desc: 'Print live sessions as JSON — scriptable fleet status.' },
-      { cmd: '/agents', kind: 'slash', desc: 'Create and manage custom subagents for delegated work.' },
-      { cmd: '/fork', kind: 'slash', desc: 'Spawn a background subagent that inherits the full conversation.', usage: '/fork implement the perf fix' },
-      { cmd: '/background', kind: 'slash', desc: 'Detach the current session so it keeps running in the background.' },
-      { cmd: '/tasks', kind: 'slash', desc: 'View and manage everything running in the background.' },
-      { cmd: '/stop', kind: 'slash', desc: 'Stop the current background session (when attached).' },
-      { cmd: 'claude --agent reviewer', kind: 'cli', desc: 'Start the session using a specific agent configuration.' }
+      { cmd: 'claude agents', kind: 'cli', desc: 'Abre a visão de agentes entre suas sessões Claude ativas e em segundo plano.' },
+      { cmd: 'claude agents --json', kind: 'cli', desc: 'Imprime as sessões ativas como JSON — status da frota para scripts.' },
+      { cmd: '/agents', kind: 'slash', desc: 'Cria e gerencia subagentes personalizados para trabalho delegado.' },
+      { cmd: '/fork', kind: 'slash', desc: 'Gera um subagente em segundo plano que herda a conversa completa.', usage: '/fork implemente a correção de performance' },
+      { cmd: '/background', kind: 'slash', desc: 'Desanexa a sessão atual para que ela continue rodando em segundo plano.' },
+      { cmd: '/tasks', kind: 'slash', desc: 'Visualiza e gerencia tudo o que está rodando em segundo plano.' },
+      { cmd: '/stop', kind: 'slash', desc: 'Para a sessão em segundo plano atual (quando anexada).' },
+      { cmd: 'claude --agent reviewer', kind: 'cli', desc: 'Inicia a sessão usando uma configuração de agente específica.' }
     ]
   },
   {
-    title: 'TOOLS & PERMISSIONS',
+    title: 'FERRAMENTAS E PERMISSÕES',
     items: [
-      { cmd: '/permissions', kind: 'slash', desc: 'View and edit which tools are allowed / asked / denied.' },
-      { cmd: '/hooks', kind: 'slash', desc: 'View the configured lifecycle hooks (PreToolUse, Stop, etc.).' },
-      { cmd: 'claude --permission-mode bypassPermissions', kind: 'cli', desc: 'Run without per-tool approval prompts (this is what "auto mode" uses).' },
-      { cmd: 'claude --allowedTools "Bash(git *) Edit Read"', kind: 'cli', desc: 'Pre-allow specific tools so they never prompt.' }
+      { cmd: '/permissions', kind: 'slash', desc: 'Visualiza e edita quais ferramentas são permitidas, perguntadas ou negadas.' },
+      { cmd: '/hooks', kind: 'slash', desc: 'Visualiza os hooks de ciclo de vida configurados (PreToolUse, Stop etc.).' },
+      { cmd: 'claude --permission-mode bypassPermissions', kind: 'cli', desc: 'Roda sem prompts de aprovação por ferramenta (é o que o "modo automático" usa).' },
+      { cmd: 'claude --allowedTools "Bash(git *) Edit Read"', kind: 'cli', desc: 'Pré-autoriza ferramentas específicas para que nunca perguntem.' }
     ]
   },
   {
-    title: 'MCP & PLUGINS',
+    title: 'MCP E PLUGINS',
     items: [
-      { cmd: '/mcp', kind: 'slash', desc: 'List/manage connected MCP servers and authenticate (OAuth).' },
-      { cmd: '/plugin', kind: 'slash', desc: 'Manage plugins (list, install, enable, disable).' },
-      { cmd: 'claude mcp list', kind: 'cli', desc: 'List configured MCP servers and their health.' },
-      { cmd: 'claude mcp add <name> <command>', kind: 'cli', desc: 'Register a new MCP server (stdio or HTTP).' }
+      { cmd: '/mcp', kind: 'slash', desc: 'Lista/gerencia servidores MCP conectados e autentica (OAuth).' },
+      { cmd: '/plugin', kind: 'slash', desc: 'Gerencia plugins (listar, instalar, ativar, desativar).' },
+      { cmd: 'claude mcp list', kind: 'cli', desc: 'Lista os servidores MCP configurados e a saúde deles.' },
+      { cmd: 'claude mcp add <nome> <comando>', kind: 'cli', desc: 'Registra um novo servidor MCP (stdio ou HTTP).' }
     ]
   },
   {
-    title: 'USAGE & COST',
+    title: 'USO E CUSTO',
     items: [
-      { cmd: '/usage', kind: 'slash', desc: 'Session cost, plan limits, and a breakdown by skill / subagent / MCP.' },
-      { cmd: '/status', kind: 'slash', desc: 'Account, active model, version, and connection status.' },
-      { cmd: 'claude -p "..." --max-budget-usd 5', kind: 'cli', desc: 'Cap the dollar spend for a headless run.' },
-      { cmd: 'claude --max-turns 20', kind: 'cli', desc: 'Limit agentic turns (a coarse runaway guard).' }
+      { cmd: '/usage', kind: 'slash', desc: 'Custo da sessão, limites do plano e detalhamento por skill / subagente / MCP.' },
+      { cmd: '/status', kind: 'slash', desc: 'Conta, modelo ativo, versão e status da conexão.' },
+      { cmd: 'claude -p "..." --max-budget-usd 5', kind: 'cli', desc: 'Limita o gasto em dólares de uma execução headless.' },
+      { cmd: 'claude --max-turns 20', kind: 'cli', desc: 'Limita os turnos agênticos (uma proteção grossa contra execuções descontroladas).' }
     ]
   },
   {
-    title: 'AUTOMATION (HEADLESS)',
+    title: 'AUTOMAÇÃO (HEADLESS)',
     items: [
-      { cmd: 'claude -p "your prompt"', kind: 'cli', desc: 'Print mode: run one prompt non-interactively and exit.', usage: 'cat log | claude -p "summarize"' },
-      { cmd: 'claude -p "..." --output-format json', kind: 'cli', desc: 'Headless with structured JSON (result, usage, cost).' },
-      { cmd: 'claude -p "..." --output-format stream-json', kind: 'cli', desc: 'Streaming JSON events for live consumption.' },
-      { cmd: 'claude -p "..." --json-schema <schema>', kind: 'cli', desc: 'Force the headless result to match a JSON Schema.' },
-      { cmd: 'claude --append-system-prompt "..."', kind: 'cli', desc: 'Append extra instructions to the default system prompt.' }
+      { cmd: 'claude -p "seu prompt"', kind: 'cli', desc: 'Modo print: executa um prompt de forma não interativa e encerra.', usage: 'cat log | claude -p "resuma"' },
+      { cmd: 'claude -p "..." --output-format json', kind: 'cli', desc: 'Headless com JSON estruturado (resultado, uso, custo).' },
+      { cmd: 'claude -p "..." --output-format stream-json', kind: 'cli', desc: 'Eventos JSON em streaming para consumo ao vivo.' },
+      { cmd: 'claude -p "..." --json-schema <schema>', kind: 'cli', desc: 'Força o resultado headless a corresponder a um JSON Schema.' },
+      { cmd: 'claude --append-system-prompt "..."', kind: 'cli', desc: 'Acrescenta instruções extras ao prompt de sistema padrão.' }
     ]
   },
   {
-    title: 'CONFIG',
+    title: 'CONFIGURAÇÃO',
     items: [
-      { cmd: '/config', kind: 'slash', desc: 'Open Settings: theme, model, output style, preferences.' },
-      { cmd: '/theme', kind: 'slash', desc: 'Change the color theme (auto / light / dark / colorblind / custom).' },
-      { cmd: '/statusline', kind: 'slash', desc: 'Configure the Claude Code status line.' }
+      { cmd: '/config', kind: 'slash', desc: 'Abre as Configurações: tema, modelo, estilo de saída e preferências.' },
+      { cmd: '/theme', kind: 'slash', desc: 'Muda o tema de cores (auto / claro / escuro / daltônico / personalizado).' },
+      { cmd: '/statusline', kind: 'slash', desc: 'Configura a linha de status do Claude Code.' }
     ]
   },
   {
-    title: 'HELP & DIAGNOSTICS',
+    title: 'AJUDA E DIAGNÓSTICO',
     items: [
-      { cmd: '/help', kind: 'slash', desc: 'List every available slash command.' },
-      { cmd: '/doctor', kind: 'slash', desc: 'Diagnose installation / health issues (press f to auto-fix).' },
-      { cmd: '/debug', kind: 'slash', desc: 'Enable debug logging and troubleshoot the current session.' },
-      { cmd: '/release-notes', kind: 'slash', desc: 'Browse the Claude Code changelog by version.' },
-      { cmd: '/remote-control', kind: 'slash', desc: 'Expose this session for control from claude.ai / your phone.' }
+      { cmd: '/help', kind: 'slash', desc: 'Lista todos os comandos de barra disponíveis.' },
+      { cmd: '/doctor', kind: 'slash', desc: 'Diagnostica problemas de instalação/saúde (pressione f para corrigir automaticamente).' },
+      { cmd: '/debug', kind: 'slash', desc: 'Ativa o log de depuração e investiga a sessão atual.' },
+      { cmd: '/release-notes', kind: 'slash', desc: 'Navega pelo changelog do Claude Code por versão.' },
+      { cmd: '/remote-control', kind: 'slash', desc: 'Expõe esta sessão para controle pelo claude.ai ou pelo celular.' }
     ]
   }
 ];

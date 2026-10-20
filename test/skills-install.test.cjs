@@ -132,7 +132,7 @@ test('uninstall refuses anything outside a managed skills root', (t) => {
   fs.mkdirSync(victim, { recursive: true });
   const res = uninstallSkill(victim, { cwds: [] });
   assert.equal(res.ok, false);
-  assert.match(res.error, /not inside a skills directory/i);
+  assert.match(res.error, /não está dentro de um diretório de skills/i);
   assert.ok(fs.existsSync(victim), 'the folder must still be there');
 });
 

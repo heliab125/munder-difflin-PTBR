@@ -60,9 +60,9 @@ export function engineBlocksOnboarding(a: EngineAvailability): boolean {
 /** One short line for the badge on each engine row. */
 export function engineAvailabilityBadge(a: EngineAvailability): string | null {
   switch (a.state) {
-    case 'installed': return 'INSTALLED';
-    case 'installs-on-first-run': return 'INSTALLS ON FIRST RUN';
-    case 'not-installable': return 'NOT INSTALLED';
+    case 'installed': return 'INSTALADO';
+    case 'installs-on-first-run': return 'INSTALA NA PRIMEIRA EXECUÇÃO';
+    case 'not-installable': return 'NÃO INSTALADO';
     default: return null;
   }
 }
@@ -72,7 +72,7 @@ export function engineAvailabilityBadge(a: EngineAvailability): string | null {
  *  then what to do next. */
 export function engineAvailabilityMessage(a: EngineAvailability, label: string): string | null {
   if (a.state !== 'not-installable') return null;
-  return `${label} is not installed on this computer and the app has no installer for it, ` +
-    `so Michael could not start. Install it first, then press "check again". ` +
-    `Or pick Claude Code, which installs itself on first run.`;
+  return `${label} não está instalado neste computador e o app não tem um instalador para ele, ` +
+    `então o orquestrador não pôde iniciar. Instale o motor primeiro e pressione "verificar novamente". ` +
+    `Ou escolha Claude Code, que se instala sozinho na primeira execução.`;
 }

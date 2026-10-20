@@ -171,10 +171,10 @@ test('no unbundled webfont rides in with the Arabic locale', () => {
 
 // --- coverage and shape: what makes a PARTIAL translation safe -------------
 
-test('English is still the default, and still not auto-detected', () => {
+test('Brazilian Portuguese is the default in this distribution, and still not auto-detected', () => {
   const code = strip(read('src/renderer/src/i18n/index.ts'));
-  assert.match(code, /return 'en';/, 'the fallback language must stay English');
-  assert.match(code, /fallbackLng: 'en'/, 'a missing Arabic key must fall back to English');
+  assert.match(code, /return 'pt-BR';/, 'the fallback language must be Brazilian Portuguese');
+  assert.match(code, /fallbackLng: 'pt-BR'/, 'a missing key must fall back to Brazilian Portuguese');
   assert.ok(!code.includes('navigator'),
     'adding a locale must not turn on OS auto-detect');
 });

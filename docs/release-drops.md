@@ -1,25 +1,25 @@
-# Release drops
+# Drops de release
 
-A **drop** is an authored release page — shown centered, at full size, the first
-time a user's app sees the release. It replaces the corner toast's three-bullet
-digest with whatever you design.
+Um **drop** é uma página de release autoral — exibida centralizada, em tamanho
+cheio, na primeira vez que o app de um usuário vê a release. Ele substitui o resumo
+de três tópicos do toast de canto pelo que você desenhar.
 
-Releases without a drop are unaffected: they still get the digest toast. This is
-additive, so no past release changes behaviour.
+Releases sem drop não são afetadas: elas continuam recebendo o toast de resumo. Isso
+é aditivo, então nenhuma release passada muda de comportamento.
 
-## Authoring
+## Como escrever
 
-Put HTML between two markers anywhere in the GitHub release body:
+Coloque HTML entre dois marcadores em qualquer lugar do corpo da release no GitHub:
 
 ```markdown
-## What's new in 0.5.0
+## Novidades da 0.5.0
 
-Regular markdown, for people reading this on github.com.
+Markdown normal, para quem lê isto no github.com.
 
 <!-- drop -->
 <section class="hero">
-  <h1>Windows agents can finally talk to each other.</h1>
-  <p>Half our downloads. Silently broken. Not any more.</p>
+  <h1>Os agentes do Windows finalmente podem conversar entre si.</h1>
+  <p>Metade dos nossos downloads. Quebrados em silêncio. Não mais.</p>
   <video src="https://…/demo.mp4" autoplay muted loop playsinline></video>
 </section>
 <style>
@@ -29,65 +29,67 @@ Regular markdown, for people reading this on github.com.
 <!-- /drop -->
 ```
 
-Everything between the markers becomes the page. The markdown around it is left
-alone, so the github.com release page still reads well.
+Tudo entre os marcadores vira a página. O markdown ao redor fica intacto, então a
+página da release no github.com continua legível.
 
-Both markers must be present and in order. An unbalanced pair is ignored and the
-release falls back to the digest — a half-parsed drop would render as broken
-markup for every user, so it is treated as no drop at all.
+Os dois marcadores precisam estar presentes e em ordem. Um par desbalanceado é
+ignorado e a release volta para o resumo — um drop meio analisado renderizaria como
+markup quebrado para todo usuário, então é tratado como nenhum drop.
 
-## What you can use
+## O que você pode usar
 
-Images, video, audio, web fonts, gradients, transforms, grid, flexbox, keyframe
-animations, `prefers-color-scheme`, `prefers-reduced-motion`. Remote assets must
-be **https** (or `data:`/`blob:`).
+Imagens, vídeo, áudio, fontes web, gradientes, transforms, grid, flexbox, animações
+keyframe, `prefers-color-scheme`, `prefers-reduced-motion`. Recursos remotos precisam
+ser **https** (ou `data:`/`blob:`).
 
-A small token palette is pre-defined — `--ink`, `--ink-soft`, `--paper`,
-`--cream`, `--lemon`, `--mint`, `--coral` — so a drop can match the app without
-restating its colours. Ignore them entirely for a bespoke look.
+Uma pequena paleta de tokens é predefinida — `--ink`, `--ink-soft`, `--paper`,
+`--cream`, `--lemon`, `--mint`, `--coral` — para um drop combinar com o app sem
+redeclarar as cores. Ignore-as totalmente para um visual sob medida.
 
-## What you cannot use, and why
+## O que você não pode usar, e por quê
 
-**No JavaScript. No forms. No working links.**
+**Sem JavaScript. Sem formulários. Sem links funcionais.**
 
-The drop is remote, author-controlled markup. The renderer it would otherwise
-land in has `window.cth` bridged onto it — `spawnPty`, `writeFileText`,
-`updateConfig`. Script execution there is not a styling bug, it is arbitrary code
-execution on the user's machine with the app's full authority, available to
-anyone who can publish a release or intercept the fetch.
+O drop é markup remoto controlado pelo autor. O renderer onde ele cairia tem
+`window.cth` conectado — `spawnPty`, `writeFileText`, `updateConfig`. Execução de
+script ali não é um bug de estilo: é execução de código arbitrário na máquina do
+usuário com a autoridade total do app, disponível para qualquer um que consiga
+publicar uma release ou interceptar a requisição.
 
-So the drop renders inside an iframe with `sandbox=""` (no scripts, no
-same-origin, no forms, no popups, no top-level navigation) and its own
-`default-src 'none'` CSP. Two independent controls, either sufficient alone.
+Por isso o drop renderiza dentro de um iframe com `sandbox=""` (sem scripts, sem
+same-origin, sem formulários, sem popups, sem navegação de nível superior) e uma CSP
+própria `default-src 'none'`. Dois controles independentes, cada um suficiente
+sozinho.
 
-Because nothing in the frame can navigate, **the modal's own buttons carry every
-action** — "open releases", "restart to update", the star link, "later". Design
-around them; don't put a call-to-action link in the drop expecting a click to
-work.
+Como nada no frame pode navegar, **os botões do próprio modal carregam toda ação** —
+"abrir releases", "reiniciar para atualizar", o link da estrela, "depois". Projete em
+torno deles; não coloque um link de call-to-action no drop esperando que o clique
+funcione.
 
-If a drop ever genuinely needs scripting, the change is `allow-scripts` on the
-iframe — and it must **never** be paired with `allow-same-origin`, because that
-combination lets the frame remove its own sandbox.
+Se um dia um drop realmente precisar de script, a mudança é `allow-scripts` no
+iframe — e ela **nunca** deve ser combinada com `allow-same-origin`, porque essa
+combinação deixa o frame remover o próprio sandbox.
 
-## Previewing before you publish
+## Pré-visualizando antes de publicar
 
-The update path only runs in packaged builds, so dev has a simulate hook:
+O caminho de atualização só roda em builds empacotados, então o modo dev tem um hook
+de simulação:
 
 ```js
-await window.cth.updateSimulate({ version: '0.5.0', notes: '<paste the body>' })
+await window.cth.updateSimulate({ version: '0.5.0', notes: '<cole o corpo>' })
 ```
 
-Run it in DevTools (⌥⌘I → Console). Dev-only — hard-gated on `!app.isPackaged`.
+Rode no DevTools (⌥⌘I → Console). Apenas dev — bloqueado por `!app.isPackaged`.
 
-To see the star ask again after it has been spent:
+Para ver o pedido de estrela de novo depois que ele já foi usado:
 
 ```js
 localStorage.removeItem('cth.updateStarAsked')
 ```
 
-## One thing to know about pre-release tags
+## Uma coisa a saber sobre tags de pré-release
 
-`/releases/latest` excludes pre-releases and electron-updater's `latest` channel
-skips them, so a `-rc` tag never triggers the toast or the drop for stable users.
-Only a plain higher `X.Y.Z` does. Test drops with `updateSimulate`, not by
-publishing an rc.
+`/releases/latest` exclui pré-releases e o canal `latest` do electron-updater as
+ignora, então uma tag `-rc` nunca dispara o toast ou o drop para usuários estáveis.
+Só um `X.Y.Z` maior e simples faz isso. Teste drops com `updateSimulate`, não
+publicando um rc.

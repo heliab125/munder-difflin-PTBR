@@ -149,7 +149,7 @@ async function loadAutoUpdater(): Promise<AutoUpdater> {
       default?: { autoUpdater?: AutoUpdater };
     };
     const found = ns.autoUpdater ?? ns.default?.autoUpdater;
-    if (!found) throw new Error('electron-updater loaded but exposes no `autoUpdater` export');
+    if (!found) throw new Error('o electron-updater carregou, mas não expõe a exportação `autoUpdater`');
     return found;
   })();
   try {
@@ -276,7 +276,7 @@ const CHECK_TIMEOUT_MS = 30_000;
  *  slow-but-successful check leaves no dangling handle. */
 function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
   return new Promise<T>((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error(`${label} timed out after ${Math.round(ms / 1000)}s`)), ms);
+    const timer = setTimeout(() => reject(new Error(`${label} excedeu o tempo limite após ${Math.round(ms / 1000)}s`)), ms);
     p.then(
       (v) => { clearTimeout(timer); resolve(v); },
       (e) => { clearTimeout(timer); reject(e); }
@@ -298,7 +298,7 @@ async function runCheck(): Promise<{ ok: boolean; error?: string }> {
     const result = await withTimeout(
       loadAutoUpdater().then((autoUpdater) => autoUpdater.checkForUpdates()),
       CHECK_TIMEOUT_MS,
-      'update check'
+      'verificação de atualização'
     );
     if (!result || !isNewer(result.updateInfo.version, app.getVersion())) {
       emit({ state: 'not-available' });
@@ -373,7 +373,7 @@ export function initAutoUpdater(getWebContents: () => WebContents | null): void 
     // throws "The command is disabled and cannot be executed", the recurring
     // wedge behind the six-clicks-to-install reports. Refuse the duplicate and
     // let the caller wait on the one already running instead of starting another.
-    if (pendingRestart) return { ok: false, error: 'a restart is already in progress' };
+    if (pendingRestart) return { ok: false, error: 'já existe um reinício em andamento' };
     try {
       const autoUpdater = await loadAutoUpdater();
       logLine('quitAndInstall requested by the user');
@@ -393,11 +393,11 @@ export function initAutoUpdater(getWebContents: () => WebContents | null): void 
     }
   });
   ipcMain.handle('update:checkNow', async () => {
-    if (!app.isPackaged) return { ok: false, error: 'dev build — updates are only checked in packaged apps' };
+    if (!app.isPackaged) return { ok: false, error: 'build de desenvolvimento — atualizações só são verificadas em apps empacotados' };
     return runCheck();
   });
   ipcMain.handle('update:download', async () => {
-    if (!app.isPackaged) return { ok: false, error: 'dev build — updates are only downloaded in packaged apps' };
+    if (!app.isPackaged) return { ok: false, error: 'build de desenvolvimento — atualizações só são baixadas em apps empacotados' };
     return runDownload();
   });
   /** Re-serve the last known status to a freshly loaded window. */
@@ -414,7 +414,7 @@ export function initAutoUpdater(getWebContents: () => WebContents | null): void 
    * `{ok:false}` and can never fabricate an update for a real user.
    */
   ipcMain.handle('update:simulate', (_evt, opts: unknown) => {
-    if (app.isPackaged) return { ok: false, error: 'simulate is dev-only' };
+    if (app.isPackaged) return { ok: false, error: 'simulate só existe em desenvolvimento' };
     const o = (opts ?? {}) as { state?: string; version?: string; notes?: string; drop?: boolean };
     const version = typeof o.version === 'string' && o.version ? o.version : '9.9.9';
     // `drop: true` previews the centered release page built from the default

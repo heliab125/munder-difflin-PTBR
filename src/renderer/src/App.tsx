@@ -30,8 +30,9 @@ import { acquireTerminal, notifyThemeChangeAll } from '@/components/terminalPool
 import { FullscreenTerminal } from '@/components/FullscreenTerminal';
 import { TaskDetailOverlay } from '@/components/TaskDetailOverlay';
 import { IdePanel } from '@/ide/IdePanel';
+import { ProDashboard } from '@/components/ProDashboard';
+import { ProIcon } from '@/components/ProIcon';
 import { useHoldOptionToTalk } from '@/freeflow/holdOption';
-import brandLogo from '@brand/logo.png?url';
 
 // Injected at build time from package.json (see electron.vite.config.ts).
 declare const __APP_VERSION__: string;
@@ -59,6 +60,15 @@ export function App() {
   const setIdeOpen = useStore(s => s.setIdeOpen);
 
   const [config, setConfig] = useState<HarnessConfig | null>(null);
+  // Modo de interface: Clássico (escritório 2D) ou PRO (painel executivo).
+  // A escolha é local a esta máquina e sobrevive a reinícios.
+  const [uiMode, setUiMode] = useState<'classic' | 'pro'>(() => {
+    try { return window.localStorage.getItem('cth.mode') === 'pro' ? 'pro' : 'classic'; } catch { return 'classic'; }
+  });
+  const setMode = (next: 'classic' | 'pro') => {
+    setUiMode(next);
+    try { window.localStorage.setItem('cth.mode', next); } catch { /* best-effort */ }
+  };
   // Whether the user has passed the launch-time hive picker this session. Starts
   // true (skip the picker) right after a hive SWITCH — changeHome relaunches and
   // leaves a one-shot localStorage flag so we don't bounce back onto the picker for
@@ -284,114 +294,142 @@ export function App() {
       <div
         className="cth-titlebar-drag"
         style={{
-          height: 36, minHeight: 36,
-          background: 'linear-gradient(180deg, var(--cth-cream-100) 0%, var(--cth-cream-200) 100%)',
+          height: 38, minHeight: 38,
+          background: 'var(--cth-cream-50)',
           borderBottom: '1px solid var(--cth-ink-300)',
           display: 'flex',
           alignItems: 'center',
           paddingLeft: 96,
           paddingRight: 12,
-          gap: 12,
+          gap: 10,
           userSelect: 'none'
         }}
       >
-        <img
-          src={brandLogo}
-          alt="Munder Difflin"
-          style={{ height: 20, width: 'auto', display: 'block' }}
-        />
-        {/* v0.3.7: the version is no longer inert text — it doubles as the
-            update control (check / download / restart to update). */}
+        {/* 0.5.7 titlebar: version/update chip on the left; theme, settings and
+            the Classic/PRO switcher on the right. The logo lives in the PRO
+            sidebar now, not in the OS chrome. */}
         <UpdateBadge />
-        <span style={{
-          fontFamily: 'var(--cth-font-ui)',
-          fontSize: 13,
-          color: 'var(--cth-ink-500)'
-        }}>
-          {config.autoMode ? 'auto mode on' : 'auto mode off'}
-        </span>
-        {/* v0.3.4: theme + fullscreen live HERE (top right), not buried in the
-            terminal header — and the theme darkens the whole app, terminals
-            included (design/theme.ts + tokens.css dark block). */}
+        {uiMode === 'classic' && (
+          <span style={{
+            fontFamily: 'var(--cth-font-ui)',
+            fontSize: 12,
+            color: 'var(--cth-ink-500)'
+          }}>
+            {config.autoMode ? 'modo automático ativado' : 'modo automático desativado'}
+          </span>
+        )}
+        <span style={{ flex: 1 }} />
         <button
           className="cth-titlebar-nodrag cth-tip"
           onClick={() => {
             const next = toggleAppTheme();
-            // Tell every RUNNING program the theme flipped. xterm repaints its own
-            // cells, but a TUI that painted its panels with explicit colours keeps
-            // them until it redraws, which left OpenCode's boxes in the old palette
-            // until the agent restarted. Only programs that enabled DEC mode 2031
-            // are told, and it is every pooled terminal rather than the visible one,
-            // so a background agent is not stale when you switch to it.
             notifyThemeChangeAll(next === 'dark' ? 'dark' : 'light');
-            // Mirror into the harness config: every agent (re)spawned from now
-            // on gets the matching `theme` in its per-session Claude settings,
-            // so the TUI's truecolor palette fits the terminal. Scoped to
-            // harness agents — the user's global Claude theme is never touched.
             void window.cth.updateConfig({ terminalTheme: next });
           }}
-          data-tip={appThemeNow === 'dark' ? 'Light theme' : 'Dark theme'}
-          aria-label="Toggle dark mode"
+          data-tip={appThemeNow === 'dark' ? 'Tema claro' : 'Tema escuro'}
+          aria-label="Alternar modo escuro"
           style={{
-            marginLeft: 'auto',
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            display: 'inline-grid', placeItems: 'center',
             width: 28, height: 28, padding: 0,
-            background: 'var(--cth-paper-100)',
-            boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)',
-            border: 'none', borderRadius: 2, cursor: 'pointer',
-            color: 'var(--cth-ink-900)', fontSize: 13, lineHeight: 1
+            background: 'transparent',
+            border: '1px solid transparent',
+            borderRadius: 7, cursor: 'pointer',
+            color: 'var(--cth-ink-500)', fontSize: 14, lineHeight: 1
           }}
         >
-          {appThemeNow === 'dark' ? '☀' : '☾'}
+          <ProIcon name={appThemeNow === 'dark' ? 'sun' : 'moon'} size={15} />
         </button>
-        {/* v0.3.4: the IDE button moved to agent level — every agent's header
-            (sidebar detail, god Command Center, fullscreen) carries it. */}
         <button
           className="cth-titlebar-nodrag cth-settings-btn cth-tip"
           onClick={() => { setSettingsSection(undefined); setSettingsOpen(true); }}
-          data-tip="Settings"
-          aria-label="Settings"
+          data-tip="Configurações"
+          aria-label="Configurações"
           style={{
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            display: 'inline-grid', placeItems: 'center',
             width: 28, height: 28, padding: 0,
-            background: 'var(--cth-paper-100)',
-            boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)',
-            border: 'none', borderRadius: 2, cursor: 'pointer',
-            color: 'var(--cth-ink-900)'
+            background: 'transparent',
+            border: '1px solid transparent',
+            borderRadius: 7, cursor: 'pointer',
+            color: 'var(--cth-ink-500)'
           }}
         >
-          <GearGlyph />
+          <ProIcon name="gear" size={15} />
         </button>
-        {/* Fullscreen. The title bar is chrome, not canvas, so these two use
-            clean stroke icons rather than the 16x16 pixel set the rest of the UI
-            is drawn in — at 16-18px a pixel-grid glyph reads as a rendering
-            artifact next to the OS window controls, not as a style choice. */}
-        <button
-          className="cth-titlebar-nodrag cth-tip"
-          onClick={() => {
-            if (fullscreenAgentId) { useStore.getState().setFullscreen(null); return; }
-            const all = useStore.getState().agents;
-            const target = all.find((x) => x.id === useStore.getState().selectedId && x.ptyId)
-              ?? all.find((x) => x.isGod && x.ptyId)
-              ?? all.find((x) => x.ptyId);
-            if (target) useStore.getState().setFullscreen(target.id);
-          }}
-          data-tip={fullscreenAgentId ? 'Exit focus mode (Esc)' : 'Focus mode'}
-          aria-label="Toggle focus mode"
+        {uiMode === 'classic' && (
+          <button
+            className="cth-titlebar-nodrag cth-tip"
+            onClick={() => {
+              if (fullscreenAgentId) { useStore.getState().setFullscreen(null); return; }
+              const all = useStore.getState().agents;
+              const target = all.find((x) => x.id === useStore.getState().selectedId && x.ptyId)
+                ?? all.find((x) => x.isGod && x.ptyId)
+                ?? all.find((x) => x.ptyId);
+              if (target) useStore.getState().setFullscreen(target.id);
+            }}
+            data-tip={fullscreenAgentId ? 'Sair do modo foco (Esc)' : 'Modo foco'}
+            aria-label="Alternar modo foco"
+            style={{
+              display: 'inline-grid', placeItems: 'center',
+              width: 28, height: 28, padding: 0,
+              background: 'transparent',
+              border: '1px solid transparent',
+              borderRadius: 7, cursor: 'pointer',
+              color: 'var(--cth-ink-500)'
+            }}
+          >
+            <ProIcon name={fullscreenAgentId ? 'collapse' : 'expand'} size={15} />
+          </button>
+        )}
+        <div
+          className="cth-titlebar-nodrag"
+          role="group"
+          aria-label="Modo de interface"
           style={{
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 28, height: 28, padding: 0,
-            background: 'var(--cth-paper-100)',
-            boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)',
-            border: 'none', borderRadius: 2, cursor: 'pointer',
-            color: 'var(--cth-ink-900)'
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 2,
+            height: 28,
+            padding: 2,
+            background: 'var(--cth-cream-100)',
+            border: '1px solid var(--cth-ink-300)',
+            borderRadius: 8
           }}
         >
-          {fullscreenAgentId ? <CollapseGlyph /> : <ExpandGlyph />}
-        </button>
-
+          {(['classic', 'pro'] as const).map((mode) => (
+            <button
+              key={mode}
+              onClick={() => setMode(mode)}
+              aria-pressed={uiMode === mode}
+              style={{
+                height: 22,
+                padding: '0 9px',
+                border: 'none',
+                cursor: uiMode === mode ? 'default' : 'pointer',
+                borderRadius: 6,
+                background: uiMode === mode ? 'var(--cth-accent)' : 'transparent',
+                color: uiMode === mode ? 'var(--cth-accent-ink)' : 'var(--cth-ink-500)',
+                fontFamily: 'var(--cth-font-ui)',
+                fontSize: 11.5,
+                fontWeight: uiMode === mode ? 600 : 500,
+                letterSpacing: '0.02em'
+              }}
+            >{mode === 'classic' ? 'Clássico' : 'PRO'}</button>
+          ))}
+        </div>
       </div>
 
+      {uiMode === 'pro' ? (
+        <ProDashboard
+          config={config}
+          onOpenSettings={() => { setSettingsSection('Agents & Models'); setSettingsOpen(true); }}
+          onOpenAgent={(id) => {
+            useStore.getState().select(id);
+            setMode('classic');
+          }}
+          onClassic={() => setMode('classic')}
+        />
+      ) : (
+      <>
       <div style={{
         flex: 1, minHeight: 0,
         display: 'flex',
@@ -409,14 +447,14 @@ export function App() {
               pointerEvents: 'none'
             }}>
               <div style={{ pointerEvents: 'auto', width: 360 }}>
-                <PixelPanel variant="dialog" title="EMPTY FLOOR" noPadding>
+                <PixelPanel variant="dialog" title="ANDAR VAZIO" noPadding>
                   <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
                     <p style={{ margin: 0, fontSize: 13, lineHeight: '20px' }}>
-                      No agents on the floor yet. Spawn one to see real claude output stream in here.
+                      Ainda não há agentes no andar. Contrate um para ver a saída real do Claude em tempo real aqui.
                     </p>
                     <PixelButton variant="primary" size="md" onClick={() => setAddAgentOpen(true)}>
                       <span style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
-                        <Icon name="plus" /> add agent
+                        <Icon name="plus" /> adicionar agente
                       </span>
                     </PixelButton>
                   </div>
@@ -447,10 +485,10 @@ export function App() {
               <div style={{
                 fontFamily: 'var(--cth-font-display)', fontSize: 10, lineHeight: '14px',
                 color: 'var(--cth-ink-500)'
-              }}>WAKING THE FLOOR</div>
+              }}>ACORDANDO O ANDAR</div>
               <p style={{ margin: 0, fontSize: 13, textAlign: 'center', color: 'var(--cth-ink-700)' }}>
-                {bootingGodName} is clocking in.<br />
-                The terminal will land here once he's seated.
+                {bootingGodName} está batendo o ponto.<br />
+                O terminal aparecerá aqui assim que ele se acomodar.
               </p>
             </PixelPanel>
           ) : (
@@ -462,14 +500,14 @@ export function App() {
               <div style={{
                 fontFamily: 'var(--cth-font-display)', fontSize: 10, lineHeight: '14px',
                 color: 'var(--cth-ink-500)'
-              }}>NO AGENT SELECTED</div>
+              }}>NENHUM AGENTE SELECIONADO</div>
               <p style={{ margin: 0, fontSize: 13, textAlign: 'center', color: 'var(--cth-ink-700)' }}>
-                Spawn an agent from the strip below.<br />
-                The terminal and command bar will land here.
+                Contrate um agente na faixa abaixo.<br />
+                O terminal e a barra de comandos aparecerão aqui.
               </p>
               <PixelButton variant="secondary" size="md" onClick={() => setAddAgentOpen(true)}>
                 <span style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
-                  <Icon name="plus" /> add agent
+                  <Icon name="plus" /> adicionar agente
                 </span>
               </PixelButton>
             </PixelPanel>
@@ -478,6 +516,8 @@ export function App() {
       </div>
 
       <AgentStrip config={config} />
+      </>
+      )}
 
       {addAgentOpen && (
         <AddAgentModal
@@ -513,59 +553,5 @@ export function App() {
       {ideOpen && <IdePanel />}
       <TaskDetailOverlay />
     </div>
-  );
-}
-
-/* ── Title-bar glyphs ────────────────────────────────────────────────────────
-   Stroke icons on a 16 unit box, inheriting `currentColor` so they follow the
-   theme exactly as the pixel set does. Deliberately NOT added to
-   components/Icon.tsx: that library is the app's pixel-art identity and is used
-   at tab and card scale, where the pixel grid is the point. These three sit
-   beside the OS traffic lights, which is the one place that identity reads as a
-   blurry asset rather than a decision. */
-function Glyph({ children }: { children: React.ReactNode }) {
-  return (
-    <svg
-      width="16" height="16" viewBox="0 0 16 16" fill="none"
-      stroke="currentColor" strokeWidth={1.4}
-      strokeLinecap="round" strokeLinejoin="round"
-      aria-hidden="true" focusable="false"
-    >{children}</svg>
-  );
-}
-
-/** Four outward corner brackets — enter fullscreen. */
-function ExpandGlyph() {
-  return (
-    <Glyph>
-      <path d="M6.2 3H3v3.2M9.8 3H13v3.2M6.2 13H3V9.8M9.8 13H13V9.8" />
-    </Glyph>
-  );
-}
-
-/** The same brackets turned inward — leave fullscreen. */
-function CollapseGlyph() {
-  return (
-    <Glyph>
-      <path d="M3 6.2h3.2V3M13 6.2H9.8V3M3 9.8h3.2V13M13 9.8H9.8V13" />
-    </Glyph>
-  );
-}
-
-/** A wrench. The previous glyph was a hub with eight radiating spokes, which at
- *  18px is indistinguishable from a sun — sitting immediately beside a theme
- *  toggle whose light-mode icon IS a sun. A tool shape carries "settings"
- *  without competing with its neighbour. Drawn on a 24 box for curve headroom
- *  and rendered at 16. */
-function GearGlyph() {
-  return (
-    <svg
-      width="16" height="16" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth={2}
-      strokeLinecap="round" strokeLinejoin="round"
-      aria-hidden="true" focusable="false"
-    >
-      <path d="M15.5 3.5a5 5 0 0 0-6.1 6.1l-5.6 5.6a2.3 2.3 0 1 0 3.2 3.2l5.6-5.6a5 5 0 0 0 6.1-6.1l-3 3-2.2-.6-.6-2.2z" />
-    </svg>
   );
 }

@@ -49,10 +49,10 @@ test('the repro: grok, antigravity and qwen are offered by the wizard but cannot
     const a = classifyEngineAvailability(s, id);
     assert.equal(a.state, 'not-installable', id);
     assert.equal(engineBlocksOnboarding(a), true, id);
-    assert.equal(engineAvailabilityBadge(a), 'NOT INSTALLED');
+    assert.equal(engineAvailabilityBadge(a), 'NÃO INSTALADO');
     const msg = engineAvailabilityMessage(a, 'Grok');
-    assert.match(msg, /not installed/);
-    assert.match(msg, /check again/);
+    assert.match(msg, /não está instalado/);
+    assert.match(msg, /verificar novamente/);
     assert.match(msg, /Claude Code/);
     assert.doesNotMatch(msg, /[–—-]/, 'no dashes in user facing prose');
   }

@@ -117,8 +117,8 @@ test('a failed bind is loud and retried, and toasts once the back-off is spent',
   for (let i = 0; i < 6; i++) await a.ensureListening();
   assert.ok(a.health().attempts >= 6, `attempts=${a.health().attempts}`);
   assert.equal(toasts.length, 1, 'exactly one toast per outage');
-  assert.match(toasts[0].title, /hooks are down/i);
-  assert.match(toasts[0].body, /allowed/i);
+  assert.match(toasts[0].title, /hooks da colmeia estão fora do ar/i);
+  assert.match(toasts[0].body, /permitidos/i);
 });
 
 test('stop() removes only the socket file it bound — never another instance\'s', posixOnly, async (t) => {

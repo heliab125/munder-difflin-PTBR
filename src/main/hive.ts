@@ -1130,11 +1130,11 @@ export class HiveManager {
    */
   setAgentHold(id: string, hold: boolean): { ok: boolean; onHold?: boolean; error?: string } {
     const root = this.root();
-    if (!root) return { ok: false, error: 'hive disabled (no harnessHome)' };
+    if (!root) return { ok: false, error: 'colmeia desativada (sem harnessHome)' };
     try {
       const reg = this.registry();
       const agent = reg.agents[id];
-      if (!agent) return { ok: false, error: 'Agent not found' };
+      if (!agent) return { ok: false, error: 'Agente não encontrado' };
       if (!!agent.onHold === hold) return { ok: true, onHold: hold };
 
       agent.onHold = hold;
@@ -1159,15 +1159,15 @@ export class HiveManager {
 
   renameAgent(id: string, name: string): { ok: boolean; name?: string; error?: string } {
     const root = this.root();
-    if (!root) return { ok: false, error: 'hive disabled (no harnessHome)' };
+    if (!root) return { ok: false, error: 'colmeia desativada (sem harnessHome)' };
 
     const nextName = name.trim();
-    if (!nextName) return { ok: false, error: 'Name is required' };
+    if (!nextName) return { ok: false, error: 'O nome é obrigatório' };
 
     try {
       const reg = this.registry();
       const agent = reg.agents[id];
-      if (!agent) return { ok: false, error: 'Agent not found' };
+      if (!agent) return { ok: false, error: 'Agente não encontrado' };
       if (agent.name === nextName) return { ok: true, name: nextName };
 
       const previousName = agent.name;
@@ -1194,7 +1194,7 @@ export class HiveManager {
       this.commit(`hive: rename ${id}`);
       return { ok: true, name: nextName };
     } catch {
-      return { ok: false, error: 'Could not rename agent' };
+      return { ok: false, error: 'Não foi possível renomear o agente' };
     }
   }
 

@@ -181,7 +181,7 @@ export async function getDiff(
   cwd: string, relPath: string
 ): Promise<GitDiff | { ok: false; error: string }> {
   const abs = await safeResolve(cwd, relPath);
-  if (!abs) return { ok: false, error: 'path escapes repository root' };
+  if (!abs) return { ok: false, error: 'caminho fora da raiz do repositório' };
 
   // HEAD side: `git show HEAD:<path>` — errors (untracked / new file) → no head version.
   let head = '';
@@ -204,9 +204,9 @@ export async function getDiff(
     // content, and a FIFO would park the read — and the IPC call behind it —
     // forever.
     const s = await fh.stat();
-    if (!s.isFile()) throw new Error('not a regular file');
+    if (!s.isFile()) throw new Error('não é um arquivo regular');
     if (s.size > MAX_DIFF_BYTES) {
-      return { ok: false, error: `file too large to diff (${(s.size / 1048576).toFixed(1)} MB)` };
+      return { ok: false, error: `arquivo grande demais para comparar (${(s.size / 1048576).toFixed(1)} MB)` };
     }
     const buf = await fh.readFile();
     workingExists = true;
@@ -420,7 +420,7 @@ function parseNameStatusZ(stdout: string): GitCommitFile[] {
 
 /** Files touched by one commit (rename-aware). */
 export async function getCommitFiles(cwd: string, sha: string): Promise<GitCommitFile[] | { error: string }> {
-  if (!isSafeRev(sha)) return { error: 'invalid revision' };
+  if (!isSafeRev(sha)) return { error: 'revisão inválida' };
   const res = await runGit(cwd, ['diff-tree', '--no-commit-id', '-r', '--root', '-z', '-M', '--name-status', sha, '--']);
   if (!res.ok) return { error: res.error };
   return parseNameStatusZ(res.stdout);
@@ -433,12 +433,12 @@ const MAX_SHOW_BYTES = 2 * 1024 * 1024; // match getDiff's cap
 export async function getFileAtRev(cwd: string, rev: string, relPath: string): Promise<
   { ok: true; exists: boolean; isBinary: boolean; content: string } | { ok: false; error: string }
 > {
-  if (!isSafeRev(rev)) return { ok: false, error: 'invalid revision' };
-  if (!(await safeResolve(cwd, relPath))) return { ok: false, error: 'path escapes repository root' };
+  if (!isSafeRev(rev)) return { ok: false, error: 'revisão inválida' };
+  if (!(await safeResolve(cwd, relPath))) return { ok: false, error: 'caminho fora da raiz do repositório' };
   const size = await runGit(cwd, ['cat-file', '-s', `${rev}:${relPath}`]);
   if (!size.ok) return { ok: true, exists: false, isBinary: false, content: '' };
   if ((parseInt(size.stdout.trim(), 10) || 0) > MAX_SHOW_BYTES) {
-    return { ok: false, error: 'file too large to diff (>2 MB)' };
+    return { ok: false, error: 'arquivo grande demais para comparar (>2 MB)' };
   }
   const res = await runGit(cwd, ['show', `${rev}:${relPath}`]);
   if (!res.ok) return { ok: true, exists: false, isBinary: false, content: '' };
@@ -456,7 +456,7 @@ export interface GitCompare {
 /** Compare two refs. mode 'three' (default, PR-style): what head adds since the
  *  merge base. mode 'two': the literal state difference base→head. */
 export async function compareRefs(cwd: string, base: string, head: string, mode: 'two' | 'three'): Promise<GitCompare | { error: string }> {
-  if (!isSafeRev(base) || !isSafeRev(head)) return { error: 'invalid revision' };
+  if (!isSafeRev(base) || !isSafeRev(head)) return { error: 'revisão inválida' };
   const counts = await runGit(cwd, ['rev-list', '--left-right', '--count', `${base}...${head}`]);
   if (!counts.ok) return { error: counts.error };
   const [behind, ahead] = counts.stdout.trim().split('\t').map((x) => parseInt(x, 10) || 0);
@@ -490,7 +490,7 @@ export async function listWorktrees(cwd: string): Promise<GitWorktreeInfo[] | { 
  *  any doubt → refuse. Guards here cover the repo itself; the IPC layer adds the
  *  "no agent actively working in this tree" guard (it owns the pty registry). */
 export async function checkoutRef(cwd: string, ref: string, detach: boolean): Promise<{ ok: true; detached: boolean } | { ok: false; error: string }> {
-  if (!isSafeRev(ref)) return { ok: false, error: 'invalid revision' };
+  if (!isSafeRev(ref)) return { ok: false, error: 'revisão inválida' };
   const st = await getStatus(cwd);
   if ('error' in st) return { ok: false, error: `could not verify a clean tree: ${st.error}` };
   const dirty = st.staged.length + st.unstaged.length;

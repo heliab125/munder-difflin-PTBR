@@ -170,7 +170,7 @@ test('path traversal out of the root is rejected', async () => {
     ]) {
       const res = await readFileBinary(root, rel);
       assert.equal(res.ok, false, `${rel} must not be readable`);
-      assert.equal(res.error, 'path escapes root');
+      assert.equal(res.error, 'caminho fora da raiz');
     }
     // …while an absolute path INSIDE the root is still fine (safeResolve's rule).
     const inside = await readFileBinary(root, path.join(root, 'docs', 'shot.png'));
@@ -185,7 +185,7 @@ test('the size cap is enforced before any bytes are read', async () => {
   try {
     const res = await readFileBinary(root, 'docs/shot.png', 8);
     assert.equal(res.ok, false);
-    assert.match(res.error, /too large/);
+    assert.match(res.error, /grande demais/);
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }
@@ -212,7 +212,7 @@ test('non-regular files are refused rather than opened', async () => {
     // check, hanging the IPC call and the renderer's loading state with it.
     const res = await readFileBinary(root, 'docs');
     assert.equal(res.ok, false);
-    assert.equal(res.error, 'not a regular file');
+    assert.equal(res.error, 'não é um arquivo regular');
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }

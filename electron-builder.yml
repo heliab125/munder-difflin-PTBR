@@ -123,13 +123,15 @@ mac:
   #   To sign: install your "Developer ID Application" cert into the keychain.
   #   (Override with CSC_LINK=<path-to.p12> + CSC_KEY_PASSWORD for CI.)
   # Notarization happens in the root-level `afterSign` hook (top of this file).
-  # dmg is what humans download; zip is what Squirrel.Mac (electron-updater)
-  # actually updates from — latest-mac.yml points at it. Both universal.
+  # Distribuição PT-BR: macOS Intel (x64). O alvo universal exigia compilar
+  # duas fatias (arm64 + x64) e não produzia um instalador explicitamente
+  # rotulado para Macs Intel. Aqui o alvo é x64 declarado, com dmg (download
+  # humano) e zip (Squirrel.Mac / electron-updater).
   target:
     - target: dmg
-      arch: [universal]
+      arch: [x64]
     - target: zip
-      arch: [universal]
+      arch: [x64]
   artifactName: Munder-Difflin-${version}-mac-${arch}.${ext}
 
 dmg:

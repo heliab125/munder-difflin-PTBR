@@ -212,6 +212,6 @@ test('lexical traversal out of the root is still rejected', () => withWorkspace(
   for (const rel of ['../outside/secret.txt', 'docs/../../outside/secret.txt', path.join(dir, 'outside', 'secret.txt')]) {
     const res = await readFileText(root, rel);
     assert.equal(res.ok, false, `${rel} must not be readable`);
-    assert.equal(res.error, 'path escapes root');
+    assert.equal(res.error, 'caminho fora da raiz');
   }
 }));

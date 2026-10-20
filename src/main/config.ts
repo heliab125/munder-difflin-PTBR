@@ -13,6 +13,7 @@ import { defaultMcpDefaults } from '../shared/mcpCatalog';
 import { MAX_AGENT_TOKEN_CAP } from '../shared/tokenCaps';
 import { expandTilde, normalizeHiveHome } from './fs';
 import type { IntegrationRecord } from '../shared/integrations';
+import type { ProviderProfileId } from '../shared/providerCatalog';
 import {
   DEFAULT_CONTEXT_TRIGGER,
   DEFAULT_ORG_TRIGGER,
@@ -64,7 +65,7 @@ export interface ScheduledMission {
  *  Shipped enabled by default; users can toggle it off in the Command Center. */
 export const OPS_STANDUP_MISSION: ScheduledMission = {
   id: 'ops-standup',
-  label: 'Hourly ops standup',
+  label: 'Reunião operacional horária',
   intervalMs: 3_600_000,
   to: 'god',
   body:
@@ -97,7 +98,7 @@ export const OPS_STANDUP_MISSION: ScheduledMission = {
  *  when an agent looks stuck and a slower one right after a re-engage. */
 export const HEARTBEAT_MISSION: ScheduledMission = {
   id: 'heartbeat',
-  label: 'Floor heartbeat',
+  label: 'Batimento do andar',
   intervalMs: 120_000,
   to: 'god',
   body:
@@ -122,7 +123,7 @@ export const HEARTBEAT_MISSION: ScheduledMission = {
  *  (compactMaintenanceSeeded guards re-seeding). */
 export const COMPACT_MAINTENANCE_MISSION: ScheduledMission = {
   id: 'compact-maintenance',
-  label: 'Auto-compact (maintenance)',
+  label: 'Compactação automática (manutenção)',
   // 2h, matching DEFAULT_CONTEXT_TRIGGER.compact.everyMs. The two cadences must
   // agree: this mission is the schedule half of the same behaviour the context
   // trigger now owns, and a 1h seed here would keep interrupting agents on the
@@ -325,6 +326,24 @@ export interface HarnessConfig {
   providerBaseUrls?: Partial<Record<AgentProvider, string>>;
   /** Per-CLI-provider default model slug, used to pre-fill the model picker. */
   providerDefaultModels?: Partial<Record<AgentProvider, string>>;
+
+  // ─── Assinatura / plano de tokens (catálogo compartilhado) ────────────────
+  /** Provedor de primeira classe escolhido (Alibaba, OpenCode, BytePlus, Z.ai,
+   *  DeepSeek, OpenAI, Anthropic ou personalizado). Unset = nenhum plano
+   *  conectado, portanto sem teto de subagentes. */
+  providerProfileId?: ProviderProfileId;
+  /** Plano de assinatura ativo dentro do provedor (ex.: 'standard' = US$18/mês
+   *  da Alibaba, com teto de 4 subagentes). */
+  providerPlanId?: string;
+  /** URL base efetiva do provedor (sobrepõe o preset do catálogo). */
+  providerBaseUrl?: string;
+  /** Modelo principal usado pelo orquestrador/subagentes nesse provedor. */
+  providerModel?: string;
+  /** Teto de subagentes para planos personalizados; 0 = nenhum, vazio = ilimitado. */
+  customSubagentLimit?: number;
+  /** Epoch ms da última conexão/teste bem-sucedido do provedor. */
+  providerConnectedAt?: number;
+
   /** Master toggle for the Slack → Michael's-queue integration. */
   slackEnabled?: boolean;
   /** Slack app signing secret (Basic Information → Signing Secret). Never logged. */

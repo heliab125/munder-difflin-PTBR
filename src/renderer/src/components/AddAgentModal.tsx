@@ -9,6 +9,9 @@ import { useStore, type Agent } from '@/store/store';
 import { OFFICE_CAST, DEFAULT_CHARACTER, type OfficeCharacterName } from '@/scene/office/cast';
 import { type AccentColorName } from '@/design/tokens';
 import type { HireManifest } from '@shared/hire';
+import type { SubscriptionStatus } from '@shared/subscription';
+import { quotaBlockedMessage } from '@shared/subscription';
+import { providerProfile } from '@shared/providerCatalog';
 import { hireQueueProgress } from '@shared/hireQueue';
 import { MCP_CATALOG } from '@shared/mcpCatalog';
 import {
@@ -54,28 +57,28 @@ const ossLink: CSSProperties = { color: 'var(--cth-ink-900)', textDecoration: 'u
 const DESCRIPTION_TEMPLATES: { labelKey: string; description: string; goal: string }[] = [
   {
     labelKey: 'addAgent.templatesHint.repoJanitor.label',
-    description: 'keeps the codebase tidy and healthy',
-    goal: 'Continuously hunt for dead code, lint errors, flaky tests, and small safe refactors. Fix the safe ones and leave a note for anything risky. Never change behavior without flagging it.'
+    description: 'mantém a base de código limpa e saudável',
+    goal: 'Procure continuamente código morto, erros de lint, testes instáveis e pequenas refatorações seguras. Corrija os casos seguros e deixe uma observação para qualquer coisa arriscada. Nunca altere o comportamento sem sinalizar.'
   },
   {
     labelKey: 'addAgent.templatesHint.docsWriter.label',
-    description: 'keeps docs in sync with the code',
-    goal: 'Watch for code changes that outdate the README and docs, then update them. Write for newcomers and prefer concrete examples over prose.'
+    description: 'mantém a documentação sincronizada com o código',
+    goal: 'Acompanhe mudanças de código que deixem o README e a documentação desatualizados e atualize-os. Escreva para iniciantes e prefira exemplos concretos a texto corrido.'
   },
   {
     labelKey: 'addAgent.templatesHint.bugTriager.label',
-    description: 'investigates and root-causes bugs',
-    goal: 'For each reported issue: reproduce it, find the root cause, then propose a minimal fix with evidence. No fixes without a confirmed root cause.'
+    description: 'investiga bugs e encontra a causa raiz',
+    goal: 'Para cada problema relatado: reproduza, encontre a causa raiz e proponha uma correção mínima com evidências. Nenhuma correção sem causa raiz confirmada.'
   },
   {
     labelKey: 'addAgent.templatesHint.researchAssistant.label',
-    description: 'gathers and summarizes information',
-    goal: 'Research the questions you are given across multiple sources, verify the key claims, and return a concise, cited summary.'
+    description: 'coleta e resume informações',
+    goal: 'Pesquise as perguntas recebidas em várias fontes, verifique as principais afirmações e retorne um resumo conciso e com citações.'
   },
   {
     labelKey: 'addAgent.templatesHint.releaseManager.label',
-    description: 'prepares and ships releases',
-    goal: 'Track what has shipped since the last release, update the changelog and version, and draft clear release notes.'
+    description: 'prepara e publica versões',
+    goal: 'Acompanhe o que foi publicado desde o último release, atualize o changelog e a versão e redija notas de versão claras.'
   }
 ];
 
@@ -83,34 +86,34 @@ const DESCRIPTION_TEMPLATES: { labelKey: string; description: string; goal: stri
 // the exact JSON shape the importer accepts and ends with a fill-in section so the
 // user adds their own details (item 7). Kept in sync with the HireManifest schema
 // (src/shared/hire.ts) — provider allowlist is claude | codex | antigravity | cursor.
-const HIRE_PROMPT = `You are designing a "hire" — a ready-to-spawn AI agent for Munder Difflin, an app that runs a team of CLI coding agents. Output ONE JSON object (a hire manifest) and nothing else.
+const HIRE_PROMPT = `Você está projetando uma "contratação" — um agente de IA pronto para iniciar no Munder Difflin, um app que executa uma equipe de agentes de programação via CLI. Produza UM único objeto JSON (um manifesto de contratação) e nada mais.
 
-Make the agent genuinely useful: give it a sharp role, a concrete standing goal, and a description that makes it behave like an expert operator of its CLI engine (Claude Code, Codex, or Antigravity/Gemini). It should know how to use the terminal, read and edit files, run and inspect commands, lean on available skills and MCP tools, keep notes in memory, and work autonomously toward its goal without hand-holding.
+Torne o agente genuinamente útil: dê a ele um papel bem definido, um objetivo permanente concreto e uma descrição que o faça se comportar como um operador especialista do seu motor CLI (Claude Code, Codex ou Antigravity/Gemini). Ele deve saber usar o terminal, ler e editar arquivos, executar e inspecionar comandos, apoiar-se nas skills e ferramentas MCP disponíveis, manter notas na memória e trabalhar de forma autônoma rumo ao seu objetivo sem precisar de supervisão constante.
 
-Return EXACTLY this shape (omit optional fields you don't need; keep the spec string verbatim):
+Retorne EXATAMENTE este formato (omita campos opcionais que não precisar; mantenha a string spec literal):
 
 {
   "spec": "munder-difflin/hire@1",
   "name": "Jim",
-  "description": "one-line role — what this agent is for",
-  "goal": "standing directive injected on every prompt — specific and outcome-oriented",
+  "description": "função em uma linha — para que serve este agente",
+  "goal": "diretriz permanente injetada em cada prompt — específica e orientada a resultados",
   "provider": "claude",
   "model": "claude-opus-4-8[1m]",
   "capabilities": ["code-review", "docs"],
   "isolate": false,
   "tokenCap": 2000000,
-  "author": "your name"
+  "author": "seu nome"
 }
 
-Rules:
-- "provider" MUST be one of: cursor | claude | codex | antigravity. "model" must be a real model id for that provider (e.g. gpt-5.6-luna-high, claude-opus-4-8[1m], gpt-5-codex, "Gemini 3.1 Pro (High)").
-- Do NOT include shell commands or any flags beyond these fields.
-- Make "description" + "goal" concrete enough that the agent knows exactly what to do on its first turn.
+Regras:
+- "provider" DEVE ser um destes: cursor | claude | codex | antigravity. "model" deve ser um id de modelo real para esse provedor (ex.: gpt-5.6-luna-high, claude-opus-4-8[1m], gpt-5-codex, "Gemini 3.1 Pro (High)").
+- NÃO inclua comandos de shell nem flags além destes campos.
+- Torne "description" + "goal" concretos o suficiente para que o agente saiba exatamente o que fazer no primeiro turno.
 
---- ADD YOUR DETAILS BELOW (the AI should use these) ---
-Role / what I want this agent to do:
-Preferred engine (claude / codex / antigravity), if any:
-Repos, tools, style, or constraints to respect:
+--- ADICIONE SEUS DETALHES ABAIXO (a IA deve usá-los) ---
+Função / o que quero que este agente faça:
+Motor preferido (claude / codex / antigravity), se houver:
+Repos, ferramentas, estilo ou restrições a respeitar:
 `;
 
 // The Add Agent form has 11+ fields, so it's grouped into sections the user jumps
@@ -185,8 +188,24 @@ export function AddAgentModal({ onClose, config, onConfigChange }: AddAgentModal
 
   // Default provider follows whatever the global default command is (claude
   // unless the user reconfigured it); the model only carries over for Claude.
-  const initialProvider = inferAgentProvider(config.defaultCommand);
-  const initialModel = isClaudeProvider(initialProvider) ? config.defaultModel : undefined;
+  // Com um plano de tokens ativo (Alibaba/BytePlus/Z.ai), o padrão passa a ser
+  // OpenCode no modelo do plano — é o motor que recebe a URL base e a chave do
+  // cofre sem expor segredos no terminal.
+  const activePlanProfile = providerProfile(config.providerProfileId);
+  const planRunsOnOpenCode = !!activePlanProfile && (
+    activePlanProfile.kind === 'token-plan' ||
+    activePlanProfile.kind === 'coding-plan' ||
+    activePlanProfile.id === 'opencode'
+  );
+  const initialProvider: AgentProvider = planRunsOnOpenCode
+    ? 'opencode'
+    : inferAgentProvider(config.defaultCommand);
+  const initialModel = planRunsOnOpenCode && activePlanProfile
+    ? (config.providerDefaultModels?.opencode ??
+        (activePlanProfile.kind === 'cli'
+          ? undefined
+          : `${activePlanProfile.id}/${config.providerModel?.trim() || activePlanProfile.models[0]}`))
+    : isClaudeProvider(initialProvider) ? config.defaultModel : undefined;
 
   const [name, setName] = useState(pendingHire?.name ?? 'Jim');
   const [character, setCharacter] = useState<OfficeCharacterName>(knownCharacter(pendingHire?.character));
@@ -202,8 +221,35 @@ export function AddAgentModal({ onClose, config, onConfigChange }: AddAgentModal
   const [command, setCommand] = useState(
     pendingHire ? hireCommand(pendingHire) : buildSpawnCommand(config, initialModel, initialProvider)
   );
-  const [description, setDescription] = useState(pendingHire?.description ?? 'a fresh harness');
+  const [description, setDescription] = useState(pendingHire?.description ?? 'um novo harness');
   const [hireMeta, setHireMeta] = useState<HireManifest | null>(pendingHire);
+  // Retrato da assinatura para bloquear a criação ANTES de tentar o spawn. O
+  // backend continua sendo a trava definitiva; isto só evita um erro tardio.
+  const [quota, setQuota] = useState<SubscriptionStatus | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    const load = async () => {
+      try {
+        const next = await window.cth.subscriptionStatus();
+        if (alive) setQuota(next);
+      } catch { /* mantém o último estado conhecido */ }
+    };
+    void load();
+    const timer = setInterval(() => { void load(); }, 5_000);
+    return () => { alive = false; clearInterval(timer); };
+  }, []);
+
+  const quotaFull = quota?.quota.state === 'full' && quota.limit !== null;
+  const quotaMessage = quotaFull && quota
+    ? quotaBlockedMessage({
+        providerLabel: quota.profileLabel,
+        planLabel: quota.planLabel,
+        priceLabel: quota.priceLabel,
+        limit: quota.limit ?? 0,
+        active: quota.active
+      })
+    : null;
 
   // Picking a model rebuilds the command; the command field stays editable for
   // power users (it's the source of truth for the actual spawn).
@@ -345,7 +391,7 @@ export function AddAgentModal({ onClose, config, onConfigChange }: AddAgentModal
     setProvider(m.provider ?? initialProvider);
     setModel(m.model);
     setCommand(hireCommand(m));
-    setDescription(m.description ?? 'a fresh harness');
+    setDescription(m.description ?? 'um novo harness');
     setGoal(m.goal ?? '');
     setIsolate(m.isolate ?? false);
     setResumeSessionId('');
@@ -375,8 +421,8 @@ export function AddAgentModal({ onClose, config, onConfigChange }: AddAgentModal
     const res = await window.cth.importHireFiles();
     if (res.manifests.length > 0) enqueuePendingHires(res.manifests);
     if (res.errors.length > 0) {
-      const noun = res.errors.length === 1 ? 'file' : 'files';
-      setError(`Skipped ${res.errors.length} invalid ${noun}: ${res.errors.join(' · ')}`);
+      const noun = res.errors.length === 1 ? 'arquivo inválido ignorado' : 'arquivos inválidos ignorados';
+      setError(`${res.errors.length} ${noun}: ${res.errors.join(' · ')}`);
     } else if (!res.ok && res.error && res.error !== 'cancelled') {
       setError(res.error);
     }
@@ -390,6 +436,7 @@ export function AddAgentModal({ onClose, config, onConfigChange }: AddAgentModal
 
   const submit = async () => {
     setError(undefined);
+    if (quotaFull) { setError(quotaMessage ?? 'Limite do plano atingido.'); return; }
     // A required field can live in a section the user hasn't opened, so jump to
     // the offending section as we surface the error — the field is never hidden.
     if (!name.trim()) { setError(tr('addAgent.errName')); setSection('identity'); return; }
@@ -430,7 +477,7 @@ export function AddAgentModal({ onClose, config, onConfigChange }: AddAgentModal
     });
     if (!spawnRes.ok) {
       setBusy(false);
-      setError(spawnRes.error ?? 'spawn failed');
+      setError(spawnRes.error ?? 'falha ao iniciar o agente');
       return;
     }
     // #2 — the requested resume session id wasn't found anywhere; main fell back
@@ -455,13 +502,13 @@ export function AddAgentModal({ onClose, config, onConfigChange }: AddAgentModal
       name: name.trim(),
       character,
       accent,
-      description: description.trim() || 'a fresh harness',
+      description: description.trim() || 'um novo harness',
       project: basename(projectCwd),
       tmuxTarget: '',
       cwd: spawnedCwd,
       goal: goal.trim() || undefined,
       status: 'idle',
-      action: resuming && spawnRes.resumeNotFound ? 'session not found — fresh start' : 'starting up',
+      action: resuming && spawnRes.resumeNotFound ? 'sessão não encontrada — início do zero' : 'iniciando',
       progress: 0,
       currentStation: 'desk',
       ptyId,
@@ -787,8 +834,8 @@ export function AddAgentModal({ onClose, config, onConfigChange }: AddAgentModal
                               </button>
                               <button
                                 onClick={() => unregisterProject(r)}
-                                title={`Remove ${basename(r)} from this list. The folder itself is left alone.`}
-                                aria-label={`Remove ${basename(r)} from the project list`}
+                                title={`Remover ${basename(r)} desta lista. A pasta em si não é alterada.`}
+                                aria-label={`Remover ${basename(r)} da lista de projetos`}
                                 style={{
                                   padding: '3px 6px 1px 2px',
                                   background: 'transparent',
@@ -1021,7 +1068,7 @@ export function AddAgentModal({ onClose, config, onConfigChange }: AddAgentModal
                             : provider === 'codex'
                               ? 'codex'
                               : provider === 'custom'
-                                ? 'your-agent-cli'
+                                ? 'sua-cli-de-agente'
                                 : 'claude'
                         }
                         style={{ ...inputStyle, fontFamily: 'var(--cth-font-mono)' }}
@@ -1076,6 +1123,18 @@ export function AddAgentModal({ onClose, config, onConfigChange }: AddAgentModal
                 )}
               </div>
             </div>
+
+            {quotaMessage && (
+              <div style={{
+                padding: '6px 10px',
+                background: 'var(--cth-lemon-light, #fdf3cf)',
+                boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)',
+                fontSize: 13,
+                color: 'var(--cth-ink-900)'
+              }}>
+                {quotaMessage}
+              </div>
+            )}
 
             {error && (
               <div style={{
@@ -1154,7 +1213,7 @@ export function AddAgentModal({ onClose, config, onConfigChange }: AddAgentModal
                 <PixelButton variant="secondary" size="md" onClick={skipHire} disabled={busy}>{tr('addAgent.skipHire')}</PixelButton>
               )}
               <PixelButton variant="ghost" size="md" onClick={onClose} disabled={busy}>{tr('common.cancel')}</PixelButton>
-              <PixelButton variant="primary" size="md" onClick={submit} disabled={busy}>
+              <PixelButton variant="primary" size="md" onClick={submit} disabled={busy || quotaFull}>
                 {busy ? tr('addAgent.spawning') : tr('addAgent.spawn')}
               </PixelButton>
             </div>

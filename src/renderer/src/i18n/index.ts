@@ -19,6 +19,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { DEFAULT_GOD_NAME } from '@shared/godIdentity';
 import en from './locales/en.json';
+import ptBR from './locales/pt-BR.json';
 import zhCN from './locales/zh-CN.json';
 import ar from './locales/ar.json';
 
@@ -33,6 +34,7 @@ import ar from './locales/ar.json';
  * the renderer takes the same path it took before Arabic existed.
  */
 export const LANGUAGES = [
+  { code: 'pt-BR', label: 'Português (Brasil)', dir: 'ltr' },
   { code: 'en', label: 'English', dir: 'ltr' },
   { code: 'zh-CN', label: '简体中文', dir: 'ltr' },
   { code: 'ar', label: 'العربية', dir: 'rtl' }
@@ -89,13 +91,15 @@ export function setGodName(name: string | undefined | null): void {
   i18n.emit('languageChanged', i18n.language);
 }
 
-/** The saved choice, or English. Never the OS locale — see the note above. */
+/** The saved choice, or Brazilian Portuguese. Never the OS locale — see the
+ *  note above. This is the PT-BR distribution: the app ships Portuguese by
+ *  default, and a user who picked another language keeps their choice. */
 function detectLanguage(): string {
   try {
     const saved = window.localStorage.getItem(STORAGE_KEY);
     if (saved && SUPPORTED.includes(saved as LanguageCode)) return saved;
-  } catch { /* localStorage unavailable — English it is */ }
-  return 'en';
+  } catch { /* localStorage unavailable — Portuguese it is */ }
+  return 'pt-BR';
 }
 
 /** Switch language now and persist the choice for next launch. */
@@ -108,13 +112,14 @@ void i18n
   .use(initReactI18next)
   .init({
     resources: {
+      'pt-BR': { translation: ptBR },
       en: { translation: en },
       'zh-CN': { translation: zhCN },
       ar: { translation: ar }
     },
     lng: detectLanguage(),
-    fallbackLng: 'en',
-    supportedLngs: ['en', 'zh-CN', 'ar'],
+    fallbackLng: 'pt-BR',
+    supportedLngs: ['pt-BR', 'en', 'zh-CN', 'ar'],
     // Resources are bundled inline, so nothing ever suspends — the string is
     // there at init time. Keeping this false lets every component call
     // useTranslation() without wrapping the tree in <Suspense>.

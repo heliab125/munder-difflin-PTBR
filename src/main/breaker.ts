@@ -313,7 +313,7 @@ export class CircuitBreaker {
       const changed = target !== s.level;
       const escalated = rank(target) > rank(s.level);
       s.level = target;
-      s.reason = trip.tripping ? trip.reason : (changed ? 'recovering — signals cleared' : s.reason);
+      s.reason = trip.tripping ? trip.reason : (changed ? 'recuperando — sinais normalizados' : s.reason);
 
       decisions.push({
         state: { agentId: input.agentId, level: target, reason: s.reason, ts: nowMs },
@@ -337,11 +337,11 @@ export class CircuitBreaker {
   ): { tripping: boolean; reason: string } {
     // (b) repeated identical tool calls
     if (s.repeatCount >= cfg.repeatedToolLimit) {
-      return { tripping: true, reason: `looping: ${s.repeatCount}× identical tool call (${s.repeatKey?.split(':')[0] ?? '?'})` };
+      return { tripping: true, reason: `em loop: ${s.repeatCount}× chamada de ferramenta idêntica (${s.repeatKey?.split(':')[0] ?? '?'})` };
     }
     // (b) api_error storm
     if (s.errorCount >= cfg.errorStormLimit) {
-      return { tripping: true, reason: `error storm: ${s.errorCount} consecutive api errors/retries` };
+      return { tripping: true, reason: `tempestade de erros: ${s.errorCount} erros/retentativas de API consecutivos` };
     }
     // (a) per-agent token limit — this agent's own WORK tokens over its configured
     // cap. Measured without cacheRead (#189): tested against the all-kinds total,
@@ -353,16 +353,16 @@ export class CircuitBreaker {
     if (typeof perAgentCap === 'number' && perAgentCap > 0) {
       const work = workTokensOf(input.sample);
       if (work > perAgentCap) {
-        return { tripping: true, reason: `token limit: ${work.toLocaleString()} work tokens over the agent cap of ${perAgentCap.toLocaleString()} (${tokensOf(input.sample).toLocaleString()} total incl. cache reads)` };
+        return { tripping: true, reason: `limite de tokens: ${work.toLocaleString()} tokens de trabalho acima do teto do agente de ${perAgentCap.toLocaleString()} (${tokensOf(input.sample).toLocaleString()} no total, incl. leituras de cache)` };
       }
     }
     // (a) cost cap — floor total over cap, this agent is the biggest spender
     if (isTopSpender && typeof costCapUsd === 'number') {
-      return { tripping: true, reason: `cost cap: floor total over $${costCapUsd} (top spender $${(input.sample?.usd ?? 0).toFixed(2)})` };
+      return { tripping: true, reason: `teto de custo: total do andar acima de $${costCapUsd} (maior gasto $${(input.sample?.usd ?? 0).toFixed(2)})` };
     }
     // (a) token cap — floor total tokens over cap, this agent is the biggest spender
     if (isTopTokenSpender && typeof costCapTokens === 'number') {
-      return { tripping: true, reason: `token cap: floor total over ${costCapTokens.toLocaleString()} tokens (top spender ${tokensOf(input.sample).toLocaleString()})` };
+      return { tripping: true, reason: `teto de tokens: total do andar acima de ${costCapTokens.toLocaleString()} tokens (maior gasto ${tokensOf(input.sample).toLocaleString()})` };
     }
     // (a) token-velocity spike — diff cumulative output across consecutive beats.
     // Skipped entirely while a compaction is in flight (+ trailing grace): a
@@ -375,7 +375,7 @@ export class CircuitBreaker {
       if (dOut > 0 && dMin > 0) {
         const velocity = dOut / dMin;
         if (velocity > cfg.tokenVelocityPerMin) {
-          return { tripping: true, reason: `token velocity ${Math.round(velocity)}/min > ${cfg.tokenVelocityPerMin}/min` };
+          return { tripping: true, reason: `velocidade de tokens ${Math.round(velocity)}/min > ${cfg.tokenVelocityPerMin}/min` };
         }
         // (c) no-progress: burning output tokens while not coordinating. A recent
         // DISTINCT tool call counts as progress too — background workflows and
@@ -404,7 +404,7 @@ export class CircuitBreaker {
         if (!input.progressing && !toolActive && !workActive && !humanActive) {
           s.noProgressBeats += 1;
           if (s.noProgressBeats >= NO_PROGRESS_BEATS) {
-            return { tripping: true, reason: 'no-progress: generating tokens without coordinating (stale log/files)' };
+            return { tripping: true, reason: 'sem progresso: gerando tokens sem coordenar (log/arquivos desatualizados)' };
           }
         } else {
           s.noProgressBeats = 0;

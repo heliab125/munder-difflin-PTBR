@@ -84,7 +84,7 @@ test('every actionable state offers the action its label promises', () => {
   // the whole point of the founder's "tell me and let me trigger it" ask.
   check(null, { action: 'check', label: null, busy: false });
   check({ state: 'idle' }, { action: 'check', label: null });
-  check({ state: 'not-available' }, { action: 'check', label: 'latest' });
+  check({ state: 'not-available' }, { action: 'check', label: 'mais recente' });
 
   check({ state: 'checking' }, { action: 'none', busy: true });
   check({ state: 'available', version: '0.3.7' }, { action: 'download', busy: false });
@@ -96,7 +96,7 @@ test('every actionable state offers the action its label promises', () => {
 
 test('labels name the version so the badge is self-explanatory', () => {
   assert.match(describeUpdate({ state: 'available', version: '0.3.7' }, '0.3.6').label, /0\.3\.7/);
-  assert.match(describeUpdate({ state: 'downloaded', version: '0.3.7' }, '0.3.6').label, /restart/i);
+  assert.match(describeUpdate({ state: 'downloaded', version: '0.3.7' }, '0.3.6').label, /reiniciar/i);
   assert.match(describeUpdate({ state: 'downloading', version: '0.3.7', percent: 42.4 }, '0.3.6').label, /42%/);
 });
 
@@ -146,19 +146,19 @@ test('every update state produces a headline and a sentence', () => {
 test('idle and up-to-date both offer a check, and say which version you are on', () => {
   const idle = describeUpdateSettings({ state: 'idle' }, '0.3.9');
   assert.equal(idle.action, 'check');
-  assert.match(idle.button, /check for updates/i);
+  assert.match(idle.button, /verificar atualizações/i);
   assert.match(idle.headline, /0\.3\.9/);
 
   const latest = describeUpdateSettings({ state: 'not-available' }, '0.3.9');
   assert.equal(latest.action, 'check');
-  assert.match(latest.headline, /0\.3\.9 is the latest/i);
-  assert.match(latest.detail, /up to date/i);
+  assert.match(latest.headline, /0\.3\.9 é a versão mais recente/i);
+  assert.match(latest.detail, /já está atualizado/i);
 });
 
 test('a staged update offers the restart, and names the version it installs', () => {
   const done = describeUpdateSettings({ state: 'downloaded', version: '0.4.0' }, '0.3.9');
   assert.equal(done.action, 'restart');
-  assert.match(done.button, /restart to update/i);
+  assert.match(done.button, /reiniciar para atualizar/i);
   assert.equal(done.tone, 'ready');
   assert.match(done.headline, /0\.4\.0/);
 });
@@ -166,7 +166,7 @@ test('a staged update offers the restart, and names the version it installs', ()
 test('an available update offers the download, not the restart', () => {
   const avail = describeUpdateSettings({ state: 'available', version: '0.4.0' }, '0.3.9');
   assert.equal(avail.action, 'download');
-  assert.match(avail.button, /download v0\.4\.0/i);
+  assert.match(avail.button, /baixar v0\.4\.0/i);
 });
 
 test('the two mid-flight states have no button to press', () => {
@@ -195,19 +195,19 @@ test('manual update with a direct installer reads as a download, not a page to h
     { state: 'available-manual', version: '0.4.5', url: 'https://x', downloadUrl: 'https://x/a.dmg' },
     '0.4.4'
   );
-  assert.match(v.label, /download/);
+  assert.match(v.label, /baixar/);
   assert.equal(v.action, 'manual');
   assert.equal(v.tone, 'ready');
   for (const p of ['darwin', 'win32', 'linux']) {
     const s = manualInstallSteps(p);
     assert.equal(s.steps.length, 2);
-    assert.match(s.steps.join(' '), /same project/);
+    assert.match(s.steps.join(' '), /mesmo projeto/);
   }
 });
 
 test('just-updated is quiet on the badge and loses to a newer available release', () => {
   const v = describeUpdate({ state: 'just-updated', version: '0.4.5' }, '0.4.5');
-  assert.equal(v.label, 'latest');
+  assert.equal(v.label, 'mais recente');
   const next = reduceStatus(
     { state: 'just-updated', version: '0.4.5' },
     { state: 'available', version: '0.4.6' }

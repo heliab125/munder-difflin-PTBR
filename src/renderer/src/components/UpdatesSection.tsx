@@ -189,11 +189,11 @@ export function UpdatesSection() {
           border: '2px solid var(--cth-ink-900)'
         }}>
           <Trans i18nKey="updatesSection.manualDownloadingTitle" values={{ version: manualStarted }} components={{ b: <b /> }}>
-            v{manualStarted} is downloading in your browser.
+            A v{manualStarted} está sendo baixada no seu navegador.
           </Trans>{' '}
           <Trans i18nKey="updatesSection.manualDownloadingBody" values={{ os: steps.os }}>
-            When it lands, quit this app, install the new version over the current one, open it and
-            pick the same project. On {steps.os}:
+            Quando o download terminar, saia deste app, instale a nova versão por cima da atual,
+            abra-a e escolha o mesmo projeto. Em {steps.os}:
           </Trans>
           <ol style={{ margin: '4px 0 0', paddingLeft: 18, color: 'var(--cth-ink-700)' }}>
             {steps.steps.map((t) => <li key={t}>{t}</li>)}

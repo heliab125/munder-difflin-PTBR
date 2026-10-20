@@ -326,7 +326,7 @@ export const AGENT_PROVIDER_PRESETS: AgentProviderPreset[] = [
     // endpoint (OPENAI_BASE_URL). It has no hook surface, so it rides a PROXY
     // bridge (bridge.kind==='proxy'), with the OpenAI usage/tool-call shape.
     id: 'qwen',
-    label: 'Qwen (local available)',
+    label: 'Qwen (local disponível)',
     defaultCommand: 'qwen',
     commandGroups: [],
     // gemini-cli heritage: --yolo auto-approves all actions. // TODO-verify

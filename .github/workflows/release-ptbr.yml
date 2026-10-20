@@ -1,0 +1,100 @@
+name: Release PT-BR (macOS Intel + Windows x64)
+
+# Compila a distribuição PT-BR em runners NATIVOS:
+#   - macos-13  → Intel x86_64 (dmg + zip)
+#   - windows-2022 → x64 (NSIS + portable)
+#
+# Por que não cross-build? `node-pty` e `better-sqlite3` são módulos nativos.
+# Compilá-los para Windows a partir do macOS exige toolchain cruzada (wine +
+# MSVC), que não é confiável. Cada sistema compila o seu próprio binário.
+on:
+  push:
+    tags:
+      - "ptbr-v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build PT-BR (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macos-intel-x64
+            os: macos-13
+            platform: mac
+            arch: x64
+          - name: windows-x64
+            os: windows-2022
+            platform: win
+            arch: x64
+
+    env:
+      # Builds sem certificado Apple: não tenta assinar/notarizar. O macOS pode
+      # exigir "Abrir mesmo assim" no primeiro lançamento.
+      CSC_IDENTITY_AUTO_DISCOVERY: "false"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # node-gyp usa distutils, removido no Python 3.12.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Fornecer distutils para o node-gyp
+        run: python -m pip install --upgrade setuptools
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Verificação de tipos (main + preload + renderer)
+        run: npm run typecheck
+
+      - name: Testes automatizados
+        run: npm test
+
+      - name: Compilar (electron-vite → out/)
+        run: npm run build
+        env:
+          POSTHOG_KEY: ${{ secrets.POSTHOG_KEY }}
+          POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
+
+      - name: Empacotar instaladores
+        shell: bash
+        run: npx electron-builder --${{ matrix.platform }} --${{ matrix.arch }} --publish never
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Gerar checksums
+        shell: bash
+        run: |
+          cd dist
+          files=$(ls *.dmg *.zip *.exe 2>/dev/null || true)
+          [ -z "$files" ] && { echo "nenhum artefato para somar"; exit 0; }
+          if command -v sha256sum >/dev/null 2>&1; then
+            sha256sum $files > "SHA256SUMS-${{ matrix.name }}.txt"
+          else
+            shasum -a 256 $files > "SHA256SUMS-${{ matrix.name }}.txt"
+          fi
+          cat "SHA256SUMS-${{ matrix.name }}.txt"
+
+      - name: Publicar artefatos
+        uses: actions/upload-artifact@v4
+        with:
+          name: munder-difflin-ptbr-${{ matrix.name }}
+          path: |
+            dist/*.dmg
+            dist/*.zip
+            dist/*.exe
+            dist/SHA256SUMS-*.txt
+          if-no-files-found: error

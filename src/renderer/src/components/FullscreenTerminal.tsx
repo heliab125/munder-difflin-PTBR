@@ -88,7 +88,7 @@ function repoLabelOf(agent: Agent): string {
   if (root) return basename(root);
   const project = agent.project?.trim();
   if (project) return project;
-  return basename(agent.cwd) || 'unknown';
+  return basename(agent.cwd) || 'desconhecido';
 }
 
 /** Resolve every distinct cwd's repository root, then re-render. Exactly one git
@@ -308,7 +308,7 @@ export function FullscreenTerminal({ config }: FullscreenTerminalProps) {
         <span style={{
           fontFamily: 'var(--cth-font-display)', fontSize: 12, lineHeight: '20px',
           color: 'var(--cth-ink-900)'
-        }}>MUNDER DIFFLIN · FOCUS MODE</span>
+        }}>MUNDER DIFFLIN · MODO FOCO</span>
         {/* Same top-right controls as the main title bar — fullscreen covers
             it, so theme / exit-fullscreen / IDE must live here too. */}
         <div className="cth-titlebar-nodrag" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -359,8 +359,8 @@ export function FullscreenTerminal({ config }: FullscreenTerminalProps) {
           <button
             className="cth-settings-btn"
             onClick={() => window.dispatchEvent(new CustomEvent('cth:open-settings'))}
-            title="Settings"
-            aria-label="Settings"
+            title="Configurações"
+            aria-label="Configurações"
             style={{
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               width: 28, height: 28, padding: 0,
@@ -507,7 +507,7 @@ export function FullscreenTerminal({ config }: FullscreenTerminalProps) {
                   background: 'var(--cth-status-working)',
                   boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)'
                 }}>
-                  <Icon name="play" /> restoring your team…
+                  <Icon name="play" /> restaurando sua equipe…
                 </div>
               )}
               {!autoRestoring && restorableAgents.length > 0 && (
@@ -529,7 +529,7 @@ export function FullscreenTerminal({ config }: FullscreenTerminalProps) {
                   {restorableAgents.map((a: Agent) => (
                     <span
                       key={a.id}
-                      title={`${a.name} — restorable from last session`}
+                      title={`${a.name} — restaurável da última sessão`}
                       style={{
                         display: 'inline-flex', alignItems: 'center', gap: 2,
                         height: 20, padding: '0 2px 0 6px',
@@ -541,8 +541,8 @@ export function FullscreenTerminal({ config }: FullscreenTerminalProps) {
                       {a.name}
                       <button
                         onClick={() => useStore.getState().removeRestorableAgent(a.id)}
-                        title={`Dismiss ${a.name} — remove permanently from the restore list`}
-                        aria-label={`Dismiss ${a.name}`}
+                        title={`Dispensar ${a.name} — remover permanentemente da lista de restauração`}
+                        aria-label={`Dispensar ${a.name}`}
                         style={{
                           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                           width: 14, height: 14, padding: 0, lineHeight: 1,
@@ -840,7 +840,7 @@ function SidebarRow({
               <span style={{
                 fontSize: scale.note, lineHeight: 1.35,
                 color: 'var(--cth-ink-300)', fontStyle: 'italic'
-              }}>no note</span>
+              }}>sem nota</span>
             )}
           </div>
         </div>
@@ -873,7 +873,7 @@ function SidebarRow({
             fontSize: noteLabelSize,
             lineHeight: `${Math.round(noteLabelSize * 1.5)}px`,
             color: 'var(--cth-ink-700)'
-          }}>PRIVATE NOTE</div>
+          }}>NOTA PRIVADA</div>
           {/* A textarea, not an input: the note is a bullet list, so Enter has
               to make a new line rather than doing nothing. autoFocus is safe
               now that opening is an explicit click, not a pointer fly-by. */}
@@ -909,7 +909,7 @@ function SidebarRow({
           />
           <div style={{
             marginTop: 5, fontSize: 10, color: 'var(--cth-ink-500)'
-          }}>one line = one bullet · esc to close</div>
+          }}>uma linha = um item · esc para fechar</div>
         </div>
         </>,
         document.body
@@ -971,8 +971,8 @@ function Header({ agent, onEdit }: { agent: Agent; onEdit: () => void }) {
         <PixelButton variant="secondary" size="sm" onClick={onEdit}>
           <span
             className="cth-tip cth-tip-left cth-tip-wrap"
-            data-tip={`Edit ${agent.name}: their name and face, which engine they run on, and the briefing that tells them what they are for.`}
-            aria-label={`Edit ${agent.name}`}
+            data-tip={`Editar ${agent.name}: nome e rosto, em qual motor roda, e o briefing que diz para que serve.`}
+            aria-label={`Editar ${agent.name}`}
             style={{ display: 'inline-flex', alignItems: 'center', lineHeight: 0 }}
           >
             <Icon name="edit" />

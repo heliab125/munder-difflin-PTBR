@@ -128,8 +128,8 @@ export class RosterStore {
    */
   write(snap: unknown): RosterWriteResult {
     const home = this.home();
-    if (!home) return { ok: false, error: 'no harnessHome' };
-    if (!isSnapshot(snap)) return { ok: false, error: 'invalid snapshot' };
+    if (!home) return { ok: false, error: 'harnessHome não definido' };
+    if (!isSnapshot(snap)) return { ok: false, error: 'snapshot inválido' };
     const p = rosterPath(home);
     try {
       mkdirSync(home, { recursive: true });

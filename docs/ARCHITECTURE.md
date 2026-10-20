@@ -1,89 +1,89 @@
-# Architecture, project structure and design system
+# Arquitetura, estrutura do projeto e sistema de design
 
-_Moved out of the README so that document can do its job of explaining the product._
-_This is the contributor's map. Start here before your first pull request._
+_Movido do README para que aquele documento cumpra o papel de explicar o produto._
+_Este é o mapa do contribuidor. Comece por aqui antes do seu primeiro pull request._
 
-## Architecture
+## Arquitetura
 
-Two data planes feed one renderer:
+Dois planos de dados alimentam um único renderer:
 
 ```
 ┌───────────────────────────────────────────────────────────────┐
 │                     Electron Renderer (React)                  │
 │   ┌──────────────────┐    ┌──────────────────────────────┐    │
-│   │ Office Floor      │    │ Terminal + Command Bar       │    │
-│   │ (Pixi.js)        │    │ Files + Git tabs (xterm.js)  │    │
+│   │ Andar do escritório│   │ Terminal + Barra de comandos │    │
+│   │ (Pixi.js)        │    │ Arquivos + abas Git (xterm.js)│   │
 │   └─────────▲────────┘    └────────────▲─────────────────┘    │
-│             │ avatar state             │ pty bytes / fs / git  │
+│             │ estado dos avatares      │ bytes do pty / fs / git│
 └─────────────┼──────────────────────────┼───────────────────────┘
               │ IPC (contextBridge: window.cth)
        ┌──────┴──────────┐        ┌──────┴─────────────┐
-       │  Event Plane    │        │  Terminal Plane    │
-       │  hooks / hive   │        │  node-pty PTYs     │
-       │  router + GOD   │        │  + fs + git        │
+       │  Plano de eventos│      │  Plano de terminal │
+       │  hooks / colmeia │      │  PTYs node-pty     │
+       │  roteador + GOD  │      │  + fs + git        │
        └────────▲────────┘        └──────▲─────────────┘
-                │ hook payloads          │ stdin / stdout
+                │ payloads de hook       │ stdin / stdout
                 └─────────┬──────────────┘
                    ┌──────┴──────────────┐
                    │ claude / agy / codex│
                    └─────────────────────┘
 ```
 
-- **Terminal plane.** The main process owns a `PtyManager` that spawns each agent as a `node-pty`
-  process and streams output over per-id IPC (`pty:data:<id>`). The renderer talks only through a
-  typed `window.cth` bridge ([`src/preload/index.ts`](../src/preload/index.ts)), which also exposes
-  sandboxed filesystem and git helpers.
-- **Hive / event plane.** `hive.ts` is the on-disk multi-agent layer; `hooks.ts` runs the hook
-  server that provider bridges POST lifecycle payloads to (`cth-hook` for Claude Code, `agy-hook`
-  for Antigravity). `memory.ts` wraps the semantic memory CLI. The router delivers messages, drains
-  provider outboxes, the GOD agent adjudicates, and idle/inbox wakeups keep workers draining mail.
+- **Plano de terminal.** O processo principal possui um `PtyManager` que inicia cada agente como um
+  processo `node-pty` e transmite a saída por IPC por id (`pty:data:<id>`). O renderer fala apenas
+  através de uma ponte tipada `window.cth` ([`src/preload/index.ts`](../src/preload/index.ts)), que
+  também expõe helpers de sistema de arquivos e git em sandbox.
+- **Plano de colmeia / eventos.** `hive.ts` é a camada multiagente em disco; `hooks.ts` executa o
+  servidor de hooks para onde as pontes dos provedores enviam payloads de ciclo de vida (`cth-hook`
+  para Claude Code, `agy-hook` para Antigravity). `memory.ts` envolve a CLI de memória semântica.
+  O roteador entrega mensagens, drena as caixas de saída dos provedores, o agente GOD julga, e os
+  despertares de inatividade/caixa de entrada mantêm os trabalhadores drenando o correio.
 
-## Project structure
+## Estrutura do projeto
 
 ```
 src/
-  main/                      Electron main process (Node)
-    index.ts                 window, IPC handlers, quit guard
-    pty.ts                   node-pty manager (spawn/write/resize/kill/stream)
-    hive.ts                  on-disk multi-agent layer (memory, mailboxes, router)
-    hooks.ts                 hook server + provider hook shims (`cth-hook`, `agy-hook`)
-    memory.ts                semantic memory layer (CLI wrapper, degrade-to-noop)
-    config.ts                harness config persistence + home setup
-    transcript.ts            reads ~/.claude/projects/ JSONL transcripts for real token/cost telemetry
-    telemetry.ts             live OTel collector + usage/cost feed for observability
-    usage.ts / pricing.ts    UsageProvider seam + per-model cost attribution
-    breaker.ts / control.ts  cost/runaway circuit breaker (steer/constrain/stop) + HITL gate / steer / stop
-    reflect.ts               MemoryReflector — memory condensation
-    db.ts                    SQLite durable store (window bounds + history) + durable cost ledger
-    github.ts                GitHub issue + CI run ingestion via the gh CLI
-    shellEnv.ts              resolve PATH and shell env for child processes
-    fs.ts / git.ts           sandboxed filesystem + git bridges
-  preload/                   contextBridge → typed window.cth API
+  main/                      Processo principal do Electron (Node)
+    index.ts                 janela, handlers IPC, proteção de saída
+    pty.ts                   gerenciador node-pty (spawn/write/resize/kill/stream)
+    hive.ts                  camada multiagente em disco (memória, caixas de correio, roteador)
+    hooks.ts                 servidor de hooks + shims de hook dos provedores (`cth-hook`, `agy-hook`)
+    memory.ts                camada de memória semântica (wrapper da CLI, degrada para no-op)
+    config.ts                persistência da configuração do harness + preparação da pasta inicial
+    transcript.ts            lê transcrições JSONL em ~/.claude/projects/ para telemetria real de tokens/custo
+    telemetry.ts             coletor OTel ao vivo + feed de uso/custo para observabilidade
+    usage.ts / pricing.ts    interface UsageProvider + atribuição de custo por modelo
+    breaker.ts / control.ts  disjuntor de custo/execução descontrolada (orientar/restringir/parar) + gate HITL / steer / stop
+    reflect.ts               MemoryReflector — condensação de memória
+    db.ts                    armazenamento durável SQLite (limites de janela + histórico) + livro-razão de custos
+    github.ts                ingestão de issues e execuções de CI do GitHub via CLI gh
+    shellEnv.ts              resolve PATH e ambiente de shell para processos filhos
+    fs.ts / git.ts           pontes de sistema de arquivos e git em sandbox
+  preload/                   contextBridge → API tipada window.cth
   renderer/src/
-    App.tsx                  top-level layout + wiring
-    design/                  tokens.css / tokens.ts / global.css (design source of truth)
+    App.tsx                  layout de nível superior + fiação
+    design/                  tokens.css / tokens.ts / global.css (fonte da verdade do design)
     components/              PixelPanel, AgentDetailPanel, CommandBar, ApprovalsPanel, MemoryPanel, …
-    CommandCenterPanel,      Michael's control surface (Terminal/Floor/Memory/Activity/Tasks/Triggers/Handbook tabs)
-    ToolWaterfall,           per-agent tool-span waterfall for the observability view
-    TasksKanban,             dependency-aware kanban board (Tasks tab)
-    ThreadsPanel,            hive message conversation viewer (Messages tab)
-    MessageQueueComposer,    park messages for a busy agent
-    scene/office/            Pixi office floor: OfficeFloor, Character, Camera, cast, pathfinding, …
-    store/ · hooks/          zustand store, event loop, PTY parser, typewriter
-    assets/                  tilesets, maps, character sheets (see ATTRIBUTION.md)
+    CommandCenterPanel,      superfície de controle do Michael (abas Terminal/Andar/Memória/Atividade/Tarefas/Gatilhos/Manual)
+    ToolWaterfall,           waterfall de spans de ferramentas por agente para a visão de observabilidade
+    TasksKanban,             quadro kanban com dependências (aba Tarefas)
+    ThreadsPanel,            visualizador de conversas de mensagens da colmeia (aba Mensagens)
+    MessageQueueComposer,    estaciona mensagens para um agente ocupado
+    scene/office/            andar Pixi: OfficeFloor, Character, Camera, cast, pathfinding, …
+    store/ · hooks/          store zustand, loop de eventos, parser de PTY, typewriter
+    assets/                  tilesets, mapas, folhas de personagem (veja ATTRIBUTION.md)
 docs/                        `logo.png`, `banner.png`, landing page (GitHub Pages → munderdiffl.in)
-docs/media/                  `og.png` (social previews) + rendered Remotion clips
-landing-remotion/            Remotion project that renders the landing page's "how it works" clips
-HIVE.md · SPEC.md · DESIGN.md   multi-agent · terminal/event · visual design
-docs/message-queue.md        who may type into an agent's terminal, and when
+docs/media/                  `og.png` (previews sociais) + clipes Remotion renderizados
+landing-remotion/            projeto Remotion que renderiza os clipes "como funciona" da landing
+HIVE.md · SPEC.md · DESIGN.md   multiagente · terminal/eventos · design visual
+docs/message-queue.md        quem pode digitar no terminal de um agente, e quando
 ```
 
-<div align="right">(<a href="#munder-difflin">↑ back to top</a>)</div>
+<div align="right">(<a href="#munder-difflin">↑ voltar ao topo</a>)</div>
 
-## Design system
+## Sistema de design
 
-The aesthetic is **Animal Crossing × Earthbound × SNES menu UI** — pixel-snapped, chunky, friendly.
-[`DESIGN.md`](../DESIGN.md) is canonical; every component derives from its tokens. The Munder Difflin
-brand layers a **Dunder-Mifflin maroon** (`#6E1423`) and **gold** (`#F4D35E`) on top for logo and
-chrome. The 15 avatars are the cast of *The Office*, differentiated by hair/skin/shirt recipes.
-
+A estética é **Animal Crossing × Earthbound × menus de SNES** — pixel-snapped, robusta e amigável.
+[`DESIGN.md`](../DESIGN.md) é canônico; todo componente deriva dos seus tokens. A marca Munder Difflin
+aplica um **vinho Dunder-Mifflin** (`#6E1423`) e **dourado** (`#F4D35E`) por cima para o logo e o
+chrome. Os 15 avatares são o elenco de *The Office*, diferenciados por receitas de cabelo/pele/camisa.

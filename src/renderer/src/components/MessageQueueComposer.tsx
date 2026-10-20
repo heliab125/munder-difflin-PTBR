@@ -138,8 +138,8 @@ export function MessageQueueComposer({ agent }: MessageQueueComposerProps) {
     // the Slack inbound path (useHive.ts) so agents Read the files directly.
     const body = attachments.length
       ? (text.trim()
-          ? `${text}\n\nAttached files:\n`
-          : 'Attached files:\n') + attachments.map((a) => `- ${a.path} (${a.name})`).join('\n')
+          ? `${text}\n\nArquivos anexados:\n`
+          : 'Arquivos anexados:\n') + attachments.map((a) => `- ${a.path} (${a.name})`).join('\n')
       : text;
     enqueueMessage(agent.id, body);
     // Counted HERE, at the composer's submit, and NOT inside enqueueMessage:
@@ -254,8 +254,8 @@ export function MessageQueueComposer({ agent }: MessageQueueComposerProps) {
               if (discarded.trim()) setText(text ? `${text}\n${discarded}` : discarded);
             }}
             title={block === 'picker'
-              ? "Close the picker this agent has open so queued messages can be delivered"
-              : "Move the leftover text on this agent's prompt into this box so queued messages can be delivered"}
+              ? "Feche o seletor aberto deste agente para que as mensagens na fila possam ser entregues"
+              : "Mova o texto restante no prompt deste agente para esta caixa para que as mensagens na fila possam ser entregues"}
             style={{
               border: 'none', background: 'transparent', cursor: 'pointer', padding: 0,
               fontFamily: 'var(--cth-font-ui)', fontSize: 12,

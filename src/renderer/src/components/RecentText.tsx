@@ -31,7 +31,7 @@ export function RecentText({ accent, text, seed }: RecentTextProps) {
         color: 'var(--cth-ink-700)',
         textTransform: 'uppercase'
       }}>
-        <span>recent</span>
+        <span>recente</span>
         <span style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           color: done ? 'var(--cth-ink-500)' : `var(--cth-${accent})`
@@ -42,7 +42,7 @@ export function RecentText({ accent, text, seed }: RecentTextProps) {
             boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)',
             animation: done ? 'none' : 'cth-pulse 800ms steps(2, end) infinite'
           }} />
-          {done ? 'idle' : 'live'}
+          {done ? 'ocioso' : 'ao vivo'}
         </span>
       </div>
       <div style={{

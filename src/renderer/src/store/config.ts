@@ -13,6 +13,7 @@ import type {
   OrgTriggerConfig,
   WebhookTrigger
 } from '@shared/triggers';
+import type { ProviderProfileId } from '@shared/providerCatalog';
 import { isNewer } from '@shared/updateState';
 import modelCatalog from '@shared/modelCatalog.json';
 import type { CatalogModel, ModelCatalog } from '@shared/modelCatalogPayload';
@@ -131,6 +132,18 @@ export interface HarnessConfig {
   providerBaseUrls?: Partial<Record<AgentProvider, string>>;
   /** Per-CLI-provider default model slug, used to pre-fill the model picker. */
   providerDefaultModels?: Partial<Record<AgentProvider, string>>;
+  /** Provedor de primeira classe escolhido (mirrors src/main/config.ts). */
+  providerProfileId?: ProviderProfileId;
+  /** Plano de assinatura ativo (ex.: 'standard' da Alibaba = 4 subagentes). */
+  providerPlanId?: string;
+  /** URL base efetiva do provedor (sobrepõe o preset do catálogo). */
+  providerBaseUrl?: string;
+  /** Modelo principal do provedor. */
+  providerModel?: string;
+  /** Teto de subagentes para planos personalizados. */
+  customSubagentLimit?: number;
+  /** Epoch ms da última conexão bem-sucedida. */
+  providerConnectedAt?: number;
   /** Legacy single-webhook fields (mirrors src/main/config.ts, where they are
    *  deprecated in favour of `webhookTriggers` but still read until the server is
    *  rewired). Declared here so the surfaces that show them can stop widening this

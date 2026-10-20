@@ -1,6 +1,6 @@
 {
   "name": "munder-difflin",
-  "version": "0.4.6",
+  "version": "0.5.7",
   "private": true,
   "description": "Clones for you and your team, working 24/7 — a free, local-first multi-agent harness that turns the CLI coding agent you already run into a clone of you, coordinating an office of agents on your machine.",
   "main": "out/main/index.js",
@@ -24,7 +24,10 @@
     "dist": "npm run build && electron-builder",
     "dist:mac": "npm run build && electron-builder --mac",
     "dist:win": "npm run build && electron-builder --win",
-    "dist:linux": "npm run build && electron-builder --linux"
+    "dist:linux": "npm run build && electron-builder --linux",
+    "dist:mac:x64": "npm run build && electron-builder --mac --x64",
+    "dist:win:x64": "npm run build && electron-builder --win --x64",
+    "test": "node --test test/*.test.cjs"
   },
   "dependencies": {
     "@codemirror/lang-css": "^6.3.1",

@@ -14,6 +14,8 @@ import type { ModelCatalog } from '../shared/modelCatalogPayload';
 export type { ModelCatalog, CatalogModel } from '../shared/modelCatalogPayload';
 import type { HookEvent } from '../shared/hookEvents';
 export type { HookEvent } from '../shared/hookEvents';
+import type { SubscriptionStatus, OpenCodeStatusPayload } from '../shared/subscription';
+export type { SubscriptionStatus, OpenCodeStatusPayload } from '../shared/subscription';
 import type { LocalSkill, CatalogSkill } from '../main/skills';
 export type { LocalSkill, CatalogSkill } from '../main/skills';
 import type {
@@ -331,6 +333,14 @@ export interface HarnessConfig {
   providerBaseUrls?: Partial<Record<AgentProvider, string>>;
   /** Per-CLI-provider default model slug, used to pre-fill the model picker. */
   providerDefaultModels?: Partial<Record<AgentProvider, string>>;
+  /** Provedor de assinatura de primeira classe (catálogo compartilhado). */
+  providerProfileId?: 'alibaba' | 'opencode' | 'byteplus' | 'zai' | 'deepseek' | 'openai' | 'anthropic' | 'custom';
+  /** Plano ativo (ex.: 'standard' = Alibaba US$18/mês, teto de 4 subagentes). */
+  providerPlanId?: string;
+  providerBaseUrl?: string;
+  providerModel?: string;
+  customSubagentLimit?: number;
+  providerConnectedAt?: number;
 }
 
 export interface MemoryStatus {
@@ -1299,6 +1309,21 @@ const api = {
     ipcRenderer.invoke('providerKey:has', backend),
   providerKeyClear: (backend: string): Promise<{ ok: boolean; error?: string }> =>
     ipcRenderer.invoke('providerKey:clear', backend),
+  // ─── Assinatura, planos e quota de subagentes ────────────────────────────
+  subscriptionStatus: (): Promise<SubscriptionStatus> =>
+    ipcRenderer.invoke('subscription:status'),
+  subscriptionSet: (patch: {
+    profileId?: string | null;
+    planId?: string | null;
+    baseUrl?: string | null;
+    model?: string | null;
+    customSubagentLimit?: number | null;
+  }): Promise<{ ok: boolean; error?: string; status?: SubscriptionStatus }> =>
+    ipcRenderer.invoke('subscription:set', patch),
+  opencodeStatus: (): Promise<OpenCodeStatusPayload> =>
+    ipcRenderer.invoke('opencode:status'),
+  providerTest: (req?: { profileId?: string; baseUrl?: string; model?: string }): Promise<{ ok: boolean; status?: number; message: string }> =>
+    ipcRenderer.invoke('provider:test', req ?? {}),
   // Realtime Michael (voice orchestrator) — MAIN mints a short-lived EPHEMERAL token
   // from the BYOK OpenAI key; the real key NEVER crosses IPC. `realtimeHasOpenAiKey`
   // is a presence boolean only (gates the voice toggle, like providerKeyHas).

@@ -247,7 +247,7 @@ function ExchangeCard({
   onDecide: (id: string, decision: 'approved' | 'rejected') => void;
 }) {
   const { t } = useTranslation();
-  const godName = useStore((s) => s.agents.find((a) => a.isGod)?.name) ?? 'the orchestrator';
+  const godName = useStore((s) => s.agents.find((a) => a.isGod)?.name) ?? 'o orquestrador';
   const head = ex.head;
   const hasInbound = ex.msgs.some((m) => m.direction === 'inbound');
   const decision = head.decision;
@@ -372,7 +372,7 @@ const SECTIONS: { key: Source; labelKey: string; blurbKey: string }[] = [
 
 export function TriggerHistoryTab() {
   const { t } = useTranslation();
-  const godName = useStore((s) => s.agents.find((a) => a.isGod)?.name) ?? 'the orchestrator';
+  const godName = useStore((s) => s.agents.find((a) => a.isGod)?.name) ?? 'o orquestrador';
   const [entries, setEntries] = useState<TriggerHistoryEntry[]>([]);
   const [source, setSource] = useState<Source>('webhook');
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});

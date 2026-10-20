@@ -1,5 +1,5 @@
-- **The interface speaks Chinese and Arabic.** Set it in Settings.
-- **Updates install themselves.** Download, restart, done.
-- **Fonts ship inside the app.** No Google Fonts fetch on launch.
-- **Hardened how engine commands launch.**
-- **Settings has one Save button.** Connections get their own tab.
+- **PRO redesenhado como na 0.5.7.**
+- **Tema profissional dark/light e skin Halloween.**
+- **Alibaba/OpenCode com trava real de subagentes.**
+- **Clássico e PRO na barra de título.**
+- **macOS Intel e Windows x64.**

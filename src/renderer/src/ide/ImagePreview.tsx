@@ -80,7 +80,7 @@ export function ImagePreview({ root, rel, onCopyPath, onViewSource }: ImagePrevi
             {t('imagePreview.viewSource')}
           </button>
         )}
-        <button onClick={onCopyPath} title="Copy absolute path" style={ideTextBtn}>copy path</button>
+        <button onClick={onCopyPath} title="Copiar caminho absoluto" style={ideTextBtn}>copiar caminho</button>
       </div>
 
       <div style={{

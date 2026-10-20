@@ -105,7 +105,7 @@ export function UpdateBadge() {
       onClick={() => { void onClick(); }}
       disabled={!interactive}
       title={view.title}
-      aria-label={view.label ? `${view.title}` : `Version ${__APP_VERSION__} — check for updates`}
+      aria-label={view.label ? `${view.title}` : `Versão ${__APP_VERSION__} — verificar atualizações`}
       aria-busy={view.busy || busy}
       style={{
         display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -113,17 +113,25 @@ export function UpdateBadge() {
         margin: 0,
         background: chipBg,
         border: 'none',
-        borderRadius: 2,
+        borderRadius: 6,
         // 'latest' is a quiet word after the version, not a chip asking for a click.
         boxShadow: view.label && view.tone !== 'idle' ? 'inset 0 0 0 1px var(--cth-ink-300)' : 'none',
         fontFamily: 'var(--cth-font-ui)',
-        fontSize: 13,
+        fontSize: 11,
         lineHeight: '18px',
         color: view.tone === 'idle' ? 'var(--cth-ink-500)' : 'var(--cth-ink-900)',
         cursor: interactive ? 'pointer' : 'default'
       }}
     >
       <span>v{__APP_VERSION__}</span>
+      {!view.label && (
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 7px',
+          borderRadius: 6, background: 'var(--cth-cream-200)',
+          fontSize: 11, fontWeight: 500, color: 'var(--cth-ink-500)',
+          whiteSpace: 'nowrap'
+        }}>Atualizado</span>
+      )}
       {view.label && (
         <>
           <span aria-hidden style={{ color: 'var(--cth-ink-500)' }}>·</span>
@@ -146,15 +154,15 @@ export function UpdateBadge() {
         }}
       >
         <div style={{ fontFamily: 'var(--cth-font-mono, monospace)', fontWeight: 700, fontSize: 12.5 }}>
-          Click to download v{pending}
+          Clique para baixar v{pending}
         </div>
         <div style={{ marginTop: 4, color: 'var(--cth-ink-700)' }}>
-          Download the latest version and replace the app you have. Prefer the app to update itself? Settings &rarr; Updates.
+          Baixe a versão mais recente e substitua o app atual. Prefere que o app se atualize sozinho? Configurações &rarr; Atualizações.
         </div>
         <div style={{
           marginTop: 8, fontFamily: 'var(--cth-font-mono, monospace)', fontSize: 9,
           letterSpacing: '.18em', textTransform: 'uppercase', color: 'var(--cth-ink-500)'
-        }}>On {steps.os}</div>
+        }}>Em {steps.os}</div>
         <ol style={{ margin: '4px 0 0', paddingLeft: 18, color: 'var(--cth-ink-700)' }}>
           {steps.steps.map((t) => <li key={t}>{t}</li>)}
         </ol>
@@ -165,7 +173,7 @@ export function UpdateBadge() {
     {started && (
       <div
         role="dialog"
-        aria-label="Install the update"
+        aria-label="Instalar a atualização"
         className="cth-titlebar-nodrag"
         style={{
           position: 'absolute', top: 'calc(100% + 6px)', left: 0, zIndex: 400,
@@ -176,17 +184,17 @@ export function UpdateBadge() {
         }}
       >
         <div style={{ fontFamily: 'var(--cth-font-mono, monospace)', fontWeight: 700, fontSize: 13 }}>
-          v{started} is downloading in your browser.
+          v{started} está sendo baixada no seu navegador.
         </div>
         <div style={{ marginTop: 6, color: 'var(--cth-ink-700)' }}>
-          When it lands, quit this app and install the new version over the current one. Open it and
-          pick the same project. Your agents, memory and settings stay where they are.
+          Quando o download terminar, saia deste app e instale a nova versão por cima da atual. Abra-o e
+          escolha o mesmo projeto. Seus agentes, memória e configurações permanecem onde estão.
         </div>
         <ol style={{ margin: '8px 0 0', paddingLeft: 18, color: 'var(--cth-ink-700)' }}>
           {steps.steps.map((t) => <li key={t}>{t}</li>)}
         </ol>
         <div style={{ display: 'flex', gap: 8, marginTop: 10, justifyContent: 'flex-end' }}>
-          <PixelButton variant="ghost" size="sm" onClick={() => setStarted(null)}>got it</PixelButton>
+          <PixelButton variant="ghost" size="sm" onClick={() => setStarted(null)}>entendi</PixelButton>
         </div>
       </div>
     )}
@@ -212,10 +220,10 @@ export function UpdateBadge() {
             width: 18, height: 18, borderRadius: 999,
             background: 'var(--cth-mint-light, #d0f0e0)', color: 'var(--cth-ink-900)', fontSize: 12
           }}>&#10003;</span>
-          You are on the latest version.
+          Você está na versão mais recente.
         </div>
         <div style={{ marginTop: 4, color: 'var(--cth-ink-700)' }}>
-          v{__APP_VERSION__} is the newest release. Checked just now.
+          v{__APP_VERSION__} é a versão mais recente. Verificado agora mesmo.
         </div>
       </div>
     )}

@@ -54,7 +54,7 @@ export function hasOpenAiKey(): boolean {
 export async function mintRealtimeToken(model: string = REALTIME_MODEL): Promise<MintResult> {
   const key = getSecret(OPENAI_KEY_REF);
   if (!key) {
-    return { ok: false, error: 'no OpenAI API key set — add one in Settings → Voice', code: 'no_key' };
+    return { ok: false, error: 'nenhuma chave da OpenAI configurada — adicione uma em Configurações → Voz', code: 'no_key' };
   }
 
   const post = async (url: string, body: unknown) => {

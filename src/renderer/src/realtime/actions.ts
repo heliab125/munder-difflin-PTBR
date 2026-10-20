@@ -41,7 +41,7 @@ async function act(verb: string, input: unknown): Promise<string> {
     return res?.spoken || 'Done.';
   } catch (e) {
     console.error('[realtime-action] verb=%s threw:', verb, e, { input });
-    const msg = e instanceof Error ? e.message : 'an unknown error';
+    const msg = e instanceof Error ? e.message : 'erro desconhecido';
     return `I couldn't do that (${msg}).`;
   }
 }
@@ -173,7 +173,7 @@ export function realtimeActionTools(): ReturnType<typeof tool>[] {
           return (res && 'summary' in res && res.summary) || 'That task completed.';
         } catch (e) {
           console.error('[realtime-action] wait_for threw:', e);
-          const msg = e instanceof Error ? e.message : 'an unknown error';
+          const msg = e instanceof Error ? e.message : 'erro desconhecido';
           return `I couldn't wait on that (${msg}).`;
         }
       }
@@ -200,7 +200,7 @@ export function realtimeActionTools(): ReturnType<typeof tool>[] {
     tool({
       name: 'kill_agent',
       description:
-        'Terminate a running agent (closes its terminal, archives it). DESTRUCTIVE — does NOT run immediately; returns an echo-back and asks for verbal confirmation. After the user confirms, call confirm_action. Killing the god orchestrator or all agents at once is forbidden.',
+        'Terminate a running agent (closes its terminal, archives it). DESTRUCTIVE — does NOT run immediately; returns an echo-back and asks for verbal confirmation. After the user confirms, call confirm_action. Stopping the main orchestrator or all agents at once is forbidden.',
       parameters: {
         type: 'object',
         properties: { agentId: { type: 'string', description: 'Agent name or id to kill.' } },
@@ -319,7 +319,7 @@ export function realtimeActionTools(): ReturnType<typeof tool>[] {
     tool({
       name: 'clear_agent_context',
       description:
-        "Queue a context clear (/clear) for one agent — wipes its working memory of the current conversation; delivery waits until the agent is idle. DESTRUCTIVE — returns an echo-back and asks for verbal confirmation ('clear' or 'confirm'). After the user confirms, call confirm_action. Allowed on the god orchestrator too (it can resume its session).",
+        "Queue a context clear (/clear) for one agent — wipes its working memory of the current conversation; delivery waits until the agent is idle. DESTRUCTIVE — returns an echo-back and asks for verbal confirmation ('clear' or 'confirm'). After the user confirms, call confirm_action. Allowed on the main orchestrator too (it can resume its session).",
       parameters: {
         type: 'object',
         properties: { agentId: { type: 'string', description: 'Agent name or id whose context to clear.' } },
@@ -350,7 +350,7 @@ export function realtimeActionTools(): ReturnType<typeof tool>[] {
           label: { type: 'string', description: 'Short name for the schedule.' },
           prompt: { type: 'string', description: 'The message the agent receives each time it fires.' },
           intervalMinutes: { type: 'number', description: 'How often it fires, in minutes (min 5). Default 60.' },
-          to: { type: 'string', description: 'Target agent name or id. Default: the god orchestrator.' }
+          to: { type: 'string', description: 'Target agent name or id. Default: the main orchestrator.' }
         },
         required: ['label', 'prompt'],
         additionalProperties: false
@@ -395,7 +395,7 @@ export function realtimeActionTools(): ReturnType<typeof tool>[] {
           return res?.spoken || 'Done.';
         } catch (e) {
           console.error('[realtime-action] confirm threw:', e, { input });
-          const msg = e instanceof Error ? e.message : 'an unknown error';
+          const msg = e instanceof Error ? e.message : 'erro desconhecido';
           return `I couldn't confirm that (${msg}).`;
         }
       }

@@ -154,7 +154,7 @@ export async function listDir(root: string, rel: string): Promise<{
   ok: true; entries: DirEntry[]; path: string;
 } | { ok: false; error: string }> {
   const abs = await safeResolve(root, rel);
-  if (!abs) return { ok: false, error: 'path escapes root' };
+  if (!abs) return { ok: false, error: 'caminho fora da raiz' };
   try {
     const names = await readdir(abs);
     const entries = await Promise.all(names.map(async (name): Promise<DirEntry> => {
@@ -181,18 +181,18 @@ export async function readFileText(root: string, rel: string): Promise<{
   ok: true; content: string; path: string; size: number;
 } | { ok: false; error: string }> {
   const abs = await safeResolve(root, rel);
-  if (!abs) return { ok: false, error: 'path escapes root' };
+  if (!abs) return { ok: false, error: 'caminho fora da raiz' };
   let fh;
   try {
     fh = await openForRead(abs);
     const s = await fh.stat();
-    if (!s.isFile()) return { ok: false, error: 'not a regular file' };
+    if (!s.isFile()) return { ok: false, error: 'não é um arquivo regular' };
     if (s.size > MAX_READ_BYTES) {
-      return { ok: false, error: `file too large (${(s.size / 1024 / 1024).toFixed(1)} MB)` };
+      return { ok: false, error: `arquivo grande demais (${(s.size / 1024 / 1024).toFixed(1)} MB)` };
     }
     const buf = await fh.readFile();
     // Reject obvious binary files based on null-byte sniff
-    if (buf.includes(0)) return { ok: false, error: 'binary file (not displayable)' };
+    if (buf.includes(0)) return { ok: false, error: 'arquivo binário (não exibível)' };
     return { ok: true, content: buf.toString('utf8'), path: abs, size: s.size };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : String(e) };
@@ -232,7 +232,7 @@ export async function readFileBinary(root: string, rel: string, maxBytes = MAX_B
   ok: true; bytes: Uint8Array<ArrayBuffer>; mime: string; path: string; size: number;
 } | { ok: false; error: string }> {
   const abs = await safeResolve(root, rel);
-  if (!abs) return { ok: false, error: 'path escapes root' };
+  if (!abs) return { ok: false, error: 'caminho fora da raiz' };
   let fh;
   try {
     fh = await openForRead(abs);
@@ -240,15 +240,15 @@ export async function readFileBinary(root: string, rel: string, maxBytes = MAX_B
     // Directories and FIFOs are the trap here: readFile on a directory throws
     // (fine) but on a FIFO it BLOCKS forever with no size to check against, which
     // would hang the IPC call and, with it, the renderer's loading state.
-    if (!s.isFile()) return { ok: false, error: 'not a regular file' };
+    if (!s.isFile()) return { ok: false, error: 'não é um arquivo regular' };
     if (s.size > maxBytes) {
-      return { ok: false, error: `file too large (${(s.size / 1024 / 1024).toFixed(1)} MB)` };
+      return { ok: false, error: `arquivo grande demais (${(s.size / 1024 / 1024).toFixed(1)} MB)` };
     }
     const buf = await fh.readFile();
     if (buf.byteLength > maxBytes) {
       // The file grew between stat and read. Rare, but the cap is a memory
       // guarantee for the renderer, not an advisory.
-      return { ok: false, error: 'file grew past the size limit while reading' };
+      return { ok: false, error: 'o arquivo cresceu além do limite de tamanho durante a leitura' };
     }
     // COPY into a freshly-allocated Uint8Array instead of forwarding the Buffer.
     // Node serves small reads out of a shared 8 KB Buffer pool, so a pooled
@@ -276,7 +276,7 @@ export async function writeFileText(root: string, rel: string, content: string):
   ok: true; path: string;
 } | { ok: false; error: string }> {
   const abs = await safeResolve(root, rel);
-  if (!abs) return { ok: false, error: 'path escapes root' };
+  if (!abs) return { ok: false, error: 'caminho fora da raiz' };
   let fh;
   try {
     fh = await open(abs, WRITE_FLAGS, 0o666);

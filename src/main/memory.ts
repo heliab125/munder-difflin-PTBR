@@ -400,7 +400,7 @@ export class MemoryManager {
   private runCli(args: string[], label: string): Promise<{ ok: boolean; output: string; error?: string }> {
     return new Promise((resolve) => {
       const bin = this.bin();
-      if (!this.active() || !bin) { resolve({ ok: false, output: '', error: 'semantic memory not active' }); return; }
+      if (!this.active() || !bin) { resolve({ ok: false, output: '', error: 'memória semântica não está ativa' }); return; }
       let proc: ReturnType<typeof spawn>;
       try {
         proc = spawn(bin, args, { env: this.childEnv(), stdio: ['ignore', 'pipe', 'pipe'] });

@@ -28,9 +28,9 @@
 export type TriggerMode = 'strict' | 'allow-all' | 'communication-only';
 
 export const TRIGGER_MODES: { value: TriggerMode; label: string; blurb: string }[] = [
-  { value: 'strict', label: 'strict', blurb: 'Ask me before anything reaches the hive.' },
-  { value: 'allow-all', label: 'allow all', blurb: 'Messages, directives and communication all flow.' },
-  { value: 'communication-only', label: 'communication only', blurb: 'Chatter flows; directives need my approval.' }
+  { value: 'strict', label: 'rigoroso', blurb: 'Pergunte antes que qualquer coisa chegue à colmeia.' },
+  { value: 'allow-all', label: 'permitir tudo', blurb: 'Mensagens, diretivas e comunicações passam livremente.' },
+  { value: 'communication-only', label: 'somente comunicação', blurb: 'Conversas passam; diretivas precisam da minha aprovação.' }
 ];
 
 export const DEFAULT_TRIGGER_MODE: TriggerMode = 'strict';
@@ -177,14 +177,14 @@ export const DEFAULT_WEBHOOK_SCHEMA_OBJECT = {
   type: 'object',
   required: ['message'],
   properties: {
-    message: { type: 'string', description: 'What you want the orchestrator to know or do.' },
-    title: { type: 'string', description: 'Short label for the kanban card.' },
+    message: { type: 'string', description: 'O que você quer que o orquestrador saiba ou faça.' },
+    title: { type: 'string', description: 'Rótulo curto para o cartão do kanban.' },
     kind: {
       type: 'string',
       enum: ['directive', 'communication'],
-      description: 'directive = asks the hive to act; communication = informational.'
+      description: 'directive = pede que a colmeia aja; communication = apenas informativo.'
     },
-    from: { type: 'string', description: 'Who is sending, for the trigger history.' }
+    from: { type: 'string', description: 'Quem está enviando, para o histórico de gatilhos.' }
   }
 } as const;
 

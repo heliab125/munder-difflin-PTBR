@@ -118,7 +118,7 @@ export function TerminalView({ initialLines = [], feed = [] }: TerminalViewProps
           width: 8, height: 8, background: 'var(--cth-coral)',
           boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)'
         }} />
-        live · pipe-pane
+        ao vivo · pipe-pane
       </div>
       <div ref={hostRef} style={{ flex: 1, minHeight: 0 }} />
     </div>

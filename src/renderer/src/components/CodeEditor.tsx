@@ -162,13 +162,13 @@ export function CodeEditor({
           textTransform: 'uppercase', letterSpacing: 1,
           color: 'var(--cth-ink-700)'
         }}>
-          No file open
+          Nenhum arquivo aberto
         </div>
         <div style={{
           fontFamily: 'var(--cth-font-ui)', fontSize: 13,
           color: 'var(--cth-ink-500)'
         }}>
-          Pick a file from the tree to view it here.
+          Escolha um arquivo na árvore para visualizá-lo aqui.
         </div>
       </div>
     );
@@ -196,23 +196,23 @@ export function CodeEditor({
         {onCopyPath && (
           <button
             onClick={onCopyPath}
-            title="Copy absolute path"
+            title="Copiar caminho absoluto"
             style={editorBtn}
-          >copy path</button>
+          >copiar caminho</button>
         )}
         <button
           onClick={save}
           disabled={!dirty || saveState === 'saving'}
-          title="Save (Cmd-S)"
+          title="Salvar (Cmd-S)"
           style={{ ...editorBtn, opacity: dirty ? 1 : 0.5 }}
         >
-          {saveState === 'saving' ? '...' : saveState === 'saved' ? 'saved' : saveState === 'error' ? 'err' : 'save'}
+          {saveState === 'saving' ? '...' : saveState === 'saved' ? 'salvo' : saveState === 'error' ? 'erro' : 'salvar'}
         </button>
         {onOpenInIde && (
           <button
             onClick={onOpenInIde}
-            title="Open in the IDE"
-            aria-label="Open in the IDE"
+            title="Abrir na IDE"
+            aria-label="Abrir na IDE"
             style={editorBtn}
           >
             <Icon name="code" />
@@ -223,7 +223,7 @@ export function CodeEditor({
       {/* Body */}
       <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
         {loading ? (
-          <div style={{ padding: 12, color: 'var(--cth-ink-500)' }}>loading…</div>
+          <div style={{ padding: 12, color: 'var(--cth-ink-500)' }}>carregando…</div>
         ) : error ? (
           <div style={{ padding: 12, color: 'var(--cth-coral)' }}>{error}</div>
         ) : (

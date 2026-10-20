@@ -182,8 +182,8 @@ export function describeUpdate(status: UpdateStatus | null, currentVersion: stri
     // Settings started the automatic download; the chip reports progress and
     // nothing else, so the two paths are not raced against each other.
     return {
-      label: `downloading ${clampPercent(status.percent)}%`, action: 'none', tone: 'busy', busy: true,
-      title: `Downloading v${status.version}… ${clampPercent(status.percent)}%`
+      label: `baixando ${clampPercent(status.percent)}%`, action: 'none', tone: 'busy', busy: true,
+      title: `Baixando a v${status.version}… ${clampPercent(status.percent)}%`
     };
   }
   const pending = pendingVersion(status, v);
@@ -195,38 +195,38 @@ export function describeUpdate(status: UpdateStatus | null, currentVersion: stri
     // native updater could NOT fetch it, so the user replaces the app by hand.
     if (status?.state === 'downloaded') {
       return {
-        label: `v${pending} · restart`, action: 'restart', tone: 'ready', busy: false,
-        title: `Click to restart and install v${pending}`
+        label: `v${pending} · reiniciar`, action: 'restart', tone: 'ready', busy: false,
+        title: `Clique para reiniciar e instalar a v${pending}`
       };
     }
     if (status?.state === 'available') {
       return {
-        label: `v${pending} · update`, action: 'download', tone: 'ready', busy: false,
-        title: `Downloading v${pending} in the background; click to start it if it has not begun`
+        label: `v${pending} · atualizar`, action: 'download', tone: 'ready', busy: false,
+        title: `Baixando a v${pending} em segundo plano; clique para iniciar caso ainda não tenha começado`
       };
     }
     const why = status?.state === 'available-manual' && status.reason
-      ? ` (this install could not update itself: ${status.reason})` : '';
+      ? ` (esta instalação não conseguiu se atualizar: ${status.reason})` : '';
     return {
-      label: `v${pending} · download`, action: 'manual', tone: 'ready', busy: false,
-      title: `Click to download v${pending}, then replace the app you have${why}`
+      label: `v${pending} · baixar`, action: 'manual', tone: 'ready', busy: false,
+      title: `Clique para baixar a v${pending} e depois substitua o app atual${why}`
     };
   }
   switch (status?.state) {
     case 'checking':
-      return { label: 'checking…', action: 'none', tone: 'busy', busy: true, title: `Checking for updates (you're on v${v})` };
+      return { label: 'verificando…', action: 'none', tone: 'busy', busy: true, title: `Verificando atualizações (você está na v${v})` };
     case 'error':
       return {
-        label: 'update check failed', action: 'check', tone: 'warn', busy: false,
-        title: `${status.message} — click to try again`
+        label: 'falha na verificação de atualizações', action: 'check', tone: 'warn', busy: false,
+        title: `${status.message} — clique para tentar novamente`
       };
     case 'not-available':
     case 'just-updated':
       // A check has confirmed it, so say so. Idle (no check yet) stays bare.
-      return { label: 'latest', action: 'check', tone: 'idle', busy: false, title: `v${v} is the latest version — click to check again` };
+      return { label: 'mais recente', action: 'check', tone: 'idle', busy: false, title: `A v${v} é a versão mais recente — clique para verificar novamente` };
     case 'idle':
     default:
-      return { label: null, action: 'check', tone: 'idle', busy: false, title: `v${v} — click to check for updates` };
+      return { label: null, action: 'check', tone: 'idle', busy: false, title: `v${v} — clique para verificar atualizações` };
   }
 }
 
@@ -261,61 +261,61 @@ export function describeUpdateSettings(
   switch (status?.state) {
     case 'checking':
       return {
-        headline: `You're on v${v}`,
-        detail: 'Checking for a newer release…',
+        headline: `Você está na v${v}`,
+        detail: 'Verificando uma versão mais recente…',
         button: null, action: 'none', busy: true, tone: 'busy'
       };
     case 'available':
       return {
-        headline: `v${status.version} is available`,
-        detail: `You're on v${v}. Download it now — you'll be asked to restart once it's ready.`,
-        button: `Download v${status.version}`, action: 'download', busy: false, tone: 'ready'
+        headline: `A v${status.version} está disponível`,
+        detail: `Você está na v${v}. Baixe agora — você será solicitado a reiniciar quando estiver pronta.`,
+        button: `Baixar v${status.version}`, action: 'download', busy: false, tone: 'ready'
       };
     case 'downloading':
       return {
-        headline: `Downloading v${status.version}`,
-        detail: `${clampPercent(status.percent)}% done. You can keep working; the restart is yours to trigger.`,
+        headline: `Baixando a v${status.version}`,
+        detail: `${clampPercent(status.percent)}% concluído. Você pode continuar trabalhando; o reinício fica a seu critério.`,
         button: null, action: 'none', busy: true, tone: 'busy'
       };
     case 'downloaded':
       return {
-        headline: `v${status.version} is ready to install`,
-        detail: `Restart Munder Difflin to finish updating from v${v}.`,
-        button: 'Restart to update', action: 'restart', busy: false, tone: 'ready'
+        headline: `A v${status.version} está pronta para instalar`,
+        detail: `Reinicie o Munder Difflin para concluir a atualização da v${v}.`,
+        button: 'Reiniciar para atualizar', action: 'restart', busy: false, tone: 'ready'
       };
     case 'available-manual':
       return {
-        headline: `v${status.version} is available`,
+        headline: `A v${status.version} está disponível`,
         detail: status.reason
-          ? `This install can't update itself (${status.reason}) — download it from the release page.`
-          : `This install can't update itself — download it from the release page.`,
-        button: status.downloadUrl ? `Download v${status.version}` : 'Open release page',
+          ? `Esta instalação não consegue se atualizar automaticamente (${status.reason}) — baixe pela página de releases.`
+          : `Esta instalação não consegue se atualizar automaticamente — baixe pela página de releases.`,
+        button: status.downloadUrl ? `Baixar v${status.version}` : 'Abrir página de releases',
         action: 'open-release', busy: false, tone: 'warn'
       };
     case 'just-updated':
       return {
-        headline: `You're on v${v}`,
-        detail: 'Freshly updated. This is the latest release.',
-        button: 'Check for updates', action: 'check', busy: false, tone: 'idle'
+        headline: `Você está na v${v}`,
+        detail: 'Atualizado recentemente. Esta é a versão mais recente.',
+        button: 'Verificar atualizações', action: 'check', busy: false, tone: 'idle'
       };
     case 'error':
       return {
-        headline: 'Update check failed',
-        detail: `${status.message} (you're on v${v}).`,
-        button: 'Try again', action: 'check', busy: false, tone: 'warn'
+        headline: 'Falha na verificação de atualizações',
+        detail: `${status.message} (você está na v${v}).`,
+        button: 'Tentar novamente', action: 'check', busy: false, tone: 'warn'
       };
     case 'not-available':
       return {
-        headline: `v${v} is the latest version`,
-        detail: "You're already up to date — nothing to install.",
-        button: 'Check again', action: 'check', busy: false, tone: 'idle'
+        headline: `A v${v} é a versão mais recente`,
+        detail: 'Você já está atualizado — não há nada para instalar.',
+        button: 'Verificar novamente', action: 'check', busy: false, tone: 'idle'
       };
     case 'idle':
     default:
       return {
-        headline: `You're on v${v}`,
-        detail: 'Updates are checked automatically every 6 hours. Check now if you want to be sure.',
-        button: 'Check for updates', action: 'check', busy: false, tone: 'idle'
+        headline: `Você está na v${v}`,
+        detail: 'As atualizações são verificadas automaticamente a cada 6 horas. Verifique agora se quiser ter certeza.',
+        button: 'Verificar atualizações', action: 'check', busy: false, tone: 'idle'
       };
   }
 }
@@ -327,8 +327,8 @@ export function manualInstallSteps(platform: string): { os: string; steps: strin
     return {
       os: 'macOS',
       steps: [
-        'Open the .dmg and drag Munder Difflin onto Applications. Choose Replace when asked.',
-        'Quit this app, open the new one from Applications, and pick the same project.'
+        'Abra o .dmg e arraste o Munder Difflin para Aplicativos. Escolha Substituir quando solicitado.',
+        'Feche este app, abra o novo em Aplicativos e selecione o mesmo projeto.'
       ]
     };
   }
@@ -336,16 +336,16 @@ export function manualInstallSteps(platform: string): { os: string; steps: strin
     return {
       os: 'Windows',
       steps: [
-        'Quit this app, then run the downloaded setup .exe. It replaces the installed version.',
-        'Open Munder Difflin again and pick the same project.'
+        'Feche este app e execute o .exe de instalação baixado. Ele substitui a versão instalada.',
+        'Abra o Munder Difflin novamente e selecione o mesmo projeto.'
       ]
     };
   }
   return {
     os: 'Linux',
     steps: [
-      'Make the downloaded .AppImage executable (chmod +x) and move it over the one you run now.',
-      'Quit this app, launch the new AppImage, and pick the same project.'
+      'Torne o .AppImage baixado executável (chmod +x) e mova-o sobre o que você usa agora.',
+      'Feche este app, inicie o novo AppImage e selecione o mesmo projeto.'
     ]
   };
 }

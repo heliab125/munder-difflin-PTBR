@@ -268,7 +268,7 @@ export class HookServer {
       this.retryTimer.unref();
     } else if (!this.alerted) {
       this.alerted = true;
-      this.notify('Hive hooks are down', `Nothing is listening at ${sock} (${code}). Every agent hook is being allowed and no cost is recorded until this recovers.`);
+      this.notify('Os hooks da colmeia estão fora do ar', `Nada está escutando em ${sock} (${code}). Todos os hooks dos agentes estão sendo permitidos e nenhum custo é registrado até que isso se recupere.`);
     }
   }
 
@@ -423,7 +423,7 @@ export class HookServer {
     // killing the PTY. session_id is in the payload for a later --resume.
     if (agentId && this.control?.shouldHalt(agentId)) {
       this.emit(agentId, event, p);
-      return { continue: false, stopReason: 'Halted by the operator from the floor.' };
+      return { continue: false, stopReason: 'Interrompido pelo operador a partir do andar.' };
     }
 
     // Capture the Claude Code session id for idempotent --resume + cost dedup
@@ -494,7 +494,7 @@ export class HookServer {
       // path bypassed terminal-draft/HITL safety and could spend credits while a
       // user was answering a question. Inbox files remain durable; the renderer
       // wakes the agent later through its guarded idle-only delivery path.
-      this.notify(agentId ?? 'Agent', 'finished — idle');
+      this.notify(agentId ?? 'Agente', 'concluído — ocioso');
       this.emit(agentId, event, p);
       return {};
     }
@@ -512,7 +512,7 @@ export class HookServer {
           hookSpecificOutput: {
             hookEventName: 'PreToolUse',
             permissionDecision: 'deny',
-            permissionDecisionReason: d.reason ?? 'Denied by operator.'
+            permissionDecisionReason: d.reason ?? 'Negado pelo operador.'
           }
         };
       }
@@ -588,7 +588,7 @@ export class HookServer {
       (p.notification_type === 'idle' ||
         (p.message ?? '').toLowerCase().includes('waiting for your input'))
     ) {
-      this.notify(agentId ?? 'Agent', p.message ?? 'needs your attention');
+      this.notify(agentId ?? 'Agente', p.message ?? 'precisa da sua atenção');
     }
 
     // Forward everything else to the renderer so avatars reflect real activity.

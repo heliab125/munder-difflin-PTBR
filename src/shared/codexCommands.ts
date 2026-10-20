@@ -13,56 +13,56 @@ import type { CmdGroup } from './claudeCommands';
 
 export const CODEX_COMMAND_GROUPS: CmdGroup[] = [
   {
-    title: 'SESSION',
+    title: 'SESSÃO',
     items: [
-      { cmd: '/clear', kind: 'slash', desc: 'Start a fresh chat without quitting — clears the conversation context.' },
+      { cmd: '/clear', kind: 'slash', desc: 'Inicia um chat novo sem sair — limpa o contexto da conversa.' },
       // Verified present in the codex 0.137.0 binary's own command table. It was
       // missing here while providerAutomation sent it, so the two disagreed.
       // Unlike Claude's, this one ignores any trailing focus text.
-      { cmd: '/compact', kind: 'slash', desc: 'Summarize the conversation so far to stay under the context limit.' },
-      { cmd: '/help', kind: 'slash', desc: 'List every available slash command.' },
-      { cmd: '/copy', kind: 'slash', desc: 'Copy the latest model output to the clipboard.' },
-      { cmd: '/logout', kind: 'slash', desc: 'Clear locally stored credentials.' },
-      { cmd: '/rename', kind: 'slash', desc: 'Rename the current conversation.' }
+      { cmd: '/compact', kind: 'slash', desc: 'Resume a conversa até agora para permanecer dentro do limite de contexto.' },
+      { cmd: '/help', kind: 'slash', desc: 'Lista todos os comandos de barra disponíveis.' },
+      { cmd: '/copy', kind: 'slash', desc: 'Copia a última saída do modelo para a área de transferência.' },
+      { cmd: '/logout', kind: 'slash', desc: 'Limpa as credenciais armazenadas localmente.' },
+      { cmd: '/rename', kind: 'slash', desc: 'Renomeia a conversa atual.' }
     ]
   },
   {
-    title: 'UI & PREFERENCES',
+    title: 'INTERFACE E PREFERÊNCIAS',
     items: [
-      { cmd: '/theme', kind: 'slash', desc: 'Toggle between light and dark themes.' },
-      { cmd: '/vim', kind: 'slash', desc: 'Toggle Vim key-bindings in the input box.' },
-      { cmd: '/raw', kind: 'slash', desc: 'Toggle raw (unformatted) output for the model response.' }
+      { cmd: '/theme', kind: 'slash', desc: 'Alterna entre os temas claro e escuro.' },
+      { cmd: '/vim', kind: 'slash', desc: 'Liga/desliga os atalhos do Vim na caixa de entrada.' },
+      { cmd: '/raw', kind: 'slash', desc: 'Liga/desliga a saída bruta (sem formatação) da resposta do modelo.' }
     ]
   },
   {
-    title: 'MEMORY & SKILLS',
+    title: 'MEMÓRIA E SKILLS',
     items: [
-      { cmd: '/memories', kind: 'slash', desc: 'View and manage what Codex has remembered about you.' },
-      { cmd: '/skills', kind: 'slash', desc: 'Browse and manage installed Codex skills / extensions.' },
-      { cmd: '/hooks', kind: 'slash', desc: 'View the configured lifecycle hooks.' }
+      { cmd: '/memories', kind: 'slash', desc: 'Visualiza e gerencia o que o Codex lembrou sobre você.' },
+      { cmd: '/skills', kind: 'slash', desc: 'Navega e gerencia as skills/extensões do Codex instaladas.' },
+      { cmd: '/hooks', kind: 'slash', desc: 'Visualiza os hooks de ciclo de vida configurados.' }
     ]
   },
   {
-    title: 'APPROVALS & PERMISSIONS',
+    title: 'APROVAÇÕES E PERMISSÕES',
     items: [
-      { cmd: 'codex --dangerously-bypass-approvals-and-sandbox', kind: 'cli', desc: 'Skip ALL approval prompts AND drop the OS sandbox (full filesystem access). Munder Difflin no longer uses this for auto mode; it keeps the sandbox and adds the hive agent folder via --add-dir.' },
-      { cmd: 'codex -a never -s workspace-write', kind: 'cli', desc: 'Never prompt for approval (-a never) but keep the sandbox scoped to the project workspace (-s workspace-write). What Munder Difflin uses for auto mode; the hive agent folder is added with --add-dir <dir>.' },
-      { cmd: 'codex -a untrusted', kind: 'cli', desc: 'Only run trusted commands without asking; escalate to the user for anything else.' },
-      { cmd: 'codex -s danger-full-access', kind: 'cli', desc: 'Remove all sandbox restrictions (fine-grained flag — pair with -a for full control).' }
+      { cmd: 'codex --dangerously-bypass-approvals-and-sandbox', kind: 'cli', desc: 'Ignora TODOS os prompts de aprovação E remove o sandbox do SO (acesso total ao sistema de arquivos). O Munder Difflin não usa mais isso no modo automático; ele mantém o sandbox e adiciona a pasta do agente via --add-dir.' },
+      { cmd: 'codex -a never -s workspace-write', kind: 'cli', desc: 'Nunca pergunta por aprovação (-a never), mas mantém o sandbox limitado ao workspace do projeto (-s workspace-write). É o que o Munder Difflin usa no modo automático; a pasta do agente é adicionada com --add-dir <dir>.' },
+      { cmd: 'codex -a untrusted', kind: 'cli', desc: 'Só executa comandos confiáveis sem perguntar; escala para o usuário em qualquer outro caso.' },
+      { cmd: 'codex -s danger-full-access', kind: 'cli', desc: 'Remove todas as restrições de sandbox (flag granular — combine com -a para controle total).' }
     ]
   },
   {
-    title: 'AUTOMATION (HEADLESS)',
+    title: 'AUTOMAÇÃO (HEADLESS)',
     items: [
-      { cmd: 'codex -p "your prompt"', kind: 'cli', desc: 'Non-interactive print mode: run one prompt and exit.', usage: 'codex -p "summarise this file"' },
-      { cmd: 'CODEX_NON_INTERACTIVE=1 codex', kind: 'cli', desc: 'Suppress all interactive installer / first-run prompts. Set automatically by Munder Difflin in auto mode.' }
+      { cmd: 'codex -p "seu prompt"', kind: 'cli', desc: 'Modo print não interativo: executa um prompt e encerra.', usage: 'codex -p "resuma este arquivo"' },
+      { cmd: 'CODEX_NON_INTERACTIVE=1 codex', kind: 'cli', desc: 'Suprime todos os prompts interativos de instalador/primeira execução. Definido automaticamente pelo Munder Difflin no modo automático.' }
     ]
   },
   {
-    title: 'CONFIG',
+    title: 'CONFIGURAÇÃO',
     items: [
-      { cmd: 'codex --model <model>', kind: 'cli', desc: 'Choose the model (e.g. o4-mini, o3).', usage: 'codex --model o4-mini' },
-      { cmd: 'codex --provider <provider>', kind: 'cli', desc: 'Select the API provider (openai, azure, anthropic…).', usage: 'codex --provider openai' }
+      { cmd: 'codex --model <modelo>', kind: 'cli', desc: 'Escolhe o modelo (por exemplo, o4-mini, o3).', usage: 'codex --model o4-mini' },
+      { cmd: 'codex --provider <provedor>', kind: 'cli', desc: 'Seleciona o provedor de API (openai, azure, anthropic…).', usage: 'codex --provider openai' }
     ]
   }
 ];

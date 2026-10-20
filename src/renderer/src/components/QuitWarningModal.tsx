@@ -54,7 +54,7 @@ export function QuitWarningModal({ ptyCount, closing, onCancel, onConfirm, onClo
         onClick={(e) => e.stopPropagation()}
         style={{ width: 480, maxWidth: '92vw' }}
       >
-        <PixelPanel variant="dialog" title={inClosingTime ? 'CLOSING TIME' : 'QUITTING NOW?'} noPadding>
+        <PixelPanel variant="dialog" title={inClosingTime ? 'HORA DE FECHAR' : 'SAIR AGORA?'} noPadding>
           <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
             {inClosingTime ? (
               <>
@@ -77,19 +77,19 @@ export function QuitWarningModal({ ptyCount, closing, onCancel, onConfirm, onClo
                       marginBottom: 4
                     }}>
                       {closing!.phase === 'complete'
-                        ? 'FLOOR SAVED — SEE YOU TOMORROW'
+                        ? 'ANDAR SALVO — ATÉ AMANHÃ'
                         : closing!.phase === 'timeout'
-                          ? 'STILL WRAPPING UP…'
-                          : 'WRAPPING UP THE FLOOR'}
+                          ? 'AINDA FINALIZANDO…'
+                          : 'FINALIZANDO O ANDAR'}
                     </div>
                     <div style={{ fontSize: 15, lineHeight: '22px', color: 'var(--cth-ink-700)' }}>
                       {closing!.phase === 'complete' ? (
-                        <>Every agent saved its memory and the orchestrator confirmed the
-                        shutdown. The harness closes itself in a moment.</>
+                        <>Cada agente salvou sua memória e o orquestrador confirmou o
+                        encerramento. O app fecha sozinho em instantes.</>
                       ) : (
-                        <>The orchestrator broadcast closing time. Every worker parks its
-                        work, saves its memory, and reports back — the app closes only
-                        after the orchestrator confirms nothing will be lost.</>
+                        <>O orquestrador anunciou a hora de fechar. Cada agente interrompe seu
+                        trabalho, salva sua memória e reporta — o app só fecha depois
+                        que o orquestrador confirma que nada será perdido.</>
                       )}
                     </div>
                   </div>
@@ -105,12 +105,12 @@ export function QuitWarningModal({ ptyCount, closing, onCancel, onConfirm, onClo
                   fontFamily: 'var(--cth-font-display)'
                 }}>
                   {closing!.total > 0
-                    ? `${closing!.acked} / ${closing!.total} WORKERS CONFIRMED${closing!.acked >= closing!.total ? ' — WAITING FOR THE ORCHESTRATOR' : ''}`
-                    : 'NO WORKERS ON THE FLOOR — WAITING FOR THE ORCHESTRATOR'}
+                    ? `${closing!.acked} / ${closing!.total} AGENTES CONFIRMADOS${closing!.acked >= closing!.total ? ' — AGUARDANDO O ORQUESTRADOR' : ''}`
+                    : 'NENHUM AGENTE NO ANDAR — AGUARDANDO O ORQUESTRADOR'}
                   {closing!.phase === 'timeout' && (
                     <div style={{ marginTop: 6, fontFamily: 'var(--cth-font-body, inherit)' }}>
-                      This is taking a while (an agent may be mid-compaction or deep in a
-                      tool call). Keep waiting, or force quit and accept the data loss.
+                      Isso está demorando (um agente pode estar no meio de uma compactação ou
+                      de uma chamada de ferramenta). Continue aguardando ou force a saída e aceite a perda de dados.
                     </div>
                   )}
                 </div>
@@ -119,10 +119,10 @@ export function QuitWarningModal({ ptyCount, closing, onCancel, onConfirm, onClo
                   {closing!.phase !== 'complete' && (
                     <>
                       <PixelButton variant="secondary" size="md" onClick={onCancel} disabled={busy}>
-                        cancel — back to work
+                        cancelar — voltar ao trabalho
                       </PixelButton>
                       <PixelButton variant="destructive" size="md" onClick={confirm} disabled={busy}>
-                        {busy ? 'killing...' : 'force quit now'}
+                        {busy ? 'encerrando...' : 'forçar saída agora'}
                       </PixelButton>
                     </>
                   )}
@@ -148,13 +148,13 @@ export function QuitWarningModal({ ptyCount, closing, onCancel, onConfirm, onClo
                       color: 'var(--cth-ink-900)',
                       marginBottom: 4
                     }}>
-                      {ptyCount} {ptyCount === 1 ? 'AGENT' : 'AGENTS'} STILL RUNNING
+                      {ptyCount} {ptyCount === 1 ? 'AGENTE AINDA EM EXECUÇÃO' : 'AGENTES AINDA EM EXECUÇÃO'}
                     </div>
                     <div style={{ fontSize: 15, lineHeight: '22px', color: 'var(--cth-ink-700)' }}>
-                      Closing the harness will terminate{' '}
-                      {ptyCount === 1 ? 'the running claude session' : `all ${ptyCount} running claude sessions`}{' '}
-                      and discard any unsaved progress they were holding in memory. The conversation
-                      history inside each session is lost when the PTY exits.
+                      Fechar o app encerrará{' '}
+                      {ptyCount === 1 ? 'a sessão do Claude em execução' : `todas as ${ptyCount} sessões do Claude em execução`}{' '}
+                      e descartará qualquer progresso não salvo mantido em memória. O histórico
+                      da conversa dentro de cada sessão é perdido quando o PTY é encerrado.
                     </div>
                   </div>
                 </div>
@@ -166,9 +166,9 @@ export function QuitWarningModal({ ptyCount, closing, onCancel, onConfirm, onClo
                   fontSize: 12, lineHeight: '18px',
                   color: 'var(--cth-ink-700)'
                 }}>
-                  Tip: <strong>closing time</strong> is the safe way out — the orchestrator has
-                  every agent commit its work and save its memory, and the app closes itself
-                  once the whole floor has confirmed. No data loss.
+                  Dica: <strong>hora de fechar</strong> é a saída segura — o orquestrador faz
+                  cada agente registrar seu trabalho e salvar sua memória, e o app fecha
+                  sozinho quando o andar inteiro confirma. Sem perda de dados.
                 </div>
 
                 {closing?.phase === 'error' && (
@@ -179,23 +179,23 @@ export function QuitWarningModal({ ptyCount, closing, onCancel, onConfirm, onClo
                     fontSize: 12, lineHeight: '18px',
                     color: 'var(--cth-ink-900)'
                   }}>
-                    {closing.error ?? 'Closing time could not start.'}
+                    {closing.error ?? 'Não foi possível iniciar a hora de fechar.'}
                   </div>
                 )}
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, flexWrap: 'wrap' }}>
                   <PixelButton variant="secondary" size="md" onClick={onCancel} disabled={busy}>
-                    keep them running
+                    mantê-los em execução
                   </PixelButton>
                   {onClosingTime && (
                     <PixelButton variant="primary" size="md" onClick={onClosingTime} disabled={busy}>
                       <span style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
-                        <Icon name="clock" /> closing time
+                        <Icon name="clock" /> hora de fechar
                       </span>
                     </PixelButton>
                   )}
                   <PixelButton variant="destructive" size="md" onClick={confirm} disabled={busy}>
-                    {busy ? 'killing...' : `kill ${ptyCount === 1 ? 'it' : 'all'} & quit`}
+                    {busy ? 'encerrando...' : (ptyCount === 1 ? 'encerrar e sair' : 'encerrar todos e sair')}
                   </PixelButton>
                 </div>
               </>

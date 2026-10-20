@@ -65,7 +65,7 @@ test('repeated identical tool calls trip the loop arm', () => {
   for (let i = 0; i < 8; i++) b.recordToolUse('a', 'Bash', { cmd: 'same' });
   const d = beat(b, 'a', null, true, T0);
   assert.equal(d.state.level, 'steering');
-  assert.match(d.state.reason, /looping/);
+  assert.match(d.state.reason, /em loop/);
 });
 
 test('error storm trips', () => {
@@ -73,7 +73,7 @@ test('error storm trips', () => {
   for (let i = 0; i < 5; i++) b.recordError('a');
   const d = beat(b, 'a', null, true, T0);
   assert.equal(d.state.level, 'steering');
-  assert.match(d.state.reason, /error storm/);
+  assert.match(d.state.reason, /tempestade de erros/);
 });
 
 test('token velocity spike trips on the second sample', () => {
@@ -81,7 +81,7 @@ test('token velocity spike trips on the second sample', () => {
   beat(b, 'a', sample('a', T0, 0), true, T0);
   const d = beat(b, 'a', sample('a', T0 + BEAT, 40_000), true, T0 + BEAT); // 80k/min
   assert.equal(d.state.level, 'steering');
-  assert.match(d.state.reason, /velocity/);
+  assert.match(d.state.reason, /velocidade/);
 });
 
 // ── fix 3: no-progress needs 2 consecutive tripping beats ───────────────────
@@ -99,7 +99,7 @@ test('sustained no-progress still trips (second consecutive beat)', () => {
   beat(b, 'a', sample('a', T0 + BEAT, 500), false, T0 + BEAT);
   const d = beat(b, 'a', sample('a', T0 + 2 * BEAT, 1000), false, T0 + 2 * BEAT);
   assert.equal(d.state.level, 'steering');
-  assert.match(d.state.reason, /no-progress/);
+  assert.match(d.state.reason, /sem progresso/);
 });
 
 test('a progressing beat resets the no-progress debounce', () => {
@@ -185,8 +185,8 @@ test('per-agent cap still trips on work tokens, and the reason names the metric'
   const d = beat(b, 'a', s, true, T0);
   assert.equal(d.state.level, 'steering', `reason: ${d.state.reason}`);
   const work = (4_100_000).toLocaleString(), cap = (4_000_000).toLocaleString(), total = (13_100_000).toLocaleString();
-  assert.ok(d.state.reason.startsWith(`token limit: ${work} work tokens over the agent cap of ${cap}`), d.state.reason);
-  assert.ok(d.state.reason.includes(`${total} total`), d.state.reason); // the display figure is still reported
+  assert.ok(d.state.reason.startsWith(`limite de tokens: ${work} tokens de trabalho acima do teto do agente de ${cap}`), d.state.reason);
+  assert.ok(d.state.reason.includes(`${total} no total`), d.state.reason); // the display figure is still reported
 });
 
 test('cache writes count toward the agent cap; cache reads do not', () => {
@@ -203,7 +203,7 @@ test('the floor-wide token budget still counts all kinds (only the per-agent arm
   const s = { ...sample('a', T0, 50_000, 6_884), cacheRead: 4_102_505 };
   const d = beat(b, 'a', s, true, T0);
   assert.equal(d.state.level, 'steering', `reason: ${d.state.reason}`);
-  assert.ok(d.state.reason.startsWith('token cap: floor total'), d.state.reason);
+  assert.ok(d.state.reason.startsWith('teto de tokens: total do andar'), d.state.reason);
 });
 
 // ── fix 2: recent distinct tool activity counts as progress ─────────────────
@@ -244,7 +244,7 @@ test('a STALE working directory still trips the no-progress arm', () => {
   beat(b, 'a', sample('a', T0 + BEAT, 5000), false, T0 + BEAT, stale);
   const d = beat(b, 'a', sample('a', T0 + 2 * BEAT, 9000), false, T0 + 2 * BEAT, stale);
   assert.equal(d.state.level, 'steering', `reason: ${d.state.reason}`);
-  assert.match(d.state.reason, /no-progress/);
+  assert.match(d.state.reason, /sem progresso/);
 });
 
 test('an ABSENT lastWorkAt behaves exactly as before', () => {
@@ -256,7 +256,7 @@ test('an ABSENT lastWorkAt behaves exactly as before', () => {
   beat(b, 'a', sample('a', T0 + BEAT, 5000), false, T0 + BEAT);
   const d = beat(b, 'a', sample('a', T0 + 2 * BEAT, 9000), false, T0 + 2 * BEAT);
   assert.equal(d.state.level, 'steering', `reason: ${d.state.reason}`);
-  assert.match(d.state.reason, /no-progress/);
+  assert.match(d.state.reason, /sem progresso/);
 });
 
 test('REPEATED identical tool calls do not count as progress', () => {
@@ -268,7 +268,7 @@ test('REPEATED identical tool calls do not count as progress', () => {
   b.recordToolUse('a', 'Bash', { cmd: 'same' }, T0 + 2 * BEAT - 1000);
   const d = beat(b, 'a', sample('a', T0 + 2 * BEAT, 1000), false, T0 + 2 * BEAT);
   assert.equal(d.state.level, 'steering', `reason: ${d.state.reason}`);
-  assert.match(d.state.reason, /no-progress/);
+  assert.match(d.state.reason, /sem progresso/);
 });
 
 // ── toolKey stays cheap AND discriminating on huge inputs ────────────────────
@@ -279,7 +279,7 @@ test('huge identical Write inputs still register as repeats (loop arm)', () => {
   for (let i = 0; i < 8; i++) b.recordToolUse('a', 'Write', huge);
   const d = beat(b, 'a', null, true, T0);
   assert.equal(d.state.level, 'steering');
-  assert.match(d.state.reason, /looping/);
+  assert.match(d.state.reason, /em loop/);
 });
 
 test('huge inputs differing early still count as distinct calls', () => {
@@ -414,7 +414,7 @@ test('REPEATED identical tool calls do not count as progress', () => {
   b.recordToolUse('a', 'Bash', { cmd: 'same' }, T0 + 2 * BEAT - 1000);
   const d = beat(b, 'a', sample('a', T0 + 2 * BEAT, 1000), false, T0 + 2 * BEAT);
   assert.equal(d.state.level, 'steering', `reason: ${d.state.reason}`);
-  assert.match(d.state.reason, /no-progress/);
+  assert.match(d.state.reason, /sem progresso/);
 });
 
 // ── toolKey stays cheap AND discriminating on huge inputs ────────────────────
@@ -425,7 +425,7 @@ test('huge identical Write inputs still register as repeats (loop arm)', () => {
   for (let i = 0; i < 8; i++) b.recordToolUse('a', 'Write', huge);
   const d = beat(b, 'a', null, true, T0);
   assert.equal(d.state.level, 'steering');
-  assert.match(d.state.reason, /looping/);
+  assert.match(d.state.reason, /em loop/);
 });
 
 test('huge inputs differing early still count as distinct calls', () => {

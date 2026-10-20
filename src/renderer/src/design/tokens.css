@@ -171,3 +171,186 @@
   /* Hard shadow reads as depth, not void */
   --cth-shadow-hard: 4px 4px 0 rgba(0, 0, 0, 0.45);
 }
+
+/* ─── Professional skin (Munder Difflin 0.5.7 PRO) ───────────────────────────
+ * The PRO workspace uses a modern, dense UI: Inter everywhere, rounded
+ * surfaces, amber accent and structural 1px borders. Classic keeps the pixel
+ * office, but shares this chrome. Values mirror the 0.5.7 token kit. */
+:root[data-cth-skin='professional'] {
+  --cth-font-display: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Geeza Pro", "Noto Naskh Arabic", "Segoe UI Historic", sans-serif;
+  --cth-font-ui: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Geeza Pro", "Noto Naskh Arabic", "Segoe UI Historic", sans-serif;
+  --cth-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --cth-text-display-lg: 24px;
+  --cth-text-display-md: 15px;
+  --cth-text-display-sm: 11px;
+  --cth-text-body-lg: 15px;
+  --cth-text-body-md: 14px;
+  --cth-text-body-sm: 13px;
+  --cth-text-secondary: 12px;
+  --cth-text-mono-md: 12px;
+  --cth-text-mono-sm: 11px;
+
+  --cth-lh-display-lg: 30px;
+  --cth-lh-display-md: 20px;
+  --cth-lh-display-sm: 14px;
+  --cth-lh-body-lg: 20px;
+  --cth-lh-body-md: 20px;
+  --cth-lh-body-sm: 18px;
+  --cth-lh-secondary: 16px;
+  --cth-lh-mono: 18px;
+
+  --cth-radius-sm: 6px;
+  --cth-radius-md: 8px;
+  --cth-radius-lg: 10px;
+  --cth-radius-xl: 12px;
+  --cth-radius-pill: 999px;
+
+  --cth-project-1: #E060A8;
+  --cth-project-2: #4F9FD9;
+  --cth-project-3: #4ADE80;
+  --cth-project-4: #9482D3;
+  --cth-project-5: #E0803A;
+  --cth-project-6: #3FB8C4;
+
+  --cth-brand: #E0803A;
+  --cth-kit-version: "0.5.7";
+  --cth-track-title: -0.02em;
+  --cth-track-row: -0.01em;
+  --cth-track-label: 0.08em;
+  --cth-track-rail: 0.10em;
+}
+
+:root[data-cth-skin='professional']:not([data-cth-theme='dark']) {
+  --cth-cream-50: #F5F4EF;
+  --cth-cream-100: #FFFFFF;
+  --cth-cream-200: #ECEAE3;
+  --cth-cream-300: #E2DFD6;
+  --cth-paper-100: #FFFFFF;
+  --cth-paper-200: #F7F6F1;
+  --cth-ink-900: #1A1916;
+  --cth-ink-700: #44423C;
+  --cth-ink-500: #6B685F;
+  --cth-ink-300: #DEDBD2;
+  --cth-ink-100: #ECEAE3;
+  --cth-accent: #FFC94F;
+  --cth-accent-hover: #FFDC8A;
+  --cth-accent-ink: #17150E;
+  --cth-accent-text: #8A5A00;
+  --cth-accent-soft: #FFF3D2;
+  --cth-accent-line: #F0CF7A;
+  --cth-coral: #E060A8; --cth-coral-light: #F7E8F0;
+  --cth-sky: #4F9FD9; --cth-sky-light: #E6EFF6;
+  --cth-lemon: #E8D34A; --cth-lemon-light: #F8F5E5;
+  --cth-lilac: #9482D3; --cth-lilac-light: #EEECF5;
+  --cth-peach: #E0803A; --cth-peach-light: #F4E9E0;
+  --cth-mint: #5CA97A; --cth-mint-light: #E7F0EB;
+  --cth-status-idle: #9B978D;
+  --cth-status-thinking: #2F7FB8;
+  --cth-status-working: #3F8F5E;
+  --cth-status-waiting: #B8621F;
+  --cth-status-blocked: #C4408A;
+  --cth-status-success: #3F8F5E;
+  --cth-status-ghost: #CBC7BC;
+  --cth-status-looping: #C4408A;
+  --cth-status-compacting: #7563B8;
+  --cth-status-typing: #2F7FB8;
+  --cth-dot-idle: #8A867C;
+  --cth-dot-working: #178A46;
+  --cth-shadow-hard: 0 8px 24px rgba(20, 18, 10, 0.08);
+  --cth-panel-border-dialog: inset 0 0 0 1px var(--cth-ink-300);
+  --cth-on-accent: #09090B;
+  --cth-focus-ring: rgba(255, 201, 79, 0.55);
+  --cth-control-quiet: #FFFFFF;
+  --cth-control-base: #F0EEE8;
+  --cth-control-raised: #E6E3DA;
+  --cth-control-strong: #DCD8CC;
+  --cth-surface-active: #ECEAE3;
+  --cth-connector: #CBC7BC;
+}
+
+:root[data-cth-skin='professional'][data-cth-theme='dark'] {
+  --cth-cream-50: #131315;
+  --cth-cream-100: #1B1B1E;
+  --cth-cream-200: #232326;
+  --cth-cream-300: #2A2A2E;
+  --cth-paper-100: #1B1B1E;
+  --cth-paper-200: #202023;
+  --cth-ink-900: #ECEAE3;
+  --cth-ink-700: #C9C6BE;
+  --cth-ink-500: #8E8B83;
+  --cth-ink-300: #2E2E32;
+  --cth-ink-100: #26262A;
+  --cth-accent: #FFD165;
+  --cth-accent-hover: #FFE08F;
+  --cth-accent-ink: #17150E;
+  --cth-accent-text: #FFCA54;
+  --cth-accent-soft: #3A2F12;
+  --cth-accent-line: #6B5620;
+  --cth-coral: #E88CC4; --cth-coral-light: #3B2431;
+  --cth-sky: #7DB8E4; --cth-sky-light: #1F3238;
+  --cth-lemon: #E2CC55; --cth-lemon-light: #332C1D;
+  --cth-lilac: #B4A5E8; --cth-lilac-light: #2B2740;
+  --cth-peach: #E9A070; --cth-peach-light: #352822;
+  --cth-mint: #7FC59A; --cth-mint-light: #1E3227;
+  --cth-status-idle: #8E8B83;
+  --cth-status-thinking: #7DB8E4;
+  --cth-status-working: #7FC59A;
+  --cth-status-waiting: #E9A070;
+  --cth-status-blocked: #E88CC4;
+  --cth-status-success: #7FC59A;
+  --cth-status-ghost: #3D3D43;
+  --cth-status-looping: #E88CC4;
+  --cth-status-compacting: #B4A5E8;
+  --cth-status-typing: #7DB8E4;
+  --cth-dot-idle: #7A776F;
+  --cth-dot-working: #5FD68B;
+  --cth-shadow-hard: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --cth-panel-border-dialog: inset 0 0 0 1px var(--cth-ink-300);
+  --cth-on-accent: #FFFFFF;
+  --cth-control-quiet: #1B1B1E;
+  --cth-control-base: #232326;
+  --cth-control-raised: #2A2A2E;
+  --cth-control-strong: #33333A;
+  --cth-surface-active: #26262A;
+  --cth-connector: #3D3D43;
+  --cth-focus-ring: rgba(255, 209, 101, 0.5);
+}
+
+/* Halloween season — the 0.5.7 look in October. Token values only: status
+ * colours never change. */
+:root[data-cth-season='halloween'][data-cth-skin='professional']:not([data-cth-theme='dark']) {
+  --cth-cream-50: #F7F1E8;
+  --cth-cream-200: #EFE7DA;
+  --cth-paper-200: #FAF5EE;
+  --cth-ink-300: #E2D8C8;
+  --cth-ink-100: #EFE7DA;
+  --cth-accent: #F59A3C;
+  --cth-accent-hover: #FFB067;
+  --cth-accent-ink: #1E1208;
+  --cth-accent-text: #A4520A;
+  --cth-accent-soft: #FDE9D3;
+  --cth-accent-line: #F2BD86;
+  --cth-surface-active: #FCEDDB;
+}
+
+:root[data-cth-season='halloween'][data-cth-skin='professional'][data-cth-theme='dark'] {
+  --cth-cream-50: #15111B;
+  --cth-cream-100: #1C1724;
+  --cth-cream-200: #251E2F;
+  --cth-cream-300: #2C2437;
+  --cth-paper-100: #1C1724;
+  --cth-paper-200: #211B2A;
+  --cth-ink-300: #362C42;
+  --cth-ink-100: #2A2334;
+  --cth-accent: #FF9F45;
+  --cth-accent-hover: #FFB870;
+  --cth-accent-ink: #1E1208;
+  --cth-accent-text: #FFAE62;
+  --cth-accent-soft: #3A2517;
+  --cth-accent-line: #74441F;
+  --cth-surface-active: #2C2119;
+}
+
+/* Professional has no noise texture; the ground is flat. */
+:root[data-cth-skin='professional'] body { background-image: none; }

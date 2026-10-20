@@ -98,7 +98,7 @@ async function spoken(fn: () => Promise<string>, what: string): Promise<string> 
     const out = (await fn()).trim();
     return out || `I could not find any ${what} right now.`;
   } catch (e) {
-    const msg = e instanceof Error ? e.message : 'an unknown error';
+    const msg = e instanceof Error ? e.message : 'erro desconhecido';
     return `I could not read the ${what} just now (${msg}).`;
   }
 }
@@ -115,7 +115,7 @@ export function realtimeReadTools(): ReturnType<typeof tool>[] {
     tool({
       name: 'get_fleet_status',
       description:
-        'Who is in the agent hive right now: how many agents, which are active versus archived, who the god orchestrator is, and each active agent name, role, and engine. Call this when the user asks who is working, who is on the floor, or for a roster.',
+        'Who is in the agent hive right now: how many agents, which are active versus archived, who the main orchestrator is, and each active agent name, role, and engine. Call this when the user asks who is working, who is on the floor, or for a roster.',
       parameters: { type: 'object', properties: {}, required: [], additionalProperties: false },
       execute: () =>
         spoken(async () => {
@@ -139,7 +139,7 @@ export function realtimeReadTools(): ReturnType<typeof tool>[] {
           const head = `There ${active.length === 1 ? 'is' : 'are'} ${plural(active.length, 'agent')} active${
             archived ? ` and ${plural(archived, 'archived agent')}` : ''
           }.`;
-          const god = godName ? ` ${godName} is the god orchestrator.` : '';
+          const god = godName ? ` ${godName} is the main orchestrator.` : '';
           const roster = lines.length ? ` Active workers: ${lines.join('; ')}.` : '';
           return head + god + roster;
         }, 'fleet status')

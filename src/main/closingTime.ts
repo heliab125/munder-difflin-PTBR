@@ -91,7 +91,7 @@ export class ClosingTimeController {
     this.godId = reg.godId ?? 'god';
     const live = new Set(this.getLiveAgentIds());
     if (!reg.agents[this.godId] || !live.has(this.godId)) {
-      return { ok: false, error: 'No orchestrator is running — closing time needs the god agent to collect the reports.' };
+      return { ok: false, error: 'Nenhum orquestrador está em execução — a hora de fechar precisa do agente god para coletar os relatórios.' };
     }
 
     // Only agents with a live terminal are waited on — the registry is just

@@ -8,30 +8,30 @@ import type { CmdGroup } from './claudeCommands';
 
 export const GROK_COMMAND_GROUPS: CmdGroup[] = [
   {
-    title: 'SESSION',
+    title: 'SESSÃO',
     items: [
-      { cmd: '/new', kind: 'slash', desc: 'Start a fresh session and clear the current context.' },
-      { cmd: '/load', kind: 'slash', desc: 'Load a previous workspace session.', usage: '/load [workspace] [session]' },
-      { cmd: '/compact', kind: 'slash', desc: 'Compact conversation history while retaining the important working context.', usage: '/compact keep the current task and next step' },
-      { cmd: 'grok --resume <session-id>', kind: 'cli', desc: 'Resume an existing Grok session by ID or title.' }
+      { cmd: '/new', kind: 'slash', desc: 'Inicia uma sessão nova e limpa o contexto atual.' },
+      { cmd: '/load', kind: 'slash', desc: 'Carrega uma sessão anterior do workspace.', usage: '/load [workspace] [sessão]' },
+      { cmd: '/compact', kind: 'slash', desc: 'Compacta o histórico da conversa mantendo o contexto de trabalho importante.', usage: '/compact mantenha a tarefa atual e o próximo passo' },
+      { cmd: 'grok --resume <id-da-sessão>', kind: 'cli', desc: 'Retoma uma sessão Grok existente por ID ou título.' }
     ]
   },
   {
-    title: 'MODELS & PERMISSIONS',
+    title: 'MODELOS E PERMISSÕES',
     items: [
-      { cmd: '/model', kind: 'slash', desc: 'Switch the model used by the current session.' },
-      { cmd: 'grok --model grok-4.6', kind: 'cli', desc: 'Launch Grok with the Grok 4.6 coding model (the CLI default).' },
-      { cmd: '/always-approve', kind: 'slash', desc: 'Toggle automatic approval of tool executions.' },
-      { cmd: 'grok --permission-mode bypassPermissions', kind: 'cli', desc: 'Launch in always-approve mode. Munder uses this when Auto Mode is on.' }
+      { cmd: '/model', kind: 'slash', desc: 'Troca o modelo usado pela sessão atual.' },
+      { cmd: 'grok --model grok-4.6', kind: 'cli', desc: 'Inicia o Grok com o modelo de programação Grok 4.6 (padrão da CLI).' },
+      { cmd: '/always-approve', kind: 'slash', desc: 'Liga/desliga a aprovação automática de execuções de ferramentas.' },
+      { cmd: 'grok --permission-mode bypassPermissions', kind: 'cli', desc: 'Inicia no modo de aprovação automática. O Munder usa isto quando o modo automático está ligado.' }
     ]
   },
   {
-    title: 'TOOLS & WORKFLOW',
+    title: 'FERRAMENTAS E FLUXO DE TRABALHO',
     items: [
-      { cmd: '/rewind', kind: 'slash', desc: 'Rewind to a previous prompt and restore its file state.' },
-      { cmd: '/hooks-list', kind: 'slash', desc: 'Show lifecycle hooks active in this session.' },
-      { cmd: '/skills', kind: 'slash', desc: 'List or load installed skills.' },
-      { cmd: '/multiline', kind: 'slash', desc: 'Toggle multiline prompt entry.' }
+      { cmd: '/rewind', kind: 'slash', desc: 'Volta a um prompt anterior e restaura o estado dos arquivos.' },
+      { cmd: '/hooks-list', kind: 'slash', desc: 'Mostra os hooks de ciclo de vida ativos nesta sessão.' },
+      { cmd: '/skills', kind: 'slash', desc: 'Lista ou carrega as skills instaladas.' },
+      { cmd: '/multiline', kind: 'slash', desc: 'Liga/desliga a entrada de prompt em várias linhas.' }
     ]
   }
 ];

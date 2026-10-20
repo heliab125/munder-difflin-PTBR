@@ -72,7 +72,7 @@ export function EditAgentModal({ agent, onClose }: EditAgentModalProps) {
 
   const save = () => {
     const trimmedName = name.trim() || agent.name;
-    const trimmedDescription = description.trim() || 'a fresh harness';
+    const trimmedDescription = description.trim() || 'um novo harness';
     const trimmedGoal = goal.trim();
     const command = config
       ? buildSpawnCommand(config, model, provider)
@@ -105,7 +105,7 @@ export function EditAgentModal({ agent, onClose }: EditAgentModalProps) {
           one job — describe an agent — and a tall narrow dialog next to a wide
           one reads as two unrelated screens. */}
       <div onClick={(e) => e.stopPropagation()} style={{ width: 940, maxWidth: '95vw' }}>
-        <PixelPanel variant="dialog" title="EDIT AGENT" style={{ padding: 16 }} noPadding>
+        <PixelPanel variant="dialog" title="EDITAR AGENTE" style={{ padding: 16 }} noPadding>
           <div style={{
             display: 'flex', flexDirection: 'column', gap: 14,
             padding: 16, maxHeight: '86vh', overflowY: 'auto'
@@ -119,8 +119,8 @@ export function EditAgentModal({ agent, onClose }: EditAgentModalProps) {
               gap: 16, alignItems: 'start', minHeight: 260
             }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14, minWidth: 0 }}>
-            <Section label="Identity" hint="name · character · color">
-              <Row label="Name">
+            <Section label="Identidade" hint="nome · personagem · cor">
+              <Row label="Nome">
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -130,7 +130,7 @@ export function EditAgentModal({ agent, onClose }: EditAgentModalProps) {
                 />
               </Row>
 
-              <Row label="Character">
+              <Row label="Personagem">
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   {OFFICE_CAST.map((c) => {
                     const active = character === c.name;
@@ -164,7 +164,7 @@ export function EditAgentModal({ agent, onClose }: EditAgentModalProps) {
                 </div>
               </Row>
 
-              <Row label="Color">
+              <Row label="Cor">
                 <div style={{ display: 'flex', gap: 6 }}>
                   {ACCENTS.map((a) => (
                     <button
@@ -186,8 +186,8 @@ export function EditAgentModal({ agent, onClose }: EditAgentModalProps) {
               </Row>
             </Section>
 
-            <Section label="Engine" hint="provider · model · next restart">
-              <Row label="Provider">
+            <Section label="Motor" hint="provedor · modelo · próximo reinício">
+              <Row label="Provedor">
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   {AGENT_PROVIDER_PRESETS.map((p) => {
                     const active = provider === p.id;
@@ -217,12 +217,12 @@ export function EditAgentModal({ agent, onClose }: EditAgentModalProps) {
               </Row>
 
               {preset.supportsModel && (
-                <Row label="Model">
+                <Row label="Modelo">
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                     {(() => {
                       const known = modelsForProvider(provider);
                       return model && !known.some((m) => m.id === model)
-                        ? [...known, { id: model, label: `${model} (current)` }]
+                        ? [...known, { id: model, label: `${model} (atual)` }]
                         : known;
                     })().map((m) => {
                       const active = (model ?? '') === (m.id ?? '');
@@ -231,7 +231,7 @@ export function EditAgentModal({ agent, onClose }: EditAgentModalProps) {
                           key={m.label}
                           type="button"
                           onClick={() => setModel(m.id)}
-                          title={m.id ?? 'CLI default model'}
+                          title={m.id ?? 'Modelo padrão do CLI'}
                           style={{
                             padding: '3px 8px 1px',
                             background: active ? `var(--cth-${accent}-light)` : 'var(--cth-cream-100)',
@@ -251,27 +251,27 @@ export function EditAgentModal({ agent, onClose }: EditAgentModalProps) {
               )}
 
               <span style={{ fontSize: 12, color: 'var(--cth-ink-500)', lineHeight: '16px' }}>
-                Engine changes are saved for the next restart. Use Command Center → Floor to restart a live session onto a new provider/model now.
+                As alterações de motor são salvas para o próximo reinício. Use Central de Comando → Monitor para reiniciar uma sessão ativa em um novo provedor/modelo agora.
               </span>
             </Section>
 
               </div>
               <div style={{ minWidth: 0 }}>
-            <Section label="Briefing" hint="description · goal">
-              <Row label="Description">
+            <Section label="Briefing" hint="descrição · objetivo">
+              <Row label="Descrição">
                 <input
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="what is this agent for"
+                  placeholder="para que serve este agente"
                   style={inputStyle}
                 />
               </Row>
 
-              <Row label="Goal (optional)">
+              <Row label="Objetivo (opcional)">
                 <textarea
                   value={goal}
                   onChange={(e) => setGoal(e.target.value)}
-                  placeholder="long-running directive injected on every prompt"
+                  placeholder="diretriz de longo prazo injetada em cada prompt"
                   rows={4}
                   style={{ ...inputStyle, fontFamily: 'var(--cth-font-ui)', resize: 'vertical', minHeight: 200 }}
                 />
@@ -281,9 +281,9 @@ export function EditAgentModal({ agent, onClose }: EditAgentModalProps) {
             </div>
 
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 4 }}>
-              <PixelButton variant="ghost" size="md" onClick={onClose}>cancel</PixelButton>
+              <PixelButton variant="ghost" size="md" onClick={onClose}>cancelar</PixelButton>
               <div style={{ flex: 1 }} />
-              <PixelButton variant="primary" size="md" onClick={save}>save changes</PixelButton>
+              <PixelButton variant="primary" size="md" onClick={save}>salvar alterações</PixelButton>
             </div>
           </div>
         </PixelPanel>

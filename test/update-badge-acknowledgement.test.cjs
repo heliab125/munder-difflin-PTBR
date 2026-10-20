@@ -28,7 +28,7 @@ test('the check branch acknowledges a no-update result', () => {
 test('the acknowledgement renders and auto-dismisses', () => {
   assert.ok(/checkedOk && !started &&/.test(SRC),
     'the acknowledgement popover must render when checkedOk is set');
-  assert.ok(/on the latest version/i.test(SRC),
+  assert.ok(/versão mais recente/i.test(SRC),
     'it must say, in words, that the user is already current');
   assert.ok(/setTimeout\(\(\) => setCheckedOk\(false\)/.test(SRC),
     'it must auto-dismiss, or it is a stuck mode instead of a flash');

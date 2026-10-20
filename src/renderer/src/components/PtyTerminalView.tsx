@@ -377,7 +377,7 @@ export function PtyTerminalView({ ptyId, onStreamData, onUserPrompt, onToggleFul
           boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)',
           animation: 'cth-pulse 1200ms steps(2, end) infinite'
         }} />
-        live · pty {ptyId}
+        ao vivo · pty {ptyId}
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 2 }}>
           {/* v0.3.4: the theme + enter-fullscreen buttons moved to the TITLE BAR
               (top right) — more accessible, and the theme now darkens the whole
@@ -385,24 +385,24 @@ export function PtyTerminalView({ ptyId, onStreamData, onUserPrompt, onToggleFul
           <button
             onClick={() => zoom(-1)}
             disabled={fontSize <= MIN_FONT_SIZE}
-            title="Zoom out (Cmd -)"
+            title="Diminuir zoom (Cmd -)"
             style={zoomBtnStyle}
           >−</button>
           <button
             onClick={resetZoom}
-            title="Reset zoom (Cmd 0)"
+            title="Redefinir zoom (Cmd 0)"
             style={{ ...zoomBtnStyle, width: 'auto', padding: '0 4px', minWidth: 28 }}
           >{fontSize}px</button>
           <button
             onClick={() => zoom(1)}
             disabled={fontSize >= MAX_FONT_SIZE}
-            title="Zoom in (Cmd +)"
+            title="Aumentar zoom (Cmd +)"
             style={zoomBtnStyle}
           >+</button>
           {fullscreen && onToggleFullscreen && (
             <button
               onClick={onToggleFullscreen}
-              title="Exit focus mode (Esc)"
+              title="Sair do modo foco (Esc)"
               style={{ ...zoomBtnStyle, width: 22, height: 22, marginLeft: 4 }}
             >
               <Icon name="minimize" />

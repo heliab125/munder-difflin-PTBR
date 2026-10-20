@@ -1346,16 +1346,16 @@ export function OfficeFloor() {
             let mv: BoardMove | null = null;
             if (!old && (t.status === 'todo' || t.status === 'blocked')) {
               const actor = actorFor(undefined, true);
-              if (actor) mv = { kind: 'pin', taskId: t.id, actorId: actor, after, carryColor: NOTE_COLORS[t.status], stand: t.status === 'blocked' ? PIN_STAND : TAKE_STAND, thought: 'pinning a new task 📌' };
+              if (actor) mv = { kind: 'pin', taskId: t.id, actorId: actor, after, carryColor: NOTE_COLORS[t.status], stand: t.status === 'blocked' ? PIN_STAND : TAKE_STAND, thought: 'fixando uma nova tarefa 📌' };
             } else if (oldS !== 'doing' && t.status === 'doing') {
               const actor = actorFor(t.assignee, false);
-              if (actor && actor === t.assignee) mv = { kind: 'take', taskId: t.id, actorId: actor, after, carryColor: NOTE_COLORS.doing, stand: TAKE_STAND, thought: 'grabbing my task' };
+              if (actor && actor === t.assignee) mv = { kind: 'take', taskId: t.id, actorId: actor, after, carryColor: NOTE_COLORS.doing, stand: TAKE_STAND, thought: 'pegando minha tarefa' };
             } else if (t.status === 'done' && oldS !== 'done') {
               const actor = actorFor(old?.assignee ?? t.assignee, false);
-              if (actor) mv = { kind: 'archive', taskId: t.id, actorId: actor, after, carryColor: NOTE_COLORS.done, stand: ARCHIVE_STAND, thought: 'filing it as done ✔' };
+              if (actor) mv = { kind: 'archive', taskId: t.id, actorId: actor, after, carryColor: NOTE_COLORS.done, stand: ARCHIVE_STAND, thought: 'arquivando como concluída ✔' };
             } else if (t.status === 'blocked' && oldS !== 'blocked') {
               const actor = actorFor(old?.assignee ?? t.assignee, false);
-              if (actor) mv = { kind: 'pin', taskId: t.id, actorId: actor, after, carryColor: NOTE_COLORS.blocked, stand: PIN_STAND, thought: 'this one is stuck 😤' };
+              if (actor) mv = { kind: 'pin', taskId: t.id, actorId: actor, after, carryColor: NOTE_COLORS.blocked, stand: PIN_STAND, thought: 'esta aqui travou 😤' };
             }
             if (mv && !busyActors.has(mv.actorId) && !moveQueue.some((q) => q.actorId === mv!.actorId)) {
               if (!visualTasks.has(t.id) && mv.kind !== 'pin') visualTasks.set(t.id, { status: oldS ?? 'todo', assignee: old?.assignee });

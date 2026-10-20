@@ -89,9 +89,9 @@ function deliverTranscript(agentId: string, text: string): void {
  *  a friendly error if the mic can't be opened. */
 async function start(agentId: string): Promise<void> {
   if (state.status !== 'idle' || opening) return;
-  if (!agentId) { setState({ error: 'no agent selected' }); return; }
+  if (!agentId) { setState({ error: 'nenhum agente selecionado' }); return; }
   if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
-    setState({ error: 'microphone not available' });
+    setState({ error: 'microfone indisponível' });
     return;
   }
   wantActive = true;
@@ -106,7 +106,7 @@ async function start(agentId: string): Promise<void> {
     const name = e instanceof DOMException ? e.name : '';
     setState({
       status: 'idle',
-      error: name === 'NotAllowedError' ? 'microphone permission denied' : 'could not open microphone'
+      error: name === 'NotAllowedError' ? 'permissão do microfone negada' : 'não foi possível abrir o microfone'
     });
     return;
   }
@@ -124,7 +124,7 @@ async function start(agentId: string): Promise<void> {
   } catch {
     teardownStream();
     wantActive = false;
-    setState({ status: 'idle', error: 'recording not supported' });
+    setState({ status: 'idle', error: 'gravação não suportada' });
     return;
   }
   recorder.ondataavailable = (ev: BlobEvent) => { if (ev.data && ev.data.size > 0) chunks.push(ev.data); };
@@ -150,7 +150,7 @@ async function finish(agentId: string): Promise<void> {
   const blob = new Blob(chunks, { type });
   chunks = [];
   if (blob.size === 0) {
-    setState({ status: 'idle', error: 'nothing recorded' });
+    setState({ status: 'idle', error: 'nada foi gravado' });
     return;
   }
   setState({ status: 'transcribing', error: null });
@@ -166,10 +166,10 @@ async function finish(agentId: string): Promise<void> {
       deliverTranscript(agentId, res.text);
       setState({ status: 'idle', error: null });
     } else {
-      setState({ status: 'idle', error: res.error || 'transcription failed' });
+      setState({ status: 'idle', error: res.error || 'falha na transcrição' });
     }
   } catch (e) {
-    setState({ status: 'idle', error: e instanceof Error ? e.message : 'transcription failed' });
+    setState({ status: 'idle', error: e instanceof Error ? e.message : 'falha na transcrição' });
   }
 }
 

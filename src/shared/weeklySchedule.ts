@@ -29,10 +29,10 @@ export interface WeeklySchedule {
   minute: number;
 }
 
-export const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+export const WEEKDAY_LABELS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 /** Initials for the 7-button picker. Two Ts and two Ss — the position carries
  *  the meaning, and every calendar in the world does the same. */
-export const WEEKDAY_INITIALS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+export const WEEKDAY_INITIALS = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
 
 /**
  * How long after a MISSED slot the mission still fires.
@@ -74,13 +74,13 @@ export function formatMinute(minute: number): string {
 /** Human summary for a row: "weekdays at 09:00", "Mon, Thu at 14:30". */
 export function formatWeekly(w: unknown): string {
   const n = normalizeWeekly(w);
-  if (!n) return 'no days picked';
+  if (!n) return 'nenhum dia selecionado';
   const at = formatMinute(n.minute);
   const key = n.days.join(',');
-  if (key === '0,1,2,3,4,5,6') return `every day at ${at}`;
-  if (key === '1,2,3,4,5') return `weekdays at ${at}`;
-  if (key === '0,6') return `weekends at ${at}`;
-  return `${n.days.map((d) => WEEKDAY_LABELS[d]).join(', ')} at ${at}`;
+  if (key === '0,1,2,3,4,5,6') return `todos os dias às ${at}`;
+  if (key === '1,2,3,4,5') return `dias úteis às ${at}`;
+  if (key === '0,6') return `fins de semana às ${at}`;
+  return `${n.days.map((d) => WEEKDAY_LABELS[d]).join(', ')} às ${at}`;
 }
 
 /** Build the local instant for `minute` on the day `offset` days from `from`.

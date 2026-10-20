@@ -108,7 +108,7 @@ export function SchedulesSection({ onSummary }: { onSummary?: (s: string) => voi
 
   const targetName = (to: string) =>
     to === 'broadcast' ? t('schedulesSection.everyone')
-      : to === 'god' ? (agents.find((a) => a.isGod)?.name ?? 'the orchestrator')
+      : to === 'god' ? (agents.find((a) => a.isGod)?.name ?? 'o orquestrador')
         : agents.find((a) => a.id === to)?.name ?? to;
 
   return (
@@ -144,7 +144,7 @@ export function SchedulesSection({ onSummary }: { onSummary?: (s: string) => voi
           <Field label={t('schedulesSection.goesTo')}>
             <Select value={mTo} onChange={setMTo} style={{ width: '100%' }}>
               <option value="broadcast">{t('schedulesSection.everyone')}</option>
-              <option value="god">{agents.find((a) => a.isGod)?.name ?? 'the orchestrator'}</option>
+              <option value="god">{agents.find((a) => a.isGod)?.name ?? 'o orquestrador'}</option>
               {agents.filter((a) => !a.isGod).map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
             </Select>
           </Field>
@@ -289,7 +289,7 @@ function MissionRow({ mission, targetName, agents, onPatch, onDelete }: {
           <Field label={t('schedulesSection.goesTo')}>
             <Select value={to} onChange={setTo} style={{ width: '100%' }}>
               <option value="broadcast">{t('schedulesSection.everyone')}</option>
-              <option value="god">{agents.find((a) => a.isGod)?.name ?? 'the orchestrator'}</option>
+              <option value="god">{agents.find((a) => a.isGod)?.name ?? 'o orquestrador'}</option>
               {agents.filter((a) => !a.isGod).map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
             </Select>
           </Field>

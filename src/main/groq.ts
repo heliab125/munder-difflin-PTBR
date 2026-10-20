@@ -45,12 +45,12 @@ export async function groqChat(opts: GroqChatOptions): Promise<GroqChatResult> {
     role: m.role,
     content: typeof m.content === 'string' ? m.content : ''
   })).filter((m) => m.content.trim().length > 0);
-  if (messages.length === 0) return { ok: false, error: 'empty messages' };
+  if (messages.length === 0) return { ok: false, error: 'nenhuma mensagem' };
 
   const chars = messages.reduce((n, m) => n + m.content.length, 0);
-  if (chars > MAX_PROMPT_CHARS) return { ok: false, error: 'prompt too large for Groq request' };
+  if (chars > MAX_PROMPT_CHARS) return { ok: false, error: 'prompt grande demais para a requisição ao Groq' };
   if (containsSecret(messages.map((m) => m.content).join('\n'))) {
-    return { ok: false, error: 'payload appears to contain secrets; review before sending' };
+    return { ok: false, error: 'o conteúdo parece conter segredos; revise antes de enviar' };
   }
 
   const model = opts.model || DEFAULT_GROQ_CHAT_MODEL;

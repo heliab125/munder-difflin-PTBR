@@ -235,7 +235,7 @@ export async function loadCatalog(
     const skills = parseCatalogMarkdown(md);
     // An empty parse means the README's shape changed under us. Keep the cache.
     if (skills.length === 0 && cached) {
-      return { skills: cached.skills, fetchedAt: cached.fetchedAt, stale: true, error: 'catalog format changed' };
+      return { skills: cached.skills, fetchedAt: cached.fetchedAt, stale: true, error: 'o formato do catálogo mudou' };
     }
     const payload = { skills, fetchedAt: Date.now() };
     try {
@@ -372,7 +372,7 @@ export async function resolveRepoRootSkillDir(
   }
   return {
     unsupported: true,
-    error: "couldn't find the skill's SKILL.md in that repository — open Learn more to install it by hand"
+    error: "não encontrei o SKILL.md dessa skill nesse repositório — abra Saiba mais para instalar manualmente"
   };
 }
 
@@ -401,10 +401,10 @@ export async function installSkill(
 ): Promise<{ ok: true; path: string } | { ok: false; error: string; unsupported?: boolean }> {
   const source = await resolveSourceUrl(entryUrl);
   if (!source) {
-    return { ok: false, unsupported: true, error: 'No downloadable source — open Learn more to install it by hand.' };
+    return { ok: false, unsupported: true, error: 'Nenhuma fonte para download — abra Saiba mais para instalar manualmente.' };
   }
   const gh = parseGitHubSourceUrl(source);
-  if (!gh) return { ok: false, unsupported: true, error: 'Source is not a GitHub folder.' };
+  if (!gh) return { ok: false, unsupported: true, error: 'A fonte não é uma pasta do GitHub.' };
 
   // An empty ref means "the repo's default branch" — omit the parameter entirely
   // rather than guessing main vs master.
@@ -427,7 +427,7 @@ export async function installSkill(
   }
 
   const dirName = safeSkillDirName(skillPath || entryName);
-  if (!dirName) return { ok: false, error: 'That skill has a name this app will not create a folder for.' };
+  if (!dirName) return { ok: false, error: 'Essa skill tem um nome para o qual o app não criará uma pasta.' };
 
   const root = join(homedir(), '.claude', 'skills');
   const dest = join(root, dirName);
@@ -464,7 +464,7 @@ export async function installSkill(
 
   const walkErr = await walk(skillPath, 0);
   if (walkErr) return { ok: false, error: walkErr };
-  if (files.length === 0) return { ok: false, error: 'No files found at that source.' };
+  if (files.length === 0) return { ok: false, error: 'Nenhum arquivo encontrado nessa fonte.' };
 
   // Write only after the whole tree resolved, so a mid-download failure cannot
   // leave a half-installed skill that an agent would then load.
@@ -497,9 +497,9 @@ export function uninstallSkill(
   skillPath: string,
   opts: { cwds: string[] }
 ): { ok: true } | { ok: false; error: string } {
-  if (typeof skillPath !== 'string' || !skillPath.trim()) return { ok: false, error: 'no path given' };
+  if (typeof skillPath !== 'string' || !skillPath.trim()) return { ok: false, error: 'nenhum caminho informado' };
   let target: string;
-  try { target = resolve(skillPath); } catch { return { ok: false, error: 'unreadable path' }; }
+  try { target = resolve(skillPath); } catch { return { ok: false, error: 'caminho ilegível' }; }
 
   const roots = [
     join(homedir(), '.claude', 'skills'),
@@ -512,21 +512,21 @@ export function uninstallSkill(
   ].map((r) => resolve(r));
 
   const root = roots.find((r) => target.startsWith(r + sep));
-  if (!root) return { ok: false, error: 'That folder is not inside a skills directory this app manages.' };
-  if (target === root) return { ok: false, error: 'refusing to delete the skills directory itself' };
-  if (!existsSync(target)) return { ok: false, error: 'Already gone.' };
+  if (!root) return { ok: false, error: 'Essa pasta não está dentro de um diretório de skills gerenciado pelo app.' };
+  if (target === root) return { ok: false, error: 'recusando excluir o próprio diretório de skills' };
+  if (!existsSync(target)) return { ok: false, error: 'Já não existe.' };
 
   // A directory must look like a skill; a plugin entry must be a plain file.
   try {
     const st = statSync(target);
     if (st.isDirectory()) {
       if (!existsSync(join(target, 'SKILL.md'))) {
-        return { ok: false, error: 'That folder has no SKILL.md — refusing to delete it.' };
+        return { ok: false, error: 'Essa pasta não tem SKILL.md — recusando excluí-la.' };
       }
     } else if (!st.isFile()) {
-      return { ok: false, error: 'Not a file or folder this app will remove.' };
+      return { ok: false, error: 'Não é um arquivo ou pasta que o app possa remover.' };
     }
-  } catch { return { ok: false, error: 'could not inspect that path' }; }
+  } catch { return { ok: false, error: 'não foi possível inspecionar esse caminho' }; }
 
   try {
     rmSync(target, { recursive: true, force: true });

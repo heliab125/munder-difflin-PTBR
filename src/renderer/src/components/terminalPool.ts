@@ -204,7 +204,7 @@ export function acquireTerminal(ptyId: string, theme?: ThemeMap, fontSize = 14):
   // stale event is suppressed in the main process and never reaches here.
   entry.unsub.push(window.cth.onPtyExit(ptyId, ({ exitCode, signal }) => {
     entry.exited = true;
-    term.writeln(`\r\n\x1b[2m─ process exited (code ${exitCode}${signal ? `, signal ${signal}` : ''}) ─\x1b[0m`);
+    term.writeln(`\r\n\x1b[2m─ processo encerrado (código ${exitCode}${signal ? `, sinal ${signal}` : ''}) ─\x1b[0m`);
   }));
   // A first-time engine-CLI install just finished and the agent is auto
   // restart-and-continuing into THIS same pty (main re-ran the spawn). Re-arm the
@@ -889,7 +889,7 @@ export function resetTerminal(
   entry.automationBlockedAt = 0;
   try {
     if (opts.preserveScrollback) {
-      entry.term.writeln('\r\n\x1b[2m─ resuming existing session ─\x1b[0m');
+      entry.term.writeln('\r\n\x1b[2m─ retomando sessão existente ─\x1b[0m');
     } else {
       // Fresh sessions need a clean grid; resume keeps the existing scrollback.
       entry.term.reset();

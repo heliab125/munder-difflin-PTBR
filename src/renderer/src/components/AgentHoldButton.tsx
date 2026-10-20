@@ -23,7 +23,7 @@ import { useStore } from '@/store/store';
  */
 export function AgentHoldButton({ agentId }: { agentId: string }) {
   const agent = useStore((s) => s.agents.find((a) => a.id === agentId));
-  const godName = useStore((s) => s.agents.find((a) => a.isGod)?.name) ?? 'the orchestrator';
+  const godName = useStore((s) => s.agents.find((a) => a.isGod)?.name) ?? 'o orquestrador';
   const [busy, setBusy] = useState(false);
   /** Last failure, shown on the button itself. A control that silently does
    *  nothing is worse than one that says why. */
@@ -61,12 +61,12 @@ export function AgentHoldButton({ agentId }: { agentId: string }) {
         // Preload is not hot-reloaded; only a restart picks it up.
         void Promise.resolve()
           .then(() => window.cth.hiveSetAgentHold?.(agentId, !on)
-            ?? Promise.reject(new Error('restart the app: this build\'s preload predates the 1:1 control')))
+            ?? Promise.reject(new Error('reinicie o app: o preload desta build é anterior ao controle de 1:1')))
           // Mirror locally only after main confirms the write. Flipping
           // optimistically would show a hold Michael never heard about.
           .then((r) => {
             if (r?.ok) { setErr(null); useStore.getState().updateAgent(agentId, { onHold: !on }); }
-            else setErr(r?.error ?? 'could not set the hold');
+            else setErr(r?.error ?? 'não foi possível definir a retenção');
           })
           .catch((e: unknown) => setErr(e instanceof Error ? e.message : String(e)))
           .finally(() => setBusy(false));
@@ -75,12 +75,12 @@ export function AgentHoldButton({ agentId }: { agentId: string }) {
       <span
         className="cth-tip cth-tip-wrap"
         data-tip={err ? err : on
-          ? `End the 1:1. ${godName} can hand ${agent.name} work again.`
-          : `Take ${agent.name} aside. ${godName} stops sending them work until you end it. Unlike the two buttons here, this does not restrain the agent: they keep running and keep answering you.`}
-        aria-label={on ? `End the 1:1 and release this agent to ${godName}` : 'Take this agent aside for a 1:1'}
+          ? `Encerrar o 1:1. ${godName} pode passar trabalho para ${agent.name} novamente.`
+          : `Levar ${agent.name} para uma conversa reservada. ${godName} para de enviar trabalho até você encerrar. Diferente dos dois botões aqui, isto não restringe o agente: ele continua rodando e respondendo a você.`}
+        aria-label={on ? `Encerrar o 1:1 e liberar este agente para ${godName}` : 'Levar este agente para um 1:1'}
         style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
       >
-        <Icon name={on ? 'pause' : 'play'} /> {err ? '1:1 failed' : on ? 'in 1:1' : '1:1'}
+        <Icon name={on ? 'pause' : 'play'} /> {err ? '1:1 falhou' : on ? 'em 1:1' : '1:1'}
       </span>
     </PixelButton>
   );

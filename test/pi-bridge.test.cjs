@@ -282,6 +282,6 @@ test('generated Pi bridge preserves tool identity and breaker semantics', async 
     const second = tick(breaker, 1_030_000);
     assert.equal(first.state.level, 'steering');
     assert.equal(second.state.level, 'constrained');
-    assert.match(second.state.reason, /8× identical tool call \(bash\)/);
+    assert.match(second.state.reason, /8× chamada de ferramenta idêntica \(bash\)/);
   });
 });

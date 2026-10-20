@@ -347,7 +347,7 @@ export function MemoryGraphPanel({
           <div style={{
             position: 'absolute', top: 10, left: 0, right: 0, textAlign: 'center',
             fontSize: 12, color: 'var(--cth-ink-500)', pointerEvents: 'none'
-          }}>No messages logged yet — the hive is quiet. Agents shown as roster.</div>
+          }}>Nenhuma mensagem registrada ainda — a colmeia está quieta. Agentes exibidos como lista.</div>
         )}
 
         {/* tooltip */}
@@ -388,14 +388,14 @@ function NodeTip({ node, memories }: { node: GraphNode; memories: Record<string,
     return (
       <>
         <div style={tipTitle}>{node.label}</div>
-        <div style={tipBody}>shared by {node.weight} agents</div>
+        <div style={tipBody}>compartilhado por {node.weight} agentes</div>
       </>
     );
   }
   return (
     <>
       <div style={tipTitle}>{node.label}</div>
-      <div style={tipBody}>{node.id === 'human' ? 'escalations to the human' : 'broadcast to everyone'}</div>
+      <div style={tipBody}>{node.id === 'human' ? 'escalonamentos para o humano' : 'transmissão para todos'}</div>
     </>
   );
 }

@@ -124,7 +124,7 @@ test('ReleaseDrop renders no action buttons, only a close', () => {
   const src = readDrop();
   const buttons = src.match(/<button\b[\s\S]*?>/g) ?? [];
   assert.equal(buttons.length, 1, 'the release drop must carry exactly one chrome button');
-  assert.ok(/aria-label="Close/.test(buttons[0]), 'the only chrome button must be the close');
+  assert.ok(/aria-label="Fechar/.test(buttons[0]), 'the only chrome button must be the close');
   assert.ok(!/Star|Restart|Later|Download|Open release/i.test(src.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '')),
     'no release action may be a chrome button');
 });

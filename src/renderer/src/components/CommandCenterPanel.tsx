@@ -347,7 +347,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
   const { t } = useTranslation();
   const rtl = useRtl();
   const agents = useStore((s) => s.agents);
-  const godName = agents.find((a) => a.isGod)?.name ?? 'the orchestrator';
+  const godName = agents.find((a) => a.isGod)?.name ?? 'o orquestrador';
   const select = useStore((s) => s.select);
   const updateAgent = useStore((s) => s.updateAgent);
   const toolCounts = useStore((s) => s.toolCounts);
@@ -428,7 +428,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
       const provider = opts.provider ?? previousProvider;
       let resume = opts.resume === true && provider === previousProvider;
       if (opts.resume && !resume && !opts.resumeOptional) {
-        throw new Error('Cannot resume a session through a different provider.');
+        throw new Error('Não é possível retomar uma sessão por um provedor diferente.');
       }
       let resumeSessionId: string | undefined;
       if (resume) {
@@ -442,9 +442,9 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
         const registry = await window.cth.hiveRegistry();
         resumeSessionId = registry.agents[a.id]?.sessionId;
         if (!resumeSessionId) {
-          giveUpOnResume('No recorded session ID; current process was left running.');
+          giveUpOnResume('Nenhum ID de sessão registrado; o processo atual foi deixado em execução.');
         } else if (provider === 'claude' && !(await window.cth.resolveSessionCwd(resumeSessionId))) {
-          giveUpOnResume('Session transcript not found; current process was left running.');
+          giveUpOnResume('Transcrição da sessão não encontrada; o processo atual foi deixado em execução.');
         }
       }
       // Capture the live grid before replacing anything. Restart & Continue
@@ -467,7 +467,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
       // `no pty: <id>`. Treating that as fatal aborted before the respawn and
       // turned the one situation the button exists for into a dead end.
       if (!killed.ok && !/^no pty:/.test(killed.error ?? '')) {
-        throw new Error(killed.error ?? 'Could not stop the current process.');
+        throw new Error(killed.error ?? 'Não foi possível encerrar o processo atual.');
       }
       if (!resume) {
         resetTerminal(a.ptyId);
@@ -496,9 +496,9 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
         resumeSessionId,
         requireResume: resume
       });
-      if (!res.ok) throw new Error(res.error ?? 'Restart failed.');
+      if (!res.ok) throw new Error(res.error ?? 'Falha ao reiniciar.');
       if (resume && res.resumed !== true) {
-        throw new Error('Resume was refused; no replacement session was accepted.');
+        throw new Error('A retomada foi recusada; nenhuma sessão substituta foi aceita.');
       }
       if (resume) {
         // The replacement is accepted, so NOW it is safe to throw the old
@@ -516,7 +516,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
         updateAgent(a.id, {
           terminalGeneration: (a.terminalGeneration ?? 0) + 1,
           status: 'idle',
-          action: 'recreating terminal…'
+          action: 'recriando terminal…'
         });
       }
       if (res.ok) {
@@ -533,14 +533,14 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
               provider,
               model,
               status: 'idle' as const,
-              action: 'continuing…'
+              action: 'continuando…'
             }
           : {
               command: command.trim(),
               provider,
               model,
               status: 'idle' as const,
-              action: provider === previousProvider ? 'restarting…' : `switching to ${providerPreset(provider).label}…`
+              action: provider === previousProvider ? 'reiniciando…' : `alternando para ${providerPreset(provider).label}…`
             };
         updateAgent(a.id, patch);
       }
@@ -581,7 +581,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
 
   const fetchIssues = async () => {
     const repo = issueRepo || repos[0];
-    if (!repo) { setIssuesError('No repo selected.'); return; }
+    if (!repo) { setIssuesError('Nenhum repositório selecionado.'); return; }
     setIssuesLoading(true);
     setIssuesError(null);
     try {
@@ -590,7 +590,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
         setIssues((res.issues ?? []).slice(0, 10));
       } else {
         setIssues([]);
-        setIssuesError(res.error ?? 'Failed to fetch issues.');
+        setIssuesError(res.error ?? 'Falha ao buscar as issues.');
       }
     } catch (e) {
       setIssues([]);
@@ -602,7 +602,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
 
   const assignIssue = (issue: GHIssue) => {
     const body = (issue.body ?? '').slice(0, 200);
-    setDispatchText(`GitHub Issue #${issue.number}: ${issue.title}\n\n${body}\n\nURL: ${issue.url}`);
+    setDispatchText(`Issue do GitHub #${issue.number}: ${issue.title}\n\n${body}\n\nURL: ${issue.url}`);
     setDispatchTo(''); // Michael decomposes and assigns — no more broadcast blasts
   };
 
@@ -699,7 +699,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
           const sparkSeries = spark[a.id] ?? [];
           const hasSpark = sparkSeries.some((v) => v > 0);
           const rateVal = Math.round(rate[a.id] ?? 0);
-          const rateLabel = rateVal > 0 ? `${fmtTokens(rateVal)}/m` : 'rate';
+          const rateLabel = rateVal > 0 ? `${fmtTokens(rateVal)}/m` : 'taxa';
           const currentModelKnown = modelsForProvider(agentProvider)
             .some((model) => model.id === a.model);
           return (
@@ -824,7 +824,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
               >
                 {(!agentPreset.supportsModel || !currentModelKnown) && (
                   <option value={encodeProviderModel(agentProvider, a.model)}>
-                    {agentPreset.label} · {a.model ?? 'current'}
+                    {agentPreset.label} · {a.model ?? 'atual'}
                   </option>
                 )}
                 {modelProvidersForAgent(a.isGod).map((preset) => (
@@ -839,7 +839,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
                           key={`${preset.id}:${model.id ?? 'cli-default'}`}
                           value={encodeProviderModel(preset.id, model.id)}
                         >
-                          {model.label}{isHarnessDefault ? ' · default' : ''}
+                          {model.label}{isHarnessDefault ? ' · padrão' : ''}
                         </option>
                       );
                     })}

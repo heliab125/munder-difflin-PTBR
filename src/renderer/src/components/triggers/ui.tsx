@@ -268,16 +268,16 @@ export const INTERVAL_OPTS: { ms: number; label: string }[] = [
   { ms: 6 * HOUR, label: '6h' },
   { ms: 12 * HOUR, label: '12h' },
   { ms: DAY, label: '24h' },
-  { ms: WEEK, label: 'weekly' }
+  { ms: WEEK, label: 'semanal' }
 ];
 
 /** A truthful label for ANY stored interval, preset or not. Arbitrary intervals
  *  persist now, so the label is computed rather than looked up — a select that
  *  falls back to the nearest preset would quietly lie about the stored value. */
 export function fmtInterval(ms: number): string {
-  if (!Number.isFinite(ms) || ms <= 0) return 'off';
-  if (ms === WEEK) return 'weekly';
-  if (ms % WEEK === 0) return `${ms / WEEK}w`;
+  if (!Number.isFinite(ms) || ms <= 0) return 'desligado';
+  if (ms === WEEK) return 'semanal';
+  if (ms % WEEK === 0) return `${ms / WEEK}sem`;
   if (ms % DAY === 0) return `${ms / DAY}d`;
   if (ms % HOUR === 0) return `${ms / HOUR}h`;
   if (ms % MINUTE === 0) return `${ms / MINUTE}m`;

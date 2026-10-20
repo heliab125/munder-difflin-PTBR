@@ -84,7 +84,7 @@ test('Stop fires "finished — idle"', async (t) => {
   const { fire } = await floor(t);
   await fire({ hook_event_name: 'Stop' });
   assert.equal(notifications.length, 1);
-  assert.equal(notifications[0].body, 'finished — idle');
+  assert.equal(notifications[0].body, 'concluído — ocioso');
 });
 
 test('Stop with stop_hook_active does NOT re-notify', async (t) => {
@@ -98,7 +98,7 @@ test('SubagentStop behaves the same as Stop', async (t) => {
   const { fire } = await floor(t);
   await fire({ hook_event_name: 'SubagentStop' });
   assert.equal(notifications.length, 1);
-  assert.equal(notifications[0].body, 'finished — idle');
+  assert.equal(notifications[0].body, 'concluído — ocioso');
 });
 
 test('notifications setting off suppresses the OS toast but the hook still resolves', async (t) => {

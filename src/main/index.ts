@@ -81,6 +81,20 @@ import {
 } from '../shared/agentProvider';
 import { buildMissingCliScript, chooseInstallRung } from './cliInstall';
 import { detectNodeVersion, nodeIsUsable, resolveNodeInstaller } from './nodeInstall';
+import { detectOpenCode } from './opencodeDetect';
+import {
+  providerProfile,
+  providerPlan,
+  planPriceLabel,
+  subagentLimitFor,
+  isProviderProfileId,
+  normalizeSubagentLimit
+} from '../shared/providerCatalog';
+import {
+  quotaSnapshot,
+  quotaBlockedMessage,
+  type SubscriptionStatus
+} from '../shared/subscription';
 import { toolCatalog, type ToolStatus } from '../shared/toolCatalog';
 import { listLocalSkills, loadCatalog, installSkill, uninstallSkill, type LocalSkill } from './skills';
 import { loadHero } from './hero';
@@ -241,6 +255,101 @@ const hive = new HiveManager(
     try { wc.send(channel, payload); return true; } catch { return false; }
   }
 );
+
+// ─── Assinatura, provedor ativo e quota de subagentes ────────────────────────
+/** Spawns de subagentes já reservados mas ainda não refletidos em PTYs. Fecha a
+ *  janela de corrida entre dois spawns simultâneos (a checagem de quota é
+ *  síncrona e a reserva entra no mesmo turno do event loop). */
+const pendingSubagentSpawns = new Set<string>();
+
+/** Quantos subagentes vivos existem agora. O orquestrador (god) e o assistente
+ *  do orquestrador NUNCA contam — só os trabalhadores/subagentes reais. */
+function activeSubagentCount(excludeAgentId?: string): number {
+  let count = 0;
+  try {
+    const reg = hive.registry();
+    for (const pty of ptyManager.list()) {
+      const agentId = ptyToAgent.get(pty.id);
+      if (!agentId || agentId === excludeAgentId) continue;
+      const agent = reg.agents[agentId];
+      if (agent?.isGod || agent?.isAssistant || reg.godId === agentId) continue;
+      count++;
+    }
+  } catch {
+    // Registro indisponível: mantém a contagem conservadora (0) em vez de
+    // derrubar o app. O spawn ainda passa pela checagem final.
+  }
+  return count;
+}
+
+/** Status completo e seguro (sem segredos) da assinatura ativa. */
+function subscriptionStatus(extraPending = 0): SubscriptionStatus {
+  const cfg = readConfig();
+  const profile = providerProfile(cfg.providerProfileId);
+  const plan = profile ? providerPlan(profile.id, cfg.providerPlanId) : undefined;
+  const opencode = detectOpenCode();
+  const limit = subagentLimitFor(cfg.providerProfileId, cfg.providerPlanId, cfg.customSubagentLimit);
+  const active = activeSubagentCount();
+  const quota = quotaSnapshot(limit, active + Math.max(0, extraPending));
+  const apiKeyPresent = profile
+    ? profile.authStyle === 'none'
+      ? opencode.found || opencode.authConfigured
+      : integrations.hasSecret(providerKeyRef(profile.backend))
+    : false;
+  return {
+    configured: !!profile,
+    profileId: profile?.id ?? null,
+    profileLabel: profile?.label ?? 'Nenhum provedor conectado',
+    planId: cfg.providerPlanId ?? plan?.id ?? null,
+    planLabel: plan?.label ?? 'Sem plano',
+    priceLabel: planPriceLabel(plan),
+    providerModel:
+      cfg.providerModel?.trim() || cfg.godModel?.trim() || profile?.models[0] || 'Modelo padrão da CLI',
+    baseUrl: cfg.providerBaseUrl?.trim() || profile?.defaultBaseUrl || '',
+    apiKeyPresent,
+    limit,
+    active,
+    pending: pendingSubagentSpawns.size,
+    quota,
+    connectedAt: cfg.providerConnectedAt ?? null,
+    opencode: {
+      found: opencode.found,
+      version: opencode.version,
+      configPath: opencode.configPath,
+      providers: opencode.providers,
+      defaultModel: opencode.defaultModel,
+      mcpCount: opencode.mcpCount,
+      authConfigured: opencode.authConfigured,
+      configReadable: opencode.configReadable
+    }
+  };
+}
+
+/**
+ * Trava REAL do plano: chamada antes de provisionar qualquer subagente.
+ * Devolve a mensagem PT-BR quando o teto foi atingido.
+ */
+function subagentQuotaBlock(excludeAgentId?: string): string | null {
+  // Caminho quente do spawn: não chama detecção de OpenCode nem monta o status
+  // completo. Só o suficiente para decidir e montar a mensagem em PT-BR.
+  // `excludeAgentId` permite reiniciar/retomar o MESMO agente no limite: ele já
+  // ocupa uma vaga e não deve ser contado como um novo subagente.
+  const cfg = readConfig();
+  const limit = subagentLimitFor(cfg.providerProfileId, cfg.providerPlanId, cfg.customSubagentLimit);
+  if (limit === null) return null;
+  const pending = [...pendingSubagentSpawns].filter((id) => id !== excludeAgentId).length;
+  const active = activeSubagentCount(excludeAgentId) + pending;
+  if (active < limit) return null;
+  const profile = providerProfile(cfg.providerProfileId);
+  const plan = profile ? providerPlan(profile.id, cfg.providerPlanId) : undefined;
+  return quotaBlockedMessage({
+    providerLabel: profile?.label ?? 'Provedor conectado',
+    planLabel: plan?.label ?? 'Plano ativo',
+    priceLabel: planPriceLabel(plan),
+    limit,
+    active
+  });
+}
 // #7C — operator control state (pause/gate/steer/halt), read by the HookServer
 // when deciding hook returns.
 const control = new ControlRegistry();
@@ -401,7 +510,13 @@ const BACKEND_KEY_ENV: Record<string, string> = {
   openai: 'OPENAI_API_KEY',
   google: 'GEMINI_API_KEY',
   openrouter: 'OPENROUTER_API_KEY',
-  groq: 'GROQ_API_KEY'
+  groq: 'GROQ_API_KEY',
+  // Provedores de plano de tokens (catálogo de primeira classe). A chave é
+  // materializada MAIN-ONLY no spawn; nunca cruza IPC nem aparece em logs.
+  alibaba: 'DASHSCOPE_API_KEY',
+  byteplus: 'ARK_API_KEY',
+  zai: 'ZAI_API_KEY',
+  deepseek: 'DEEPSEEK_API_KEY'
 };
 const providerKeyRef = (backend: string): string => `apikey:${backend}`;
 
@@ -1267,11 +1382,11 @@ function runBreakerBeat(progressWindowMs: number): void {
     } else if (d.action === 'constrain') {
       hive.send({ to: d.state.agentId, act: 'request', subject: 'Circuit breaker: constrain',
         body: `Automated guardrail escalated: ${reason}. Stop active work now: switch to read-only/plan, write a short plan of your next step, and send it to god for sign-off BEFORE running more tools.` }, 'breaker');
-      breakerToast(`${name} constrained`, reason);
+      breakerToast(`${name} em modo restrito`, reason);
     } else if (d.action === 'stop') {
       const ptyId = ptyForAgent(d.state.agentId);
       if (ptyId) { try { ptyManager.kill(ptyId); } catch { /* already gone */ } teardownPty(ptyId); }
-      breakerToast(`${name} stopped by circuit breaker`, reason);
+      breakerToast(`${name} interrompido pelo disjuntor de segurança`, reason);
     }
   }
 }
@@ -2280,8 +2395,8 @@ ipcMain.handle('hire:drainPending', () => {
 // is validated independently; valid neighbours survive an invalid manifest.
 ipcMain.handle('hire:openFile', async () => {
   const res = await dialog.showOpenDialog({
-    title: 'Import hire manifests',
-    filters: [{ name: 'Hire manifest', extensions: ['json'] }],
+    title: 'Importar manifestos de contratação',
+    filters: [{ name: 'Manifesto de contratação', extensions: ['json'] }],
     properties: ['openFile', 'multiSelections']
   });
   if (res.canceled || res.filePaths.length === 0) {
@@ -2422,11 +2537,11 @@ function createWindow(opts: { floor?: boolean } = {}): BrowserWindow {
       if (owned > 0) {
         const choice = dialog.showMessageBoxSync(win, {
           type: 'warning',
-          buttons: ['Close floor', 'Cancel'],
+          buttons: ['Fechar andar', 'Cancelar'],
           defaultId: 1,
           cancelId: 1,
-          message: `Close this floor? ${owned} running terminal${owned === 1 ? '' : 's'} on it will be stopped.`,
-          detail: 'Other floors keep running.'
+          message: `Fechar este andar? ${owned} terminal${owned === 1 ? '' : 'is'} em execução nele será${owned === 1 ? '' : 'ão'} encerrado${owned === 1 ? '' : 's'}.`,
+          detail: 'Os outros andares continuam em execução.'
         });
         if (choice === 1) e.preventDefault();
       }
@@ -2486,18 +2601,37 @@ function openFloor(): BrowserWindow | null {
  *  "New Floor" item (Cmd/Ctrl+Shift+N). */
 function installAppMenu(): void {
   const isMac = process.platform === 'darwin';
+  const multiWindow = readConfig().multiWindow === true;
   const newFloorItem = {
-    label: 'New Floor',
+    label: 'Novo andar',
     accelerator: 'CmdOrCtrl+Shift+N',
     click: () => { openFloor(); }
   };
   const template: Electron.MenuItemConstructorOptions[] = [
-    ...(isMac ? [{ role: 'appMenu' as const }] : []),
+    ...(isMac
+      ? [{
+          label: app.name,
+          submenu: [
+            { role: 'about' as const, label: `Sobre ${app.name}` },
+            { type: 'separator' as const },
+            { role: 'services' as const, label: 'Serviços' },
+            { type: 'separator' as const },
+            { role: 'hide' as const, label: `Ocultar ${app.name}` },
+            { role: 'hideOthers' as const, label: 'Ocultar outros' },
+            { role: 'unhide' as const, label: 'Mostrar todos' },
+            { type: 'separator' as const },
+            { role: 'quit' as const, label: `Encerrar ${app.name}` }
+          ]
+        }]
+      : []),
     {
-      label: 'File',
-      submenu: isMac
-        ? [newFloorItem, { type: 'separator' as const }, { role: 'close' as const }]
-        : [newFloorItem, { type: 'separator' as const }, { role: 'quit' as const }]
+      label: 'Arquivo',
+      submenu: [
+        ...(multiWindow ? [newFloorItem, { type: 'separator' as const }] : []),
+        isMac
+          ? { role: 'close' as const, label: 'Fechar janela' }
+          : { role: 'quit' as const, label: 'Sair' }
+      ]
     },
     // The Edit menu is spelled out rather than `{ role: 'editMenu' }` for one
     // reason: `registerAccelerator: false` on the clipboard items.
@@ -2516,19 +2650,57 @@ function installAppMenu(): void {
     // handler and the textarea's native paste event both read the clipboard
     // synchronously, inside the keystroke, before any restore can land.
     {
-      label: 'Edit',
+      label: 'Editar',
       submenu: [
-        { role: 'undo' as const, registerAccelerator: false },
-        { role: 'redo' as const, registerAccelerator: false },
+        { role: 'undo' as const, label: 'Desfazer', registerAccelerator: false },
+        { role: 'redo' as const, label: 'Refazer', registerAccelerator: false },
         { type: 'separator' as const },
-        { role: 'cut' as const, registerAccelerator: false },
-        { role: 'copy' as const, registerAccelerator: false },
-        { role: 'paste' as const, registerAccelerator: false },
-        { role: 'selectAll' as const, registerAccelerator: false }
+        { role: 'cut' as const, label: 'Recortar', registerAccelerator: false },
+        { role: 'copy' as const, label: 'Copiar', registerAccelerator: false },
+        { role: 'paste' as const, label: 'Colar', registerAccelerator: false },
+        { role: 'selectAll' as const, label: 'Selecionar tudo', registerAccelerator: false }
       ]
     },
-    { role: 'viewMenu' },
-    { role: 'windowMenu' }
+    {
+      label: 'Visualizar',
+      submenu: [
+        { role: 'reload' as const, label: 'Recarregar' },
+        { role: 'forceReload' as const, label: 'Forçar recarregamento' },
+        { role: 'toggleDevTools' as const, label: 'Ferramentas de desenvolvedor' },
+        { type: 'separator' as const },
+        { role: 'resetZoom' as const, label: 'Tamanho real' },
+        { role: 'zoomIn' as const, label: 'Aumentar zoom' },
+        { role: 'zoomOut' as const, label: 'Diminuir zoom' },
+        { type: 'separator' as const },
+        { role: 'togglefullscreen' as const, label: 'Tela cheia' }
+      ]
+    },
+    {
+      label: 'Janela',
+      submenu: [
+        { role: 'minimize' as const, label: 'Minimizar' },
+        { role: 'zoom' as const, label: 'Ampliar' },
+        ...(isMac
+          ? [
+              { type: 'separator' as const },
+              { role: 'front' as const, label: 'Trazer tudo para frente' }
+            ]
+          : [{ role: 'close' as const, label: 'Fechar janela' }])
+      ]
+    },
+    {
+      label: 'Ajuda',
+      submenu: [
+        {
+          label: 'Documentação',
+          click: () => { void shell.openExternal('https://munderdiffl.in/blog/'); }
+        },
+        {
+          label: 'Abrir pasta de dados',
+          click: () => { void shell.openPath(app.getPath('userData')); }
+        }
+      ]
+    }
   ];
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
@@ -2648,6 +2820,22 @@ async function spawnAgentCore(opts: AgentSpawnOptions, owner: Electron.WebConten
   // the missing-CLI relaunch (the only re-entry, index.ts install-exit handler) does
   // NOT double-count a single user attempt — it is the SAME attempt continuing.
   if (!opts.noAutoInstall) analytics.track('agent_spawn_attempted', { provider });
+  // ── TRAVA REAL DO PLANO DE ASSINATURA ──────────────────────────────────────
+  // O orquestrador é sempre permitido; subagentes respeitam o teto do plano
+  // vigente (ex.: Alibaba Token Plan Standard US$18 = 4 simultâneos). A reserva
+  // é síncrona, então dois spawns concorrentes não podem passar juntos.
+  if (opts.hive && !opts.hive.isGod && !opts.hive.isAssistant) {
+    const blocked = subagentQuotaBlock(opts.hive.id);
+    if (blocked) {
+      analytics.track('agent_spawn_failed', { provider, reason: 'spawn_error' });
+      return { ok: false, error: blocked };
+    }
+    pendingSubagentSpawns.add(opts.id);
+    // Rede de segurança: se algum caminho excepcional escapar sem liberar a
+    // reserva, ela expira sozinha — nunca bloqueia o app para sempre.
+    const releaseTimer = setTimeout(() => pendingSubagentSpawns.delete(opts.id), 120_000);
+    releaseTimer.unref?.();
+  }
   // ── Missing engine CLI → run its installer visibly (pre-spawn) ───────────────
   // If the agent's engine binary (claude/codex/…) isn't installed, spawning it
   // just dies with "— process exited (code 1) —" and the user has no idea why.
@@ -2715,6 +2903,7 @@ async function spawnAgentCore(opts: AgentSpawnOptions, owner: Electron.WebConten
         analytics.track('agent_spawn_failed', { provider, reason: spawnFailReason(res.error) });
       }
       syncKeepAwake();
+      pendingSubagentSpawns.delete(opts.id);
       return res;
     }
   }
@@ -2801,7 +2990,7 @@ async function spawnAgentCore(opts: AgentSpawnOptions, owner: Electron.WebConten
       // A degraded spawn (proxy bridge never bound) is told to the user the same
       // way breaker escalations are: a native toast, gated on the notifications
       // setting. The hive already logged it and pushed hive:degraded to the floor.
-      if (inj.degraded) breakerToast('Agent running degraded', inj.degraded);
+      if (inj.degraded) breakerToast('Agente em modo degradado', inj.degraded);
       // Point the agent's mempalace CLI at the shared palace + the `kg` CLI at the
       // enterprise knowledge store (both no-ops / empty when their flags are off).
       opts.env = { ...(opts.env ?? {}), ...inj.env, ...memory.env(), ...knowledge.env() };
@@ -2933,9 +3122,10 @@ async function spawnAgentCore(opts: AgentSpawnOptions, owner: Electron.WebConten
     }
   }
   if (opts.requireResume === true && !didResume) {
+    pendingSubagentSpawns.delete(opts.id);
     return {
       ok: false,
-      error: 'Existing session could not be resumed; no replacement process was started.',
+      error: 'A sessão existente não pôde ser retomada; nenhum processo substituto foi iniciado.',
       ...(resumeNotFound ? { resumeNotFound: true } : {})
     };
   }
@@ -2977,7 +3167,8 @@ async function spawnAgentCore(opts: AgentSpawnOptions, owner: Electron.WebConten
     const modelSlug = modelIdx >= 0 ? (opts.args?.[modelIdx + 1] ?? '') : '';
     const prefix = modelSlug.includes('/') ? modelSlug.split('/')[0].toLowerCase() : '';
     const PREFIX_BACKEND: Record<string, string> = {
-      anthropic: 'anthropic', openai: 'openai', google: 'google', gemini: 'google', groq: 'groq', openrouter: 'openrouter'
+      anthropic: 'anthropic', openai: 'openai', google: 'google', gemini: 'google', groq: 'groq', openrouter: 'openrouter',
+      alibaba: 'alibaba', dashscope: 'alibaba', byteplus: 'byteplus', ark: 'byteplus', zai: 'zai', deepseek: 'deepseek'
     };
     const scoped = PREFIX_BACKEND[prefix];
     const backends = scoped ? [scoped] : Object.keys(BACKEND_KEY_ENV);
@@ -2997,6 +3188,7 @@ async function spawnAgentCore(opts: AgentSpawnOptions, owner: Electron.WebConten
     if (provider === 'opencode') {
       const oc: Record<string, unknown> = { autoupdate: false };
       if (cfg.autoMode) oc.permission = { edit: 'allow', bash: 'allow', webfetch: 'allow' };
+      const providers: Record<string, unknown> = {};
       const baseUrl = cfg.providerBaseUrls?.opencode;
       if (baseUrl) {
         // Register the model id the user actually selects (the part after 'local/')
@@ -3004,10 +3196,27 @@ async function spawnAgentCore(opts: AgentSpawnOptions, owner: Electron.WebConten
         // dropdown's `local/llama3` failed against a config that only declared model
         // 'local' (Jim verify-opencode MUST-FIX #2).
         const localModel = (prefix === 'local' && modelSlug.slice(6)) || 'local';
-        oc.provider = {
-          local: { npm: '@ai-sdk/openai-compatible', name: 'Local (self-hosted)', options: { baseURL: baseUrl }, models: { [localModel]: { name: localModel } } }
+        providers.local = {
+          npm: '@ai-sdk/openai-compatible',
+          name: 'Local (self-hosted)',
+          options: { baseURL: baseUrl },
+          models: { [localModel]: { name: localModel } }
         };
       }
+      // Provedor de assinatura ativo (Alibaba/BytePlus/Z.ai/DeepSeek/…): registra
+      // o endpoint e os modelos no OpenCode para que `--model <provedor>/<modelo>`
+      // resolva. A chave entra por REFERÊNCIA de ambiente, nunca em texto puro.
+      const activeProfile = providerProfile(cfg.providerProfileId);
+      const activeBase = cfg.providerBaseUrl?.trim() || activeProfile?.defaultBaseUrl;
+      if (activeProfile && activeProfile.kind !== 'cli' && activeBase) {
+        providers[activeProfile.id] = {
+          npm: '@ai-sdk/openai-compatible',
+          name: activeProfile.label,
+          options: { baseURL: activeBase, apiKey: `{env:${activeProfile.envKey}}` },
+          models: Object.fromEntries(activeProfile.models.map((m) => [m, { name: m }]))
+        };
+      }
+      if (Object.keys(providers).length > 0) oc.provider = providers;
       extra.OPENCODE_CONFIG_CONTENT = JSON.stringify(oc);
     }
     opts.env = { ...(opts.env ?? {}), ...extra };
@@ -3028,6 +3237,7 @@ async function spawnAgentCore(opts: AgentSpawnOptions, owner: Electron.WebConten
   // The restore flow re-enters this exact worktree (cwd = worktreePath) so a
   // restored isolated agent resumes in the CORRECT checkout, not the base repo.
   const worktreePath = worktreePaths.get(opts.id);
+  pendingSubagentSpawns.delete(opts.id);
   // `cwd` echoes back the TILDE-EXPANDED absolute path so the renderer's agent
   // record matches what the registry and the PTY actually used.
   return { ...res, cwd: opts.cwd, ...(worktreePath ? { worktreePath } : {}), ...(resumeNotFound ? { resumeNotFound: true } : {}), ...(didResume ? { resumed: true } : {}), ...(seedPrompt ? { seedPrompt } : {}) };
@@ -3111,7 +3321,7 @@ ipcMain.handle('dialog:chooseFolder', async (evt) => {
   if (!win) return { ok: false as const, error: 'no window' };
   const res = await dialog.showOpenDialog(win, {
     properties: ['openDirectory', 'createDirectory'],
-    title: 'Pick a folder'
+    title: 'Escolher uma pasta'
   });
   if (res.canceled || res.filePaths.length === 0) return { ok: false as const, error: 'cancelled' };
   return { ok: true as const, path: res.filePaths[0] };
@@ -3167,6 +3377,166 @@ ipcMain.handle('providerKey:clear', (_evt, backend: unknown) => {
   if (typeof backend !== 'string' || !(backend in BACKEND_KEY_ENV)) return { ok: false, error: 'unknown backend' };
   try { integrations.deleteSecret(providerKeyRef(backend)); return { ok: true }; }
   catch (e) { return { ok: false, error: e instanceof Error ? e.message : String(e) }; }
+});
+
+// ─── IPC: assinatura, planos e quota de subagentes ──────────────────────────
+ipcMain.handle('subscription:status', (): SubscriptionStatus => subscriptionStatus());
+
+ipcMain.handle('subscription:set', (_evt, payload: unknown) => {
+  const p = (payload ?? {}) as {
+    profileId?: unknown;
+    planId?: unknown;
+    baseUrl?: unknown;
+    model?: unknown;
+    customSubagentLimit?: unknown;
+  };
+  const cfgBefore = readConfig();
+  const patch: Partial<HarnessConfig> = {};
+  if (p.profileId === null || p.profileId === '') {
+    patch.providerProfileId = undefined;
+    patch.providerPlanId = undefined;
+    patch.providerBaseUrl = undefined;
+    patch.providerModel = undefined;
+    patch.providerConnectedAt = undefined;
+  } else if (p.profileId !== undefined) {
+    if (!isProviderProfileId(p.profileId)) return { ok: false, error: 'Provedor desconhecido.' };
+    const profile = providerProfile(p.profileId);
+    if (!profile) return { ok: false, error: 'Provedor desconhecido.' };
+    patch.providerProfileId = p.profileId;
+    // Trocar de provedor não deve herdar o modelo/URL do provedor anterior.
+    if (cfgBefore.providerProfileId !== p.profileId) {
+      if (p.model === undefined) patch.providerModel = profile.models[0];
+      if (p.baseUrl === undefined) patch.providerBaseUrl = undefined;
+    }
+    if (p.planId !== undefined) {
+      const plan = profile.plans.find((x) => x.id === p.planId);
+      if (!plan) return { ok: false, error: 'Plano inválido para este provedor.' };
+      patch.providerPlanId = plan.id;
+    } else {
+      const recommended = profile.plans.find((x) => x.recommended) ?? profile.plans[0];
+      patch.providerPlanId = recommended?.id;
+    }
+  }
+  if (p.baseUrl !== undefined) {
+    if (p.baseUrl === null || p.baseUrl === '') patch.providerBaseUrl = undefined;
+    else if (typeof p.baseUrl === 'string') patch.providerBaseUrl = p.baseUrl.trim();
+    else return { ok: false, error: 'URL base inválida.' };
+  }
+  if (p.model !== undefined) {
+    if (p.model === null || p.model === '') patch.providerModel = undefined;
+    else if (typeof p.model === 'string') patch.providerModel = p.model.trim();
+    else return { ok: false, error: 'Modelo inválido.' };
+  }
+  if (p.customSubagentLimit !== undefined) {
+    if (p.customSubagentLimit === null || p.customSubagentLimit === '') {
+      patch.customSubagentLimit = undefined;
+    } else {
+      const n = normalizeSubagentLimit(p.customSubagentLimit);
+      if (n === null) return { ok: false, error: 'O limite personalizado deve ser um inteiro entre 0 e 100.' };
+      patch.customSubagentLimit = n;
+    }
+  }
+  // Plano de tokens: aponta o motor OpenCode para o endpoint/modelo do plano.
+  // `providerDefaultModels.opencode` é o padrão que o seletor de modelo usa ao
+  // escolher OpenCode; o spawn injeta a URL base e a chave do cofre. Só para
+  // provedores que NÃO são a própria CLI OpenCode.
+  if (patch.providerProfileId) {
+    const profile = providerProfile(patch.providerProfileId);
+    const model = patch.providerModel ?? profile?.models[0];
+    if (profile && profile.kind !== 'cli' && model) {
+      patch.providerDefaultModels = {
+        ...(cfgBefore.providerDefaultModels ?? {}),
+        opencode: `${profile.id}/${model}`
+      };
+    }
+  }
+  writeConfig(patch);
+  return { ok: true, status: subscriptionStatus() };
+});
+
+ipcMain.handle('opencode:status', () => {
+  const d = detectOpenCode(true);
+  return {
+    found: d.found,
+    version: d.version,
+    configPath: d.configPath,
+    providers: d.providers,
+    defaultModel: d.defaultModel,
+    mcpCount: d.mcpCount,
+    authConfigured: d.authConfigured,
+    configReadable: d.configReadable
+  };
+});
+
+/** Teste de conexão de provedor (usa a chave do cofre, nunca a devolve). */
+ipcMain.handle('provider:test', async (_evt, payload: unknown) => {
+  const p = (payload ?? {}) as { profileId?: unknown; baseUrl?: unknown; model?: unknown };
+  const cfg = readConfig();
+  const profileId = isProviderProfileId(p.profileId) ? p.profileId : cfg.providerProfileId;
+  const profile = providerProfile(profileId);
+  if (!profile) return { ok: false, message: 'Selecione um provedor antes de testar a conexão.' };
+
+  if (profile.kind === 'cli') {
+    const d = detectOpenCode(true);
+    if (d.found) {
+      return {
+        ok: true,
+        message: `OpenCode detectado${d.version ? ` (v${d.version})` : ''}${d.configReadable ? ` · ${d.providers.length} provedor(es) · ${d.mcpCount} MCP(s)` : ' · configuração local não encontrada'}.`
+      };
+    }
+    return { ok: false, message: 'CLI do OpenCode não encontrada no PATH. Instale o OpenCode e tente novamente.' };
+  }
+
+  const baseUrl = (typeof p.baseUrl === 'string' && p.baseUrl.trim()) || cfg.providerBaseUrl?.trim() || profile.defaultBaseUrl;
+  if (!baseUrl) return { ok: false, message: 'Informe a URL base do provedor.' };
+  const key = integrations.getSecret(providerKeyRef(profile.backend));
+  const localEndpoint = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(?::|\/|$)/i.test(baseUrl);
+  if (!key && profile.authStyle !== 'none' && !(profile.id === 'custom' && localEndpoint)) {
+    return { ok: false, message: 'Nenhuma chave de API configurada para este provedor. Salve a chave acima e tente novamente.' };
+  }
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 8_000);
+  try {
+    const url = `${baseUrl.replace(/\/+$/, '')}/models`;
+    const headers: Record<string, string> = { accept: 'application/json' };
+    // A API da Anthropic exige a versão do protocolo em toda requisição.
+    if (profile.id === 'anthropic') headers['anthropic-version'] = '2023-06-01';
+    if (key) {
+      if (profile.authStyle === 'x-api-key') {
+        headers['x-api-key'] = key;
+        headers['anthropic-version'] = '2023-06-01';
+      } else {
+        headers.authorization = `Bearer ${key}`;
+      }
+    }
+    const res = await fetch(url, { method: 'GET', headers, signal: controller.signal });
+    if (res.ok) {
+      writeConfig({ providerConnectedAt: Date.now() });
+      return { ok: true, status: res.status, message: `Conexão validada com sucesso (HTTP ${res.status}).` };
+    }
+    if (res.status === 401 || res.status === 403) {
+      return { ok: false, status: res.status, message: 'Chave inválida ou sem permissão para este provedor (HTTP 401/403).' };
+    }
+    if (res.status === 404) {
+      return {
+        ok: false,
+        status: res.status,
+        message: 'O endpoint respondeu, mas /models não existe. Verifique se a URL base inclui o caminho correto (ex.: /v1).'
+      };
+    }
+    return { ok: false, status: res.status, message: `O provedor respondeu com HTTP ${res.status}.` };
+  } catch (e) {
+    const aborted = e instanceof Error && (e.name === 'AbortError' || /abort/i.test(e.message));
+    return {
+      ok: false,
+      message: aborted
+        ? 'Tempo esgotado ao conectar ao provedor (8s). Verifique a URL e a rede.'
+        : `Não foi possível conectar: ${e instanceof Error ? e.message : String(e)}`
+    };
+  } finally {
+    clearTimeout(timer);
+  }
 });
 // Probe an integration's reachability through the broker's own auth path (admin-only;
 // runs in main, so the secret is used but never returned — only the upstream status).
@@ -3264,10 +3634,10 @@ ipcMain.handle('config:changeHome', async (_evt, payload: unknown) => {
 
   // Guard against same-folder / nested-folder (a move would self-copy forever).
   if (oldHome) {
-    if (newHome === oldHome) return { ok: false, error: 'That is already the current home folder.' };
+    if (newHome === oldHome) return { ok: false, error: 'Essa já é a pasta inicial atual.' };
     const a = newHome + sep, b = oldHome + sep;
     if (a.startsWith(b) || b.startsWith(a)) {
-      return { ok: false, error: 'Pick a folder that is not inside (or a parent of) the current home.' };
+      return { ok: false, error: 'Escolha uma pasta que não esteja dentro (nem seja pai) da pasta inicial atual.' };
     }
   }
 
@@ -3702,7 +4072,7 @@ ipcMain.handle('kg:addFiles', async (evt) => {
   if (!win) return { ok: false as const, error: 'no window' };
   const res = await dialog.showOpenDialog(win, {
     properties: ['openFile', 'multiSelections'],
-    title: 'Add documents to the Knowledge Graph'
+    title: 'Adicionar documentos ao Grafo de Conhecimento'
   });
   if (res.canceled || res.filePaths.length === 0) return { ok: false as const, error: 'cancelled' };
   const results = res.filePaths.map((srcPath) => {
@@ -3725,10 +4095,10 @@ ipcMain.handle('dialog:attachFiles', async (evt) => {
   if (!win) return { ok: false as const, error: 'no window' };
   const res = await dialog.showOpenDialog(win, {
     properties: ['openFile', 'multiSelections'],
-    title: 'Attach images or files',
+    title: 'Anexar imagens ou arquivos',
     filters: [
-      { name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'svg', 'heic', 'tiff', 'avif'] },
-      { name: 'All Files', extensions: ['*'] }
+      { name: 'Imagens', extensions: ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'svg', 'heic', 'tiff', 'avif'] },
+      { name: 'Todos os arquivos', extensions: ['*'] }
     ]
   });
   if (res.canceled || res.filePaths.length === 0) return { ok: false as const, error: 'cancelled' };
@@ -4124,7 +4494,7 @@ ipcMain.handle('slack:reply', (_evt, arg: unknown) => {
   // OFF unless the user opts in via Settings → Slack. The Slack-ORIGIN done-reply
   // round-trip (done-poller) and an agent's own direct /reply are NOT routed
   // through here, so they are unaffected and always stay on.
-  if (!cfg.slackProactivePosting) return { ok: false, error: 'app-initiated Slack posting disabled (enable in Settings → Slack)' };
+  if (!cfg.slackProactivePosting) return { ok: false, error: 'postagem iniciada pelo app no Slack está desativada (ative em Configurações → Slack)' };
   const botToken = cfg.slackBotToken;
   if (!botToken) return { ok: false, error: 'no bot token' };
   if (typeof p.channel !== 'string' || typeof p.thread_ts !== 'string' || typeof p.text !== 'string') {
@@ -5319,7 +5689,7 @@ function healthCheckPtys(reason: string, awayMs: number | null): void {
   const away = awayMs != null ? ` (away ~${Math.round(awayMs / 1000)}s)` : '';
   if (dead.length) {
     console.warn(`[power] ${reason}${away}: ${dead.length}/${ptys.length} PTY(s) look wedged (process gone):`, dead.join(', '));
-    breakerToast('Agents need a restart', `${dead.length} agent terminal(s) didn't survive sleep — re-open them to resume.`);
+    breakerToast('Agentes precisam reiniciar', `${dead.length} terminal(is) de agente não sobreviveu à suspensão — reabra para retomar.`);
   } else {
     console.log(`[power] ${reason}${away}: ${ptys.length} PTY(s) healthy`);
   }
@@ -5427,7 +5797,7 @@ app.whenReady().then(() => {
   powerMonitor.on('lock-screen', () => { lastSuspendAt = Date.now(); console.log('[power] lock-screen'); });
   // Multi-window floors (opt-in): install the menu carrying "New Floor". When
   // off, the app keeps Electron's default menu — zero behavior change.
-  if (readConfig().multiWindow) installAppMenu();
+  installAppMenu();
   createWindow();
   // Auto-start the Slack webhook server when configured. Best-effort: a tunnel
   // failure (offline) is logged, not fatal. The tunnel URL is ephemeral and

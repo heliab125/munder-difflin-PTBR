@@ -97,7 +97,7 @@ async function waitForTerminalReady(
   while (Date.now() - started < timeoutMs) {
     const live = await window.cth.listPtys();
     const pty = live.find((entry) => entry.id === ptyId);
-    if (!pty) throw new Error(`PTY exited before becoming ready: ${ptyId}`);
+    if (!pty) throw new Error(`O PTY encerrou antes de ficar pronto: ${ptyId}`);
     if (readyPids.get(ptyId) === pty.pid) return;
     if (terminalReadyToReceive(pty.hasOutput, Date.now() - started, provider)) {
       readyPids.set(ptyId, pty.pid);
@@ -105,7 +105,7 @@ async function waitForTerminalReady(
     }
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
-  throw new Error(`PTY did not become ready within ${timeoutMs}ms: ${ptyId}`);
+  throw new Error(`O PTY não ficou pronto em ${timeoutMs}ms: ${ptyId}`);
 }
 
 /**
@@ -146,10 +146,10 @@ function submitToPty(
     // popped, #36). Surface the failure as a rejection; the chain itself is
     // immune (the prev.catch above absorbs it for the next writer).
     const wrote = await window.cth.writePty(ptyId, payload);
-    if (!wrote?.ok) throw new Error(wrote?.error ?? `pty write failed: ${ptyId}`);
+    if (!wrote?.ok) throw new Error(wrote?.error ?? `falha ao escrever no pty: ${ptyId}`);
     await new Promise((r) => setTimeout(r, 140));
     const submitted = await window.cth.writePty(ptyId, '\r');
-    if (!submitted?.ok) throw new Error(submitted?.error ?? `pty write failed: ${ptyId}`);
+    if (!submitted?.ok) throw new Error(submitted?.error ?? `falha ao escrever no pty: ${ptyId}`);
     await new Promise((r) => setTimeout(r, settleMs));
   });
   writeChains.set(ptyId, next);
@@ -423,12 +423,12 @@ export function useHive(config: HarnessConfig | null): void {
         name: godName,
         character: 'michael',
         accent: 'lemon',
-        description: 'god — runs the floor, triages requests, escalates only critical calls to you',
+        description: 'orquestrador — comanda o andar, faz a triagem de pedidos e escala para você apenas decisões críticas',
         project: 'hive',
         tmuxTarget: '',
         cwd: config.harnessHome!,
         status: 'idle',
-        action: 'running the floor',
+        action: 'comandando o andar',
         progress: 0,
         currentStation: 'desk',
         ptyId: GOD_PTY,
@@ -489,12 +489,12 @@ export function useHive(config: HarnessConfig | null): void {
       // pty-stream parser only refines the on-floor action/station).
       if (e.event === 'PreCompact') {
         // #5C — agent entered /compact; show it's boxing up context, not frozen.
-        if (!breakerArmed) updateAgent(e.agentId, { status: 'compacting', action: 'compacting context', carrying: undefined });
+        if (!breakerArmed) updateAgent(e.agentId, { status: 'compacting', action: 'compactando contexto', carrying: undefined });
       } else if (e.event === 'PostCompact') {
-        if (!breakerArmed) updateAgent(e.agentId, { status: 'working', action: 'resumed', carrying: undefined });
+        if (!breakerArmed) updateAgent(e.agentId, { status: 'working', action: 'retomado', carrying: undefined });
       } else if (e.event === 'PreToolUse' && e.tool) {
         const m = stationForTool(e.tool);
-        if (!breakerArmed) updateAgent(e.agentId, { status: 'working', currentStation: m.station, carrying: m.carry, action: `using ${e.tool}` });
+        if (!breakerArmed) updateAgent(e.agentId, { status: 'working', currentStation: m.station, carrying: m.carry, action: `usando ${e.tool}` });
         useStore.getState().bumpToolCount(e.agentId); // usage proxy for the command center
       } else if (e.event === 'PostToolUse' || e.event === 'UserPromptSubmit') {
         // A turn is in progress (prompt submitted / tool just finished) — keep
@@ -502,22 +502,22 @@ export function useHive(config: HarnessConfig | null): void {
         if (!breakerArmed) updateAgent(e.agentId, { status: 'working' });
       } else if (e.event === 'PreInvocation') {
         // Antigravity (agy): the model is being called — it's thinking/working.
-        if (!breakerArmed) updateAgent(e.agentId, { status: 'working', action: 'thinking' });
+        if (!breakerArmed) updateAgent(e.agentId, { status: 'working', action: 'pensando' });
       } else if (e.event === 'PostInvocation') {
         // agy's per-turn boundary. Unlike Claude, agy's Stop fires only on process
         // EXIT, so without this an agy worker would never register as idle and the
         // inbox-wake nudge (idle-only) could never reach it — its mail would sit
         // undrained. Treat it as idle; a follow-up tool/turn re-sets working.
-        if (!breakerArmed) updateAgent(e.agentId, { status: 'idle', action: 'idle', carrying: undefined });
+        if (!breakerArmed) updateAgent(e.agentId, { status: 'idle', action: 'ocioso', carrying: undefined });
       } else if (e.event === 'Stop' || e.event === 'SubagentStop') {
         // A blocked Stop means the agent is being re-engaged to process its
         // inbox — it's NOT idle, so keep it working until it genuinely stops.
         if (e.blocked) {
-          if (!breakerArmed) updateAgent(e.agentId, { status: 'working', action: 'reading inbox', carrying: undefined });
+          if (!breakerArmed) updateAgent(e.agentId, { status: 'working', action: 'lendo a caixa de entrada', carrying: undefined });
         } else {
           // A genuine stop clears any breaker override — the run is over.
           breakerLevel.current[e.agentId] = 'healthy';
-          updateAgent(e.agentId, { status: 'idle', action: 'idle', carrying: undefined });
+          updateAgent(e.agentId, { status: 'idle', action: 'ocioso', carrying: undefined });
         }
       } else if (e.event === 'Notification' && !breakerArmed) {
         // Claude Code fires Notification for two very different situations:
@@ -542,7 +542,7 @@ export function useHive(config: HarnessConfig | null): void {
           updateAgent(e.agentId, { status: self.isGod ? 'blocked' : 'waiting' });
         } else {
           // Idle notification — responded, nothing to do. Linger, don't flag.
-          updateAgent(e.agentId, { status: 'idle', action: 'idle', carrying: undefined });
+          updateAgent(e.agentId, { status: 'idle', action: 'ocioso', carrying: undefined });
         }
       }
     });
@@ -558,7 +558,7 @@ export function useHive(config: HarnessConfig | null): void {
       const { updateAgent, agents } = useStore.getState();
       if (!agents.some((a) => a.id === s.agentId)) return;
       if (s.level === 'constrained' || s.level === 'stopped') {
-        updateAgent(s.agentId, { status: 'looping', action: s.reason || 'breaker armed', carrying: undefined });
+        updateAgent(s.agentId, { status: 'looping', action: s.reason || 'disjuntor armado', carrying: undefined });
       }
       // 'healthy'/'steering' clear the pin; the next hook event refreshes status.
     });
@@ -668,7 +668,7 @@ export function useHive(config: HarnessConfig | null): void {
         if ((bootGraceUntil.current[a.id] ?? 0) > now) continue;
         const last = lastOut[a.ptyId];
         if (typeof last === 'number' && last > 0 && now - last > QUIESCE_IDLE_MS) {
-          updateAgent(a.id, { status: 'idle', action: 'idle', carrying: undefined });
+          updateAgent(a.id, { status: 'idle', action: 'ocioso', carrying: undefined });
         }
       }
     }, QUIESCE_POLL_MS);
@@ -969,7 +969,7 @@ export function useHive(config: HarnessConfig | null): void {
       // Append local file paths so the agent (Claude Code) can Read them directly.
       if (hasFiles) {
         const fileLines = msg.files!.map((f) => `- ${f.path} (${f.name})`).join('\n');
-        text = text ? `${text}\n\nAttached files:\n${fileLines}` : `Attached files:\n${fileLines}`;
+        text = text ? `${text}\n\nArquivos anexados:\n${fileLines}` : `Arquivos anexados:\n${fileLines}`;
       }
       const slack = { channel: msg.channel, thread_ts: msg.thread_ts };
       // `text` (raw user request + any attachment lines) drives the human-facing
@@ -984,7 +984,7 @@ export function useHive(config: HarnessConfig | null): void {
       void window.cth.slackReply({
         channel: msg.channel,
         thread_ts: msg.thread_ts,
-        text: ':hourglass_flowing_sand: *Received.* Your request has been queued — the team is on it and will reply here when done.'
+        text: ':hourglass_flowing_sand: *Recebido.* Sua solicitação entrou na fila — a equipe está cuidando disso e responderá aqui quando terminar.'
       });
     });
   }, [config?.onboardingComplete]);
@@ -1035,12 +1035,12 @@ export function useHive(config: HarnessConfig | null): void {
         name: rec.name || rec.id,
         character,
         accent: askedAccent ?? SPAWN_ACCENTS[h],
-        description: rec.role || 'a fresh harness',
+        description: rec.role || 'um harness novo',
         project,
         tmuxTarget: '',
         cwd: rec.cwd,
         status: 'idle',
-        action: 'starting up',
+        action: 'iniciando',
         progress: 0,
         currentStation: 'desk',
         ptyId: rec.id,
@@ -1229,7 +1229,7 @@ export function useHive(config: HarnessConfig | null): void {
         });
         if (res.ok) {
           reviving.current[deadId] = Date.now(); // re-stamp so the debounce covers the spawn
-          useStore.getState().updateAgent(a.id, { status: 'idle', action: 'revived after sleep' });
+          useStore.getState().updateAgent(a.id, { status: 'idle', action: 'retomado após suspensão' });
         } else {
           delete reviving.current[deadId]; // let a later power:resume retry it
           console.error('[autorevive] respawn failed for', a.id, res.error);

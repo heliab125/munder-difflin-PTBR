@@ -36,7 +36,7 @@ export function AgentNameEditor({
     if (committing.current || cancelling.current) return;
     const nextName = draft.trim();
     if (!nextName) {
-      setError('Name is required');
+      setError('O nome é obrigatório');
       return;
     }
     if (nextName === name) {
@@ -49,9 +49,9 @@ export function AgentNameEditor({
     try {
       const result = await onCommit(nextName);
       if (result.ok) setEditing(false);
-      else setError(result.error ?? 'Could not rename agent');
+      else setError(result.error ?? 'Não foi possível renomear o agente');
     } catch (commitError) {
-      setError(commitError instanceof Error ? commitError.message : 'Could not rename agent');
+      setError(commitError instanceof Error ? commitError.message : 'Não foi possível renomear o agente');
     } finally {
       committing.current = false;
     }
@@ -63,7 +63,7 @@ export function AgentNameEditor({
         autoFocus
         draggable={false}
         value={draft}
-        aria-label={`Rename ${name}`}
+        aria-label={`Renomear ${name}`}
         title={error}
         onFocus={(event) => event.currentTarget.select()}
         onChange={(event) => setDraft(event.target.value)}
@@ -100,7 +100,7 @@ export function AgentNameEditor({
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, minWidth: 0, flex: 1 }}>
       <span
         onDoubleClick={(event) => { event.stopPropagation(); beginEditing(); }}
-        title={`${name} — double-click to rename`}
+        title={`${name} — clique duas vezes para renomear`}
         style={{
           fontFamily: 'var(--cth-font-display)', fontSize,
           color: 'var(--cth-ink-900)',
@@ -110,8 +110,8 @@ export function AgentNameEditor({
       <button
         type="button"
         draggable={false}
-        aria-label={`Rename ${name}`}
-        title={`Rename ${name}`}
+        aria-label={`Renomear ${name}`}
+        title={`Renomear ${name}`}
         onClick={(event) => { event.stopPropagation(); beginEditing(); }}
         onMouseDown={(event) => event.stopPropagation()}
         style={{

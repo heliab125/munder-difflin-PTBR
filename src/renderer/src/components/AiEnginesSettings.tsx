@@ -24,16 +24,21 @@ const BACKENDS: Array<{ id: string; label: string; envVar: string }> = [
   { id: 'openai', label: 'OpenAI', envVar: 'OPENAI_API_KEY' },
   { id: 'google', label: 'Google · Gemini', envVar: 'GEMINI_API_KEY' },
   { id: 'openrouter', label: 'OpenRouter', envVar: 'OPENROUTER_API_KEY' },
-  { id: 'groq', label: 'Groq', envVar: 'GROQ_API_KEY' }
+  { id: 'groq', label: 'Groq', envVar: 'GROQ_API_KEY' },
+  // Provedores de plano de tokens (ver SubscriptionSettings / providerCatalog).
+  { id: 'alibaba', label: 'Alibaba Model Studio', envVar: 'DASHSCOPE_API_KEY' },
+  { id: 'byteplus', label: 'BytePlus Ark', envVar: 'ARK_API_KEY' },
+  { id: 'zai', label: 'Z.ai · GLM', envVar: 'ZAI_API_KEY' },
+  { id: 'deepseek', label: 'DeepSeek', envVar: 'DEEPSEEK_API_KEY' }
 ];
 
 /** CLI engines that take a per-provider local base-URL + default model. `hint`
  *  values are technical endpoint descriptions — kept English (technical data). */
 const CLIS: Array<{ id: AgentProvider; label: string; hint: string }> = [
-  { id: 'opencode', label: 'OpenCode', hint: 'http://localhost:11434/v1 (Ollama) — injected as a local provider' },
-  { id: 'crush', label: 'Crush', hint: 'OpenAI-compatible endpoint — used as the proxy upstream' },
-  { id: 'pi', label: 'Pi', hint: 'local models are file-based (models.json); base-URL reserved' },
-  { id: 'qwen', label: 'Qwen', hint: 'OpenAI-compatible endpoint — used as the proxy upstream' }
+  { id: 'opencode', label: 'OpenCode', hint: 'http://localhost:11434/v1 (Ollama) — injetado como provedor local' },
+  { id: 'crush', label: 'Crush', hint: 'Endpoint compatível com OpenAI — usado como upstream do proxy' },
+  { id: 'pi', label: 'Pi', hint: 'modelos locais são arquivos (models.json); URL base reservada' },
+  { id: 'qwen', label: 'Qwen', hint: 'Endpoint compatível com OpenAI — usado como upstream do proxy' }
 ];
 
 const inputStyle: CSSProperties = {
@@ -173,7 +178,7 @@ export function AiEnginesSettings({ config }: { config: HarnessConfig }) {
             </label>
             <div style={{ display: 'flex', gap: 6 }}>
               <input
-                placeholder={`base-URL — ${c.hint}`}
+                placeholder={`URL base — ${c.hint}`}
                 defaultValue={baseUrls[c.id] ?? ''}
                 onBlur={(e) => saveBaseUrl(c.id, e.target.value)}
                 style={inputStyle}

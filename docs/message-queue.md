@@ -1,152 +1,153 @@
-# The message queue — how anything gets typed into an agent's terminal
+# A fila de mensagens — como qualquer coisa é digitada no terminal de um agente
 
-Every agent runs a real CLI in a real PTY. That CLI has exactly one input line, and
-you are not the only one who wants it: you type into the terminal directly, and the
-harness also has messages of its own to deliver. This document is the contract for
-who gets that line and when.
+Cada agente roda uma CLI real em um PTY real. Essa CLI tem exatamente uma linha de
+entrada, e você não é o único que quer usá-la: você digita diretamente no terminal, e
+o harness também tem mensagens próprias para entregar. Este documento é o contrato
+de quem fica com essa linha e quando.
 
-Two different queues get called "the queue". They are not the same thing:
+Duas filas diferentes são chamadas de "a fila". Elas não são a mesma coisa:
 
-| Name | Lives in | Holds |
+| Nome | Onde vive | O que guarda |
 |---|---|---|
-| **MD queue** | the harness (zustand store, per agent) | messages parked by *Munder Difflin* until that agent's terminal is free |
-| **Claude queue** | inside Claude Code itself | text Claude Code has accepted but not started on yet |
+| **Fila MD** | o harness (store zustand, por agente) | mensagens estacionadas pelo *Munder Difflin* até o terminal daquele agente ficar livre |
+| **Fila do Claude** | dentro do próprio Claude Code | texto que o Claude Code aceitou mas ainda não começou a executar |
 
-Everything below is about the **MD queue**. The harness cannot see the Claude queue
-and never reasons about it.
+Tudo abaixo é sobre a **fila MD**. O harness não consegue ver a fila do Claude e
+nunca raciocina sobre ela.
 
 ---
 
-## 1. One gate
+## 1. Um único portão
 
-One place types automatic messages into a live agent's PTY: the **drain loop**,
-`useHive.ts` effect #4. Everything that wants to reach a running agent enqueues into
-the MD queue and lets the drain decide when.
+Um só lugar digita mensagens automáticas no PTY de um agente vivo: o **loop de
+drenagem**, efeito #4 de `useHive.ts`. Tudo o que quer alcançar um agente em execução
+enfileira na fila MD e deixa a drenagem decidir quando.
 
-(The single exception is the god agent's boot sequence, `useHive.ts:284`, which
-writes its remote-control command and orientation prompt directly. That PTY was
-spawned milliseconds earlier and is covered by the boot-grace window, so there is no
-user draft it could land on.)
+(A única exceção é a sequência de boot do agente god, `useHive.ts:284`, que escreve
+o comando de controle remoto e o prompt de orientação diretamente. Esse PTY foi
+criado milissegundos antes e está coberto pela janela de tolerância de boot, então
+não há rascunho do usuário onde ele possa cair.)
 
 ```
-composer / Slack ingress ─┐
-inbox nudge (effect #3) ──┼──▶ enqueueMessage(agentId, text) ──▶ MD queue ──▶ drain (#4) ──▶ PTY
-scheduled /compact (#6) ──┘
+composer / entrada do Slack ─┐
+nudge da caixa de entrada (#3) ──┼──▶ enqueueMessage(agentId, text) ──▶ fila MD ──▶ drenagem (#4) ──▶ PTY
+/compact agendado (#6) ──┘
 ```
 
-This is load-bearing. When the inbox nudge wrote straight into the terminal, it was
-a second writer with its own idea of when the prompt was free — and its text landed
-on top of a half-written line, so the nudge and the user's sentence were submitted
-together as one garbled prompt. Routing it through the queue means one loop owns
-every "is this terminal free?" decision, and the nudge needs no prompt logic of its
-own.
+Isso é estrutural. Quando o nudge da caixa de entrada escrevia direto no terminal,
+era um segundo escritor com a própria ideia de quando o prompt estava livre — e o
+texto dele caía em cima de uma linha pela metade, então o nudge e a frase do usuário
+eram enviados juntos como um único prompt embaralhado. Rotear pela fila significa que
+um loop é dono de toda decisão de "este terminal está livre?", e o nudge não precisa
+de lógica de prompt própria.
 
-The drain runs on every store change (debounced 200 ms, so a burst of PTY output
-coalesces) plus a 3 s backstop tick.
+A drenagem roda a cada mudança no store (com debounce de 200 ms, para que uma rajada
+de saída do PTY se agrupe) mais um tick de segurança a cada 3 s.
 
-## 2. What the drain checks
+## 2. O que a drenagem verifica
 
-The front of an agent's MD queue is delivered only when **all** of these hold:
+A frente da fila MD de um agente só é entregue quando **todas** estas condições valem:
 
-| Condition | Why |
+| Condição | Por quê |
 |---|---|
-| agent status is `idle` | don't interrupt a running turn |
-| auto-delivery not paused — **or the message was manually released** | floor-wide switch (Command Center); see below |
-| past the boot grace window | the CLI is still painting its banner |
-| `isTerminalAutomationSafe(ptyId)` | the user owns the prompt — see below |
-| 4.5 s since the last delivery to this agent | back-to-back sends jam the TUI |
+| status do agente é `idle` | não interromper um turno em execução |
+| entrega automática não pausada — **ou a mensagem foi liberada manualmente** | interruptor do andar inteiro (Central de Comando); veja abaixo |
+| passou da janela de tolerância de boot | a CLI ainda está desenhando o banner |
+| `isTerminalAutomationSafe(ptyId)` | o usuário é dono do prompt — veja abaixo |
+| 4,5 s desde a última entrega a este agente | envios em sequência travam a TUI |
 
-**Manual release (v0.3.5).** While floor-wide auto-delivery is paused, every queued row
-shows a **send now** link. Clicking it sets `manual: true` on that message and moves it
-to the front of its queue. The drain then bypasses **only the pause check** for that
-message — every other condition in this table still applies, so a manually released
-message waits for idle, respects your draft/picker, and is acknowledged the same way.
-The pause gate holds everything else untouched.
+**Liberação manual (v0.3.5).** Enquanto a entrega automática do andar está pausada,
+cada linha enfileirada mostra um link **enviar agora**. Clicar nele define
+`manual: true` naquela mensagem e a move para a frente da fila. A drenagem então
+ignora **somente a verificação de pausa** para essa mensagem — todas as outras
+condições desta tabela continuam valendo, então uma mensagem liberada manualmente
+espera o ócio, respeita seu rascunho/seletor e é confirmada da mesma forma. O portão
+de pausa mantém todo o resto intacto.
 
-Delivery is acknowledged only after both PTY writes (the text, then the submit) have
-succeeded. A failure leaves the message visible in the queue and it retries.
+A entrega só é confirmada depois que ambas as escritas no PTY (o texto e depois o
+envio) deram certo. Uma falha deixa a mensagem visível na fila e ela tenta de novo.
 
-## 3. The user owns the prompt
+## 3. O usuário é dono do prompt
 
-`isTerminalAutomationSafe` is the gate that protects your typing. It refuses
-delivery while any of these is true (`terminalAutomation.ts`):
+`isTerminalAutomationSafe` é o portão que protege o que você digita. Ele recusa a
+entrega enquanto qualquer um destes estiver ativo (`terminalAutomation.ts`):
 
-| Block | Set by | Cleared by |
+| Bloqueio | Definido por | Limpo por |
 |---|---|---|
-| `exited` | the PTY died | respawn |
-| `picker` | you submitted a bare `/model`-style command that opens a menu | an Enter / Escape / Ctrl-C typed into that terminal, or expiry |
-| `draft` | you have unsubmitted text on the prompt | submitting or clearing it, or expiry |
-| `settling` | a short repaint window after the line was freed | time |
+| `exited` | o PTY morreu | novo spawn |
+| `picker` | você enviou um comando tipo `/model` que abre um menu | um Enter / Escape / Ctrl-C digitado naquele terminal, ou expiração |
+| `draft` | você tem texto não enviado no prompt | enviar ou limpar o texto, ou expiração |
+| `settling` | uma janela curta de repintura depois que a linha foi liberada | tempo |
 
-Both `picker` and `draft` expire after **30 minutes** (`STALE_PICKER_MS`,
-`STALE_INPUT_MS`). The expiry exists because both flags are inferred, not reported —
-a picker closed some way we can't observe, or a draft flag left set by a TUI that
-swallowed keys, would otherwise wedge that agent's MD queue for the rest of the
-session.
+Tanto `picker` quanto `draft` expiram após **30 minutos** (`STALE_PICKER_MS`,
+`STALE_INPUT_MS`). A expiração existe porque os dois sinais são inferidos, não
+reportados — um seletor fechado de um jeito que não conseguimos observar, ou um
+sinal de rascunho deixado por uma TUI que engoliu teclas, travaria a fila MD daquele
+agente pelo resto da sessão.
 
-Two rules about what happens when a block expires:
+Duas regras sobre o que acontece quando um bloqueio expira:
 
-- **Automation never erases your text.** Expiry means the queued message is typed
-  *after* whatever is on the line; the two fuse into one prompt. An earlier version
-  sent Ctrl-U first, which silently destroyed real drafts that had merely been left
-  alone for a minute.
-- **Automation never closes your menu.** We do not send Escape at a picker. You may
-  have opened it deliberately and stepped away; taking it down to make room for a
-  queued message is not the harness's call, and we cannot verify that Escape worked
-  anyway. The composer has a button that does it — because then *you* asked.
+- **A automação nunca apaga o seu texto.** Expirar significa que a mensagem
+  enfileirada é digitada *depois* do que estiver na linha; as duas se fundem em um
+  prompt. Uma versão anterior enviava Ctrl-U primeiro, o que destruía silenciosamente
+  rascunhos reais que só tinham ficado parados por um minuto.
+- **A automação nunca fecha o seu menu.** Não enviamos Escape em um seletor. Você
+  pode tê-lo aberto de propósito e se afastado; derrubá-lo para abrir espaço para uma
+  mensagem enfileirada não é decisão do harness, e não temos como verificar se o
+  Escape funcionou. O composer tem um botão que faz isso — porque aí *você* pediu.
 
-Both windows are long on purpose. Treating a live draft as abandoned is the
-expensive mistake; leaving a queued message parked a while longer is the cheap one.
+As duas janelas são longas de propósito. Tratar um rascunho vivo como abandonado é o
+erro caro; deixar uma mensagem enfileirada parada por mais tempo é o erro barato.
 
-## 4. Reading the prompt instead of modelling it
+## 4. Ler o prompt em vez de modelá-lo
 
-`inputDirty` is inferred by counting keystrokes in `term.onData`. That model drifts:
-a TUI that eats keys for its own UI leaves the count above zero while the prompt is
-visibly empty — a **phantom draft**, which blocks the MD queue against text that
-does not exist.
+`inputDirty` é inferido contando teclas em `term.onData`. Esse modelo deriva: uma TUI
+que engole teclas para a própria interface deixa a contagem acima de zero enquanto o
+prompt está visivelmente vazio — um **rascunho fantasma**, que bloqueia a fila MD
+contra um texto que não existe.
 
-xterm already holds the rendered screen, so `promptLineHasText` reads it directly
-(`term.buffer.active`, the row at `baseY + cursorY`, stripped of prompt chrome).
+O xterm já mantém a tela renderizada, então `promptLineHasText` a lê diretamente
+(`term.buffer.active`, a linha em `baseY + cursorY`, removendo o chrome do prompt).
 
-It is deliberately **one-directional**: the buffer read can only *clear* a draft,
-never invent one.
+É deliberadamente **unidirecional**: a leitura do buffer só pode *limpar* um rascunho,
+nunca inventar um.
 
-- screen says empty ⇒ believe it, drop the block
-- screen says text, or cannot be read ⇒ fall back to the keystroke count
+- a tela diz vazia ⇒ acredite, remova o bloqueio
+- a tela diz texto, ou não pode ser lida ⇒ volte para a contagem de teclas
 
-The asymmetry is the point, because the two mistakes don't cost the same. A wrong
-"empty" opens the gate and fuses a queued message onto what you're writing. A wrong
-"has text" only parks that message until the draft expires. So the cheap mistake is
-the one we allow to happen.
+A assimetria é o ponto, porque os dois erros não custam o mesmo. Um "vazio" errado
+abre o portão e funde uma mensagem enfileirada no que você está escrevendo. Um "tem
+texto" errado apenas estaciona a mensagem até o rascunho expirar. Então o erro barato
+é o que permitimos acontecer.
 
-One case where the screen is not evidence at all: `inputDirty` is set the moment you
-press a key, but the character only reaches xterm's buffer after the PTY echoes it
-back. Inside that gap the buffer is still showing the previous state, so a read of a
-freshly started draft would return "empty" — the expensive direction. A read within
-`ECHO_GRACE_MS` (1 s) of the last keystroke therefore returns "don't know" and clears
-nothing.
+Um caso em que a tela não é evidência alguma: `inputDirty` é definido no momento em
+que você pressiona uma tecla, mas o caractere só chega ao buffer do xterm depois que
+o PTY o ecoa de volta. Nessa lacuna o buffer ainda mostra o estado anterior, então
+uma leitura de um rascunho recém-iniciado retornaria "vazio" — a direção cara. Uma
+leitura dentro de `ECHO_GRACE_MS` (1 s) da última tecla, portanto, retorna "não sei"
+e não limpa nada.
 
-## 5. Seeing why nothing is being delivered
+## 5. Vendo por que nada está sendo entregue
 
-A held MD queue used to look exactly like an idle agent with nothing to do. The
-`typing` badge (`--cth-status-typing`, label **"your draft"**) fixes that: it renders
-on agent cards and in the fullscreen roster whenever `hasTerminalDraft(ptyId)` is
-true.
+Uma fila MD retida costumava parecer exatamente um agente ocioso sem nada para fazer.
+O selo `typing` (`--cth-status-typing`, rótulo **"seu rascunho"**) corrige isso: ele
+aparece nos cartões de agente e na lista em tela cheia sempre que
+`hasTerminalDraft(ptyId)` é verdadeiro.
 
-It is not an agent status and is never stored on the agent — the PTY parser owns
-that field and would overwrite it. It is derived at render from the same draft
-detection the gate uses, so the badge is reporting the same draft the gate sees.
+Não é um status de agente e nunca é armazenado no agente — o parser do PTY é dono
+desse campo e o sobrescreveria. É derivado na renderização a partir da mesma detecção
+de rascunho que o portão usa, então o selo reporta o mesmo rascunho que o portão vê.
 
-It does **not** apply the 30-minute expiry the gate applies. Past that window the
-gate starts delivering while the badge still reads "your draft" — which is honest:
-your text really is still sitting on the prompt. The badge answers "is my text
-there", not "is the queue blocked".
+Ele **não** aplica a expiração de 30 minutos que o portão aplica. Passada essa janela,
+o portão começa a entregar enquanto o selo ainda mostra "seu rascunho" — o que é
+honesto: seu texto realmente continua no prompt. O selo responde "meu texto está aí",
+não "a fila está bloqueada".
 
-## 6. Where the code lives
+## 6. Onde o código vive
 
-| File | Role |
+| Arquivo | Papel |
 |---|---|
-| `src/renderer/src/components/terminalAutomation.ts` | pure policy — blocks, expiry windows. No DOM, fully unit-tested (`test/terminal-automation.test.cjs`) |
-| `src/renderer/src/components/terminalPool.ts` | the pooled xterm per PTY; buffer reads, latches, `isTerminalAutomationSafe`, `hasTerminalDraft` |
-| `src/renderer/src/hooks/useHive.ts` | effect #3 inbox nudge (enqueues), effect #4 drain (the one writer), effect #6 scheduled `/compact` |
-| `src/renderer/src/store/store.ts` | the MD queues themselves + agent persistence |
+| `src/renderer/src/components/terminalAutomation.ts` | política pura — bloqueios, janelas de expiração. Sem DOM, totalmente testada (`test/terminal-automation.test.cjs`) |
+| `src/renderer/src/components/terminalPool.ts` | o xterm agrupado por PTY; leituras de buffer, latches, `isTerminalAutomationSafe`, `hasTerminalDraft` |
+| `src/renderer/src/hooks/useHive.ts` | efeito #3 nudge da caixa de entrada (enfileira), efeito #4 drenagem (o único escritor), efeito #6 `/compact` agendado |
+| `src/renderer/src/store/store.ts` | as próprias filas MD + persistência do agente |

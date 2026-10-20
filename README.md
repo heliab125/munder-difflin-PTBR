@@ -1,28 +1,28 @@
 <div align="center">
 
-<img src="./docs/logo.png" alt="Munder Difflin, the agent harness to run an office of your clones" width="180">
+<img src="./docs/logo.png" alt="Munder Difflin, o harness de agentes para administrar um escritório dos seus clones" width="180">
 
 # Munder Difflin
 
-### Agent harness to run an office of your clones
+### Harness de agentes para administrar um escritório dos seus clones
 
 <p>
   <a href="https://trendshift.io/repositories/46562" target="_blank" rel="noopener noreferrer"><img alt="GitHub Trending: #1 Repository of the Day" src="./docs/badge-github-trending.png" width="250" height="54"></a>
   <a href="https://www.producthunt.com/products/munder-difflin?embed=true&utm_source=badge-top-post-badge&utm_medium=badge&utm_campaign=badge-munder-difflin" target="_blank" rel="noopener noreferrer"><img alt="Munder Difflin, #5 Product of the Day on Product Hunt" src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=1221363&theme=light&period=daily" width="250" height="54"></a>
 </p>
 
-<img src="./docs/media/floor.png" alt="The Munder Difflin office floor: agents at desks working in parallel, with the Command Center and a live agent terminal on the right" width="1240">
+<img src="./docs/media/floor.png" alt="O andar do escritório do Munder Difflin: agentes em suas mesas trabalhando em paralelo, com a Central de Comando e um terminal de agente ao vivo à direita" width="1240">
 
-**Free, open source and performant.** A multi-agent harness that works with the
-subscriptions you already pay for, on their hourly limits. It turns the terminal coding CLI
-you already run into a clone of you, one that keeps working while you're away and
-coordinates a whole office of agents on your own machine.
+**Gratuito, open source e de alto desempenho.** Um harness multiagente que funciona com as
+assinaturas que você já paga, dentro dos limites por hora delas. Ele transforma a CLI de
+programação de terminal que você já usa em um clone de você, que continua trabalhando enquanto você
+está fora e coordena um escritório inteiro de agentes na sua própria máquina.
 
-Wraps [Claude Code](https://claude.com/claude-code), Antigravity (Gemini), OpenAI Codex,
+Envolve o [Claude Code](https://claude.com/claude-code), Antigravity (Gemini), OpenAI Codex,
 **xAI Grok**, **Kimi Code**, **Gemini CLI**, **Qwen**, **OpenCode**, **Crush**,
-**pi.dev**, **GitHub Copilot CLI**, and **Cursor**, with bring-your-own keys and local LLMs.
-Agents that message, route, and remember, coordinated by **your clone** (Michael) and
-visualized as avatars at work on a shared office floor.
+**pi.dev**, **GitHub Copilot CLI** e **Cursor**, com chaves próprias e LLMs locais.
+Agentes que trocam mensagens, roteiam e lembram, coordenados por **seu clone** (Michael) e
+visualizados como avatares trabalhando em um andar de escritório compartilhado.
 
 <p>
   <em>Electron · React · TypeScript · Pixi.js · xterm.js · node-pty</em>
@@ -30,7 +30,7 @@ visualized as avatars at work on a shared office floor.
 
 <p>
   <a href="./LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-F4D35E.svg?style=flat-square&labelColor=6E1423"></a>
-  <a href="./CHANGELOG.md"><img alt="Version: 0.5.6" src="https://img.shields.io/badge/version-0.5.6-F4D35E.svg?style=flat-square&labelColor=6E1423"></a>
+  <a href="./CHANGELOG.md"><img alt="Version: 0.5.7" src="https://img.shields.io/badge/version-0.5.7-F4D35E.svg?style=flat-square&labelColor=6E1423"></a>
   <a href="https://github.com/chaitanyagiri/munder-difflin/releases"><img alt="Downloads across all releases" src="https://img.shields.io/github/downloads/chaitanyagiri/munder-difflin/total?style=flat-square&label=downloads&color=F4D35E&labelColor=6E1423"></a>
   <img alt="Status: pre-release" src="https://img.shields.io/badge/status-pre--release-F4F1EA.svg?style=flat-square&labelColor=6E1423">
   <img alt="Platform: macOS | Windows | Linux" src="https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-F4F1EA.svg?style=flat-square&labelColor=6E1423">
@@ -43,57 +43,64 @@ visualized as avatars at work on a shared office floor.
 
 <!-- Inline player renders on github.com (raw URL required; relative paths only link). -->
 <video src="https://github.com/chaitanyagiri/munder-difflin/raw/main/docs/media/hero.mp4" controls muted loop playsinline width="820">
-  <a href="https://github.com/chaitanyagiri/munder-difflin/raw/main/docs/media/hero.mp4">▶ Watch the floor: Munder Difflin running a hive of Claude Code agents</a>
+  <a href="https://github.com/chaitanyagiri/munder-difflin/raw/main/docs/media/hero.mp4">▶ Assista ao andar: Munder Difflin comandando um hive de agentes Claude Code</a>
 </video>
 
 <br><br>
 
-**[⬇ Download 0.5.6 for macOS, Windows or Linux](https://harnessmd.com/download)**
+**[⬇ Baixar 0.5.7 para macOS, Windows ou Linux](https://harnessmd.com/download)**
 
-<sub>macOS builds are signed and notarized. You do not need to build from source to use it.
-The open source build is on the <a href="https://github.com/HarnessMD/munder-difflin/releases">GitHub releases page</a>.</sub>
+<sub>Builds de macOS são assinados e notarizados. Você não precisa compilar a partir do código-fonte para usá-lo.
+O build open source está na <a href="https://github.com/HarnessMD/munder-difflin/releases">página de releases do GitHub</a>.</sub>
 
-**Cancel your Granola and Wispr Flow subscriptions.** It dictates into any app and transcribes your
-meetings, all running locally.
+**Cancele suas assinaturas do Granola e do Wispr Flow.** Ele dita em qualquer app e transcreve suas
+reuniões, tudo rodando localmente.
 
-**New here?** Start with the [install guide](https://munderdiffl.in/blog/how-to-install-and-use-munder-difflin/), then
-[your first hour](https://munderdiffl.in/blog/your-first-hour-with-munder-difflin/), and see [every agent on our own floor](https://munderdiffl.in/blog/ai-agent-use-cases-our-office/).
+**Novo por aqui?** Comece pelo [guia de instalação](https://munderdiffl.in/blog/how-to-install-and-use-munder-difflin/), depois
+pela [sua primeira hora](https://munderdiffl.in/blog/your-first-hour-with-munder-difflin/), e veja [todos os agentes no nosso próprio andar](https://munderdiffl.in/blog/ai-agent-use-cases-our-office/).
 
-<sub><b>Launch offer:</b> Pro is free for everyone until Saturday 24 October 2026: download the app and sign in.
-After that the Pro annual plan is $150 USD, adjusted for purchasing power in different countries and as low as $100 a
-year. <a href="https://app.harnessmd.com/console/license">Get Pro</a></sub>
+<sub><b>Oferta de lançamento:</b> o Pro é grátis para todos até sábado, 24 de outubro de 2026: baixe o app e entre.
+Depois disso, o plano anual Pro é US$ 150, ajustado pelo poder de compra em diferentes países, chegando a US$ 100
+por ano. <a href="https://app.harnessmd.com/console/license">Obter Pro</a></sub>
 
 </div>
+
+> [!NOTE]
+> **Distribuição PT-BR.** Este é o README da distribuição em Português do Brasil do Munder Difflin.
+> A interface está 100% em Português do Brasil. Nomes de produtos, comandos, caminhos de arquivo,
+> chaves e URLs permanecem como no original.
 
 ---
 
 > [!NOTE]
-> **The world's best agents. The world's worst paper company.**
-> Munder Difflin takes the terminal-agent CLIs you already run (`claude`, `agy`, `codex`, `grok`,
-> `kimi`, `qwen`, `opencode`, `crush`, `pi`, and `copilot`) and turns them
-> into a self-coordinating team: each agent gets long-term memory, a mailbox, and a desk on a 2D
-> office floor, and **your clone** (Michael) routes work between them while you watch. He's the
-> boss of the floor; you're still the boss of him.
+> **Os melhores agentes do mundo. A pior empresa de papel do mundo.**
+> O Munder Difflin pega as CLIs de agentes de terminal que você já usa (`claude`, `agy`, `codex`, `grok`,
+> `kimi`, `qwen`, `opencode`, `crush`, `pi` e `copilot`) e as transforma
+> em uma equipe que se coordena sozinha: cada agente ganha memória de longo prazo, uma caixa de correio e uma mesa em um
+> andar de escritório 2D, e **seu clone** (Michael) roteia o trabalho entre eles enquanto você observa. Ele é o
+> chefe do andar; você continua sendo o chefe dele.
 
-## Contents
+## Sumário
 
-- [Supported agents](#supported-agents)
-- [What it is](#what-it-is)
-- [How it works](#how-it-works)
-- [Features](#features)
-- [Getting started](#getting-started)
-- [Architecture & project structure](./docs/ARCHITECTURE.md)
-- [Roadmap](#roadmap)
-- [Contributing](#contributing)
-- [Telemetry](#telemetry)
-- [License](#license)
-- [Acknowledgements](#acknowledgements)
+- [Agentes suportados](#supported-agents)
+- [Planos de assinatura e provedores suportados](#planos-de-assinatura-e-provedores-suportados)
+- [O que é](#what-it-is)
+- [Como funciona](#how-it-works)
+- [Recursos](#features)
+- [Primeiros passos](#getting-started)
+- [Arquitetura e estrutura do projeto](./docs/ARCHITECTURE.md)
+- [Roteiro](#roadmap)
+- [Contribuindo](#contributing)
+- [Telemetria](#telemetry)
+- [Licença](#license)
+- [Agradecimentos](#acknowledgements)
 
-## Supported agents
+<a id="supported-agents"></a>
+## Agentes suportados
 
-**Bring the CLI you already pay for.** Every one of these runs as a real process in its own
-terminal, with your existing subscription and its hourly limits. If it runs in a terminal, it
-can run here.
+**Traga a CLI que você já paga.** Cada uma delas roda como um processo real em seu próprio
+terminal, com sua assinatura existente e seus limites por hora. Se roda em um terminal,
+roda aqui.
 
 <p>
   <a href="https://docs.claude.com/en/docs/claude-code"><kbd>Claude Code</kbd></a>
@@ -108,342 +115,388 @@ can run here.
   <a href="https://pi.dev/docs/latest"><kbd>Pi</kbd></a>
   <a href="https://docs.github.com/copilot/concepts/agents/about-copilot-cli"><kbd>GitHub Copilot</kbd></a>
   <a href="https://cursor.com/docs/cli/install"><kbd>Cursor</kbd></a>
-  <kbd>+ any custom command</kbd>
+  <kbd>+ qualquer comando personalizado</kbd>
 </p>
 
-Plus **bring your own keys** and **local models** through Ollama, LM Studio or vLLM.
+Além disso, **traga suas próprias chaves** e **modelos locais** via Ollama, LM Studio ou vLLM.
 
-## What it is
+## Planos de assinatura e provedores suportados
 
-Munder Difflin is a desktop app that wraps **real terminal-agent CLIs** as fully-capable agents,
-wires them into a **hive mind**, and puts **your clone** in charge. Michael is the one agent *you*
-talk to in order to get things done. Under the hood it runs the **fastest memory layer in the
-world** so every agent remembers what it learns and recalls it instantly.
+Esta distribuição oferece suporte de primeira classe aos principais planos de assinatura e provedores:
 
-- **Every terminal is an agent.** Each `claude`, `agy`, `codex`, `grok`, `kimi`, `qwen`, `opencode`, `crush`, `pi`, `copilot`, or custom session runs as a real
-  process in a pseudo-terminal (`node-pty`), byte-for-byte authentic, rendered with xterm.js.
-- **Every agent is an avatar.** Sessions appear as characters on a Pixi.js office floor. They walk
-  to stations as they work, and envelopes fly desk-to-desk when they message each other.
-- **The hive coordinates them.** Agents read their memory and drain a mailbox; the router moves
-  messages between inboxes; the GOD agent adjudicates, assigns, and escalates only when it needs you.
-- **Memory that's instant.** A markdown-first memory layer with a semantic recall index means agents
-  remember across sessions and recall in milliseconds.
+- **Alibaba AI Token Plan** (DashScope / Alibaba Cloud Model Studio)
+- **OpenCode nativo** (CLI detectada localmente)
+- **BytePlus Coding Plan** (Ark)
+- **Z.ai** (GLM Coding Plan)
+- **DeepSeek API direta**
+- **OpenAI**
+- **Anthropic**
+- **Endpoints personalizados compatíveis com OpenAI**
 
-## How it works
+### Detecção do OpenCode local
+
+Quando o OpenCode está instalado na máquina, o harness o detecta automaticamente e lê a configuração local em
+`~/.config/opencode/` de forma segura. A leitura serve para reconhecer provedor, plano e modelo disponíveis;
+chaves e segredos não são expostos.
+
+### Planos e limites de subagentes simultâneos
+
+| Plano | Preço | Subagentes simultâneos |
+| --- | --- | --- |
+| Alibaba Token Plan Lite/Starter | US$ 9/mês (ou trial) | 2 |
+| Alibaba Token Plan Standard | US$ 18/mês | 4 |
+| Alibaba Token Plan Pro/Plus | US$ 36+/mês | 8 |
+| BytePlus / Z.ai / outros | conforme o plano | perfis equivalentes ou personalizado |
+
+O limite é aplicado de verdade no processo principal, antes de criar o PTY — e não apenas na interface.
+Ao atingir o teto, o subagente excedente é bloqueado com uma mensagem clara em Português do Brasil: em um
+plano com limite de 4, o 5º subagente é bloqueado antes de o PTY ser criado.
+
+No painel inicial (modo PRO), você vê o provedor ativo, o plano reconhecido, o modelo principal e um medidor
+visual de subagentes no formato **X/limite**.
+
+### Novidades da 0.5.7
+
+A versão 0.5.7 traz o workspace **PRO** redesenhado: navegação lateral compacta, cards do orquestrador
+com orçamento/disjuntor/tarefas/aguardando você, barra de comando integrada e uma grade de agentes no
+mesmo estilo do aplicativo oficial. O modo **Clássico** continua disponível no seletor da barra de título.
+Os planos Alibaba/OpenCode e a trava de subagentes seguem ativos no PRO.
+
+<a id="what-it-is"></a>
+## O que é
+
+O Munder Difflin é um aplicativo de desktop que envolve **CLIs de agentes de terminal reais** como agentes plenamente capazes,
+conecta-os em uma **mente coletiva (hive)** e coloca **seu clone** no comando. Michael é o único agente com quem *você*
+conversa para fazer as coisas acontecerem. Por baixo, ele executa a **camada de memória mais rápida do
+mundo** para que cada agente lembre o que aprendeu e recupere isso instantaneamente.
+
+- **Todo terminal é um agente.** Cada sessão `claude`, `agy`, `codex`, `grok`, `kimi`, `qwen`, `opencode`, `crush`, `pi`, `copilot` ou personalizada roda como um processo real
+  em um pseudo-terminal (`node-pty`), autêntico byte a byte, renderizado com xterm.js.
+- **Todo agente é um avatar.** As sessões aparecem como personagens em um andar de escritório Pixi.js. Eles caminham
+  até as estações enquanto trabalham, e envelopes voam de mesa em mesa quando trocam mensagens.
+- **O hive os coordena.** Os agentes leem sua memória e esvaziam uma caixa de correio; o roteador move
+  mensagens entre caixas de entrada; o agente GOD julga, atribui e escala apenas quando precisa de você.
+- **Memória instantânea.** Uma camada de memória markdown-first com índice de recuperação semântica faz os agentes
+  lembrarem entre sessões e recuperarem em milissegundos.
+
+<a id="how-it-works"></a>
+## Como funciona
 
 ```
-            you ── talk to ──►  ┌─────────────┐
-                                │  GOD agent  │  orchestrator / supervisor
-                                │ (Michael's  │  roster · routing · adjudication
-                                │   office)   │  blackboard · task ledger
-                                └──────┬──────┘
-                                       │ assigns · routes · escalates
-              ┌────────────────────────┼────────────────────────┐
-              ▼                         ▼                         ▼
-        ┌───────────┐            ┌───────────┐            ┌───────────┐
-        │  agent A  │  message   │  agent B  │  message   │  agent C  │
-        │ provider  │ ─────────► │ provider  │ ─────────► │ provider  │
-        │  + memory │            │  + memory │            │  + memory │
-        └───────────┘            └───────────┘            └───────────┘
-              └──────── shared hive: memory · mailbox · blackboard · log ───────┘
+            você ── fala com ──►  ┌─────────────────┐
+                                  │   agente GOD    │  orquestrador / supervisor
+                                  │ (escritório do  │  equipe · roteamento · adjudicação
+                                  │    Michael)     │  quadro compartilhado · registro de tarefas
+                                  └────────┬────────┘
+                                           │ atribui · roteia · escala
+              ┌────────────────────────────┼────────────────────────────┐
+              ▼                            ▼                            ▼
+        ┌─────────────┐            ┌─────────────┐            ┌─────────────┐
+        │  agente A   │  mensagem  │  agente B   │  mensagem  │  agente C   │
+        │  provedor   │ ─────────► │  provedor   │ ─────────► │  provedor   │
+        │  + memória  │            │  + memória  │            │  + memória  │
+        └─────────────┘            └─────────────┘            └─────────────┘
+              └──────────── hive compartilhado: memória · correio · quadro · log ─────────────┘
 ```
 
-1. **You spawn agents**: each is a normal terminal process (`claude`, `agy`, `codex`, or custom)
-   with its own working directory, identity, and provider-specific lifecycle.
-2. **Agents collaborate through the hive**: a local git repo of plain files. They write to their own
-   `outbox/`; the harness's router delivers into recipients' `inbox/`. No agent ever touches git
-   (single-committer design avoids `index.lock` corruption).
-3. **The GOD agent runs the floor**: it reads every request, resolves routine ones itself (keeping
-   the system fully autonomous), and only escalates *critical* items (spend, destructive ops, scope
-   changes) into an approvals queue you act on.
-4. **Everything is visible**: you watch avatars move, envelopes fly, and the live terminal stream;
-   you can type back into any session, browse its files, and read its git history.
+1. **Você cria os agentes**: cada um é um processo de terminal normal (`claude`, `agy`, `codex` ou personalizado)
+   com seu próprio diretório de trabalho, identidade e ciclo de vida específico do provedor.
+2. **Os agentes colaboram pelo hive**: um repositório git local de arquivos simples. Eles escrevem em seu próprio
+   `outbox/`; o roteador do harness entrega nas `inbox/` dos destinatários. Nenhum agente toca no git
+   (o design de committer único evita corrupção do `index.lock`).
+3. **O agente GOD comanda o andar**: ele lê cada solicitação, resolve as rotineiras sozinho (mantendo
+   o sistema totalmente autônomo) e escala apenas itens *críticos* (gastos, operações destrutivas, mudanças
+   de escopo) para uma fila de aprovações que você analisa.
+4. **Tudo é visível**: você vê os avatares se moverem, os envelopes voarem e o fluxo ao vivo do terminal;
+   pode digitar de volta em qualquer sessão, navegar pelos arquivos e ler o histórico git dela.
 
-See [`HIVE.md`](./HIVE.md) for the full multi-agent design, [`SPEC.md`](./SPEC.md) for the
-terminal/event plane, and [`DESIGN.md`](./DESIGN.md) for the visual system.
+Veja [`HIVE.md`](./HIVE.md) para o design multiagente completo, [`SPEC.md`](./SPEC.md) para o
+plano de terminal/eventos e [`DESIGN.md`](./DESIGN.md) para o sistema visual.
 
-## Features
+<a id="features"></a>
+## Recursos
 
 <table>
 <tr>
 <td width="50%" valign="middle">
 
-### Cancel your Granola and Wispr Flow subscriptions
+### Cancele suas assinaturas do Granola e do Wispr Flow
 
-**Dictate into any app.** Hold Option on the Mac, or Control+Alt+Space on Windows and Linux (X11),
-talk, and let go. The words land in whatever field is in front of you, and in every text box inside
-Munder Difflin. The message box mic works in the free build too.
+**Dite em qualquer app.** Segure Option no Mac, ou Control+Alt+Space no Windows e Linux (X11),
+fale e solte. As palavras entram no campo que estiver na sua frente, e em toda caixa de texto dentro do
+Munder Difflin. O microfone da caixa de mensagem também funciona na versão gratuita.
 
-**Meetings hear both sides**, in Stapler, part of Pro. Your microphone is written as You and the
-call's audio as Them, on Mac, Windows and Linux. Shift+Command+Space starts and stops a meeting on
-the Mac, Control+Shift+Space on Windows and Linux. Correct the transcript, add a description, and
-send it to any of your agents.
+**As reuniões ouvem os dois lados**, no Stapler, parte do Pro. Seu microfone é gravado como Você e o
+áudio da chamada como Eles, no Mac, Windows e Linux. Shift+Command+Space inicia e para uma reunião no
+Mac, Control+Shift+Space no Windows e Linux. Corrija a transcrição, adicione uma descrição e
+envie para qualquer um dos seus agentes.
 
-**Transcription on your machine.** A Whisper model ships inside the app and is the default engine.
-A larger model is one download away, Apple's on device recogniser works on macOS 26, and Groq stays
-off unless you add a key. 126 built in technical names plus your own words. English for now.
+**Transcrição na sua máquina.** Um modelo Whisper vem dentro do app e é o mecanismo padrão.
+Um modelo maior está a um download de distância, o reconhecedor on-device da Apple funciona no macOS 26, e o Groq fica
+desligado a menos que você adicione uma chave. 126 nomes técnicos embutidos mais as suas próprias palavras. Inglês por enquanto.
 
-<img src="./docs/media/stapler-053.png" alt="Stapler, the yellow puck, with its ring open and Record meeting ready" width="360">
+<img src="./docs/media/stapler-053.png" alt="Stapler, o disco amarelo, com seu anel aberto e Gravar reunião pronto" width="360">
 
 </td>
 <td width="50%" valign="middle">
 
-### One row per agent, and it tells you everything
+### Uma linha por agente, e ela conta tudo
 
-Classic, the free skin, gets the new agent cards: status, engine, model, a context gauge, the
-ticket it is on and the action it is taking right now, a crash strip instead of a silent
-terminal, and a right click menu for the common jobs.
+Classic, o tema gratuito, ganha os novos cartões de agente: status, engine, modelo, um medidor de contexto, o
+ticket em que está trabalhando e a ação que está executando agora, uma faixa de falha em vez de um terminal silencioso,
+e um menu de contexto para as tarefas comuns.
 
-Pro gets the new sidebar: Tasks, Inbox, Automations, Memory, Capabilities and the Stapler at the
-top, agents grouped under their projects, a live line per agent, **Asked you** on the row when an
-agent has a question, notes you can search, and **Keep my agent order** to drag agents and projects
-where you want them. Drag the sidebar's edge to make it wider, hover a ticket for its details, or
-switch to agents and notes only.
+O Pro ganha a nova barra lateral: Tarefas, Caixa de entrada, Automações, Memória, Capacidades e o Stapler no
+topo, agentes agrupados sob seus projetos, uma linha ao vivo por agente, **Perguntou a você** na linha quando um
+agente tem uma pergunta, notas pesquisáveis e **Manter minha ordem de agentes** para arrastar agentes e projetos
+para onde quiser. Arraste a borda da barra lateral para aumentá-la, passe o mouse sobre um ticket para ver detalhes ou
+alterne para mostrar apenas agentes e notas.
 
 </td>
 </tr>
 <tr>
 <td width="50%" valign="middle">
 
-### Talk to one agent, not twelve
+### Fale com um agente, não com doze
 
-Michael is your clone and the only agent you brief. He assigns the work, routes the traffic, and
-escalates the few things that actually need you.
+Michael é seu clone e o único agente que você orienta. Ele atribui o trabalho, roteia o tráfego e
+escala as poucas coisas que realmente precisam de você.
 
 </td>
 <td width="50%">
-  <a href="https://github.com/chaitanyagiri/munder-difflin/raw/main/docs/media/demo/orchestrator.mp4"><img src="./docs/media/demo/orchestrator-poster.jpg" alt="Briefing Michael, the orchestrator agent, from the Command Center" width="100%"></a>
+  <a href="https://github.com/chaitanyagiri/munder-difflin/raw/main/docs/media/demo/orchestrator.mp4"><img src="./docs/media/demo/orchestrator-poster.jpg" alt="Briefing para Michael, o agente orquestrador, a partir da Central de Comando" width="100%"></a>
 </td>
 </tr>
 <tr>
 <td width="50%" valign="middle">
 
-### Hire an agent in a few clicks
+### Contrate um agente em poucos cliques
 
-Pick the CLI, the model and the autonomy, give it a desk, and it starts working. Import a
-ready made role from the [Agent Gallery](https://munderdiffl.in/hires/) if you would rather not
-start from scratch.
+Escolha a CLI, o modelo e a autonomia, dê uma mesa a ele, e ele começa a trabalhar. Importe um
+papel pronto da [Galeria de Agentes](https://munderdiffl.in/hires/) se preferir não
+começar do zero.
 
 </td>
 <td width="50%">
-  <img src="./docs/screenshots/add-agent.png" alt="The add agent dialog: choosing a provider, model and role" width="100%">
+  <img src="./docs/screenshots/add-agent.png" alt="A caixa de diálogo de adicionar agente: escolha de provedor, modelo e papel" width="100%">
 </td>
 </tr>
 <tr>
 <td width="50%" valign="middle">
 
-### Memory that survives the session
+### Memória que sobrevive à sessão
 
-Every agent keeps markdown memory that is mined into a shared, searchable palace. Close the app,
-come back tomorrow, and they still know what they learned.
+Cada agente mantém uma memória em markdown que é minerada para um palácio compartilhado e pesquisável. Feche o app,
+volte amanhã, e eles ainda sabem o que aprenderam.
 
 </td>
 <td width="50%">
-  <img src="./docs/screenshots/memory.png" alt="Searching the shared memory palace across every agent" width="100%">
+  <img src="./docs/screenshots/memory.png" alt="Pesquisando o palácio de memória compartilhado entre todos os agentes" width="100%">
 </td>
 </tr>
 <tr>
 <td width="50%" valign="middle">
 
-### Autonomy with a leash
+### Autonomia com coleira
 
-Set how far each agent may go on its own. Spend, scope and destructive operations come back to
-you, and a circuit breaker steers, constrains, then stops anything that loops or runs away.
+Defina até onde cada agente pode ir sozinho. Gastos, escopo e operações destrutivas voltam para
+você, e um disjuntor direciona, restringe e então interrompe qualquer coisa que entre em loop ou fuja do controle.
 
 </td>
 <td width="50%">
-  <img src="./docs/screenshots/autonomy.png" alt="Per agent autonomy and approval settings" width="100%">
+  <img src="./docs/screenshots/autonomy.png" alt="Configurações de autonomia e aprovação por agente" width="100%">
 </td>
 </tr>
 <tr>
 <td width="50%" valign="middle">
 
-### Watch the whole floor work
+### Veja o andar inteiro trabalhar
 
-Agents walk to stations as they work and envelopes fly desk to desk when they message each other.
-Click any desk to read that terminal live, and type straight back into it.
+Agentes caminham até as estações enquanto trabalham e envelopes voam de mesa em mesa quando trocam mensagens.
+Clique em qualquer mesa para ler aquele terminal ao vivo e digitar diretamente nele.
 
 </td>
 <td width="50%">
-  <a href="https://github.com/chaitanyagiri/munder-difflin/raw/main/docs/media/demo/agents.mp4"><img src="./docs/media/demo/agents-poster.jpg" alt="Agents working in parallel on the office floor" width="100%"></a>
+  <a href="https://github.com/chaitanyagiri/munder-difflin/raw/main/docs/media/demo/agents.mp4"><img src="./docs/media/demo/agents-poster.jpg" alt="Agentes trabalhando em paralelo no andar do escritório" width="100%"></a>
 </td>
 </tr>
 <tr>
 <td width="50%" valign="middle">
 
-### Set up once
+### Configure uma vez
 
-The onboarding wizard checks what you already have, and offers to install what is missing rather
-than sending you to a docs page.
+O assistente de onboarding verifica o que você já tem e oferece instalar o que falta, em vez de
+mandar você para uma página de documentação.
 
 </td>
 <td width="50%">
-  <a href="https://github.com/chaitanyagiri/munder-difflin/raw/main/docs/media/demo/setup.mp4"><img src="./docs/media/demo/setup-poster.jpg" alt="The first run setup wizard" width="100%"></a>
+  <a href="https://github.com/chaitanyagiri/munder-difflin/raw/main/docs/media/demo/setup.mp4"><img src="./docs/media/demo/setup-poster.jpg" alt="O assistente de configuração da primeira execução" width="100%"></a>
 </td>
 </tr>
 </table>
 
-**The floor**
-- **Every terminal is a real agent.** Claude Code, Antigravity (Gemini), OpenAI Codex, xAI Grok, Kimi Code, Gemini CLI, Qwen, OpenCode, Crush, pi.dev, GitHub Copilot CLI, Cursor, or a custom command, each in its own `node-pty` PTY, rendered with xterm.js.
-- **Every agent is an avatar.** A Pixi.js office floor where agents walk to stations, envelopes fly desk to desk, and avatar state reflects real work.
-- **A GOD orchestrator you talk to.** It routes tasks, adjudicates traffic, and escalates only what needs a human. Or press **Talk** and run the floor by voice.
-- **Per-agent git worktrees.** Optional isolation so parallel agents never collide on branches.
-- **More than one floor** (0.5.3). File, New Floor opens another office on its own folder, in its own window, with its own agents, board and memory. A folder only ever opens in one floor, and one licence covers them all.
+**O andar**
+- **Todo terminal é um agente real.** Claude Code, Antigravity (Gemini), OpenAI Codex, xAI Grok, Kimi Code, Gemini CLI, Qwen, OpenCode, Crush, pi.dev, GitHub Copilot CLI, Cursor ou um comando personalizado, cada um em seu próprio PTY `node-pty`, renderizado com xterm.js.
+- **Todo agente é um avatar.** Um andar de escritório Pixi.js onde agentes caminham até estações, envelopes voam de mesa em mesa e o estado do avatar reflete o trabalho real.
+- **Um orquestrador GOD com quem você conversa.** Ele roteia tarefas, julga o tráfego e escala apenas o que precisa de um humano. Ou pressione **Falar** e comande o andar por voz.
+- **Worktrees git por agente.** Isolamento opcional para que agentes paralelos nunca colidam em branches.
+- **Mais de um andar** (0.5.3). Arquivo, Novo andar abre outro escritório em sua própria pasta, em sua própria janela, com seus próprios agentes, quadro e memória. Uma pasta só abre em um andar, e uma licença cobre todos eles.
 
-**Memory & coordination**
-- **The hive**: per-agent memory, atomic-file mailboxes, a shared blackboard, an append-only event log, single-committer git.
-- **Semantic recall**: markdown memory mined into a shared palace, searchable from the UI, with condensation so it doesn't grow forever.
-- **Enterprise Knowledge Graph**: your own documents and policies, queryable by any agent.
+**Memória e coordenação**
+- **O hive**: memória por agente, caixas de correio em arquivos atômicos, um quadro compartilhado, um log de eventos somente de acréscimo, git de committer único.
+- **Recuperação semântica**: memória markdown minerada para um palácio compartilhado, pesquisável pela interface, com condensação para não crescer para sempre.
+- **Knowledge Graph empresarial**: seus próprios documentos e políticas, consultáveis por qualquer agente.
 
-**Control & safety**
-- **Human gates**: spend, scope, and destructive ops escalate to you. Steer mid-run or stop gracefully.
-- **Circuit breaker**: a steer → constrain → stop ladder for agents that loop, storm errors, or blow their budget.
-- **Budgets & telemetry**: per-agent token budgets, real cost from transcripts, a durable ledger, OTel spans, and a tool waterfall.
+**Controle e segurança**
+- **Portões humanos**: gastos, escopo e operações destrutivas escalam para você. Direcione em tempo de execução ou pare de forma graciosa.
+- **Disjuntor**: uma escada de direcionar → restringir → parar para agentes que entram em loop, disparam erros em tempestade ou estouram o orçamento.
+- **Orçamentos e telemetria**: orçamentos de tokens por agente, custo real a partir das transcrições, um livro-razão durável, spans OTel e uma cascata de ferramentas.
 
-**Command Center**
-- **Tickets with keys** (0.5.3): every card gets a key like V53-299, each agent has a Tasks tab with what it did and when, and the Tasks screen filters by date.
-- Kanban tasks with dependencies, scheduled missions + heartbeat, live fleet monitoring, memory search, activity log, and a CI watcher.
-- **Skills**: what every agent can already do across Claude Code, OpenCode and Codex, plus a browsable catalog of 227 more with search, filters, install and uninstall.
-- **Built-in Monaco IDE**: file tree, editor tabs, save, plus CHANGES · HISTORY · COMPARE git rails with commit graph, diffs, branch compare, and guarded checkout. All fs/git access brokered through main.
+**Central de Comando**
+- **Tickets com chaves** (0.5.3): cada cartão ganha uma chave como V53-299, cada agente tem uma aba Tarefas com o que fez e quando, e a tela de Tarefas filtra por data.
+- Tarefas kanban com dependências, missões agendadas + heartbeat, monitoramento ao vivo da frota, pesquisa de memória, log de atividades e um observador de CI.
+- **Skills**: o que cada agente já sabe fazer em Claude Code, OpenCode e Codex, além de um catálogo navegável com mais 227, com busca, filtros, instalação e desinstalação.
+- **IDE Monaco embutida**: árvore de arquivos, abas de editor, salvamento, além de trilhos git MUDANÇAS · HISTÓRICO · COMPARAR com grafo de commits, diffs, comparação de branches e checkout protegido. Todo acesso a fs/git é intermediado pelo processo principal (main).
 
-**Getting work in and out**
-- **Slack & webhooks**: message a channel or POST a webhook; Michael can spawn an ephemeral worker, reply in-thread, and tear it down.
-- **Shareable hires + Agent Gallery**: import a role from a `munderdifflin://hire` link; import only pre-fills the form, a human still spawns it. Browse roles at the [Agent Gallery](https://munderdiffl.in/hires/).
-- **Local transcription and dictation** (0.5.3): dictate into any app (Option on the Mac,
-  Control+Alt+Space on Windows and Linux X11), and Stapler in Pro transcribes meetings with You and
-  Them on Mac, Windows and Linux. A bundled Whisper model is the default engine; Apple's on device
-  recogniser on macOS 26 and Groq with your own key are options. A built in vocabulary of 126
-  technical names keeps Anthropic, Claude, Kubernetes and ARR spelled right, and you can add your own.
-- **Tell an agent from the Stapler** (Pro): Record message, several screenshots per message, PDFs,
-  videos and folders, and a To menu that remembers who you picked.
-- **BYOK keys + local LLMs**: per-provider keys in a write-only secret broker, plus Ollama / LM Studio / vLLM base URLs. Guides: [open models](https://munderdiffl.in/blog/run-munder-difflin-on-open-models/) · [Mac Mini](https://munderdiffl.in/blog/run-munder-difflin-on-a-mac-mini/).
-- **Updates in one click**: the title-bar badge runs the real update. It downloads the build for your machine, then restarts and installs it, and it reads `latest` once a check confirms you are current. A manual download is the fallback for when the updater cannot fetch the build itself. The first run afterwards opens that release's notes as a designed page rather than a version number.
-- **Your language**: English, Simplified Chinese and Arabic, with right to left layout for Arabic. English is the default and nothing changes until you pick another one in Settings. The app does not read your OS locale. All three app fonts ship inside the bundle, so nothing is fetched at boot.
-- **Prerequisites**: one Settings page showing which supporting tools (uv, git, Node, MemPalace, each agent CLI) you have, what each is for, and a button that asks Michael to install what is missing.
+**Entrada e saída de trabalho**
+- **Slack e webhooks**: envie mensagem a um canal ou faça POST em um webhook; Michael pode criar um worker efêmero, responder na thread e destruí-lo.
+- **Contratações compartilháveis + Galeria de Agentes**: importe um papel de um link `munderdifflin://hire`; a importação apenas preenche o formulário, um humano ainda o cria. Navegue pelos papéis na [Galeria de Agentes](https://munderdiffl.in/hires/).
+- **Transcrição e ditado locais** (0.5.3): dite em qualquer app (Option no Mac,
+  Control+Alt+Space no Windows e Linux X11), e o Stapler no Pro transcreve reuniões com Você e
+  Eles no Mac, Windows e Linux. Um modelo Whisper incluído é o mecanismo padrão; o reconhecedor on-device
+  da Apple no macOS 26 e o Groq com sua própria chave são opções. Um vocabulário embutido de 126
+  nomes técnicos mantém Anthropic, Claude, Kubernetes e ARR escritos corretamente, e você pode adicionar os seus.
+- **Fale com um agente pelo Stapler** (Pro): Gravar mensagem, várias capturas de tela por mensagem, PDFs,
+  vídeos e pastas, e um menu Para que lembra quem você escolheu.
+- **Chaves BYOK + LLMs locais**: chaves por provedor em um broker de segredos somente-escrita, além de URLs base Ollama / LM Studio / vLLM. Guias: [modelos abertos](https://munderdiffl.in/blog/run-munder-difflin-on-open-models/) · [Mac Mini](https://munderdiffl.in/blog/run-munder-difflin-on-a-mac-mini/).
+- **Atualizações em um clique**: o selo da barra de título executa a atualização real. Ele baixa o build para sua máquina, depois reinicia e instala, e lê `latest` quando uma verificação confirma que você está atualizado. O download manual é o fallback para quando o atualizador não consegue buscar o build sozinho. A primeira execução depois disso abre as notas daquela versão como uma página projetada, em vez de um número de versão.
+- **Seu idioma**: inglês, chinês simplificado e árabe, com layout da direita para a esquerda no árabe. O inglês é o padrão e nada muda até você escolher outro em Configurações. O app não lê o locale do sistema operacional. As três fontes do app vêm dentro do pacote, então nada é buscado na inicialização.
+- **Pré-requisitos**: uma página de Configurações mostrando quais ferramentas de apoio (uv, git, Node, MemPalace, cada CLI de agente) você tem, para que serve cada uma, e um botão que pede a Michael para instalar o que falta.
 
 > [!NOTE]
-> **Status: v0.5.6. Capabilities, Integrations and Teams, and fewer tokens.**
-> **Pro is free for everyone until Saturday 24 October 2026**, as part of the launch: download the app and sign in.
-> These notes describe the 0.5.6 app on the [download page](https://harnessmd.com/download).
-> **Capabilities (Pro)**: a marketplace of 2,347 MCP servers, skills, plugins and tools from the public list
-> [HarnessMD/awesome-agent-capabilities](https://github.com/HarnessMD/awesome-agent-capabilities). We reviewed 622 of
-> them; the rest read "Listed, not reviewed by us" and have no Install button. A merged change reaches the app with no
-> new release, and the app uses the list only when it carries our signature.
-> **Integrations**: one place for Slack, webhooks, the apps your agents use and your keys, each with a plain status and
-> the last 50 things that happened. Nothing saves until you press Save.
-> **Teams**: your office talks to your teammates' offices. One plain chat per teammate, you choose who answers each one,
-> and files and folders go as a link with a password, for one download.
-> **Fewer tokens by default**: Compact when context fills and Clear on a switch of work are on for every new install.
-> The clear runs when an agent's work switches after a session of 60 minutes, and a `handoff.md` in the agent's folder
-> carries the thread across. A new install has no hourly standup. In a replay of one office of 13 Claude agents over a
-> week, with those two changes, token use fell about 37%. That is a replay, not a live measurement.
-> **Agent files (Pro)**: export an agent as a file and choose what goes in; a key, a token or a secret's value never
-> does. 36 templates replace role bundles.
-> **Temps**: any lasting agent can start a temp, a short lived agent for one job, not only the orchestrator. Wherever you
-> pick who answers (Slack, a teammate, a webhook, a schedule's Sends to, the Stapler's Send captures to), you can pick
-> **A temp** or **A temp, clone of** one of your agents. **Temps per agent** (0 to 4) and **Max temps at once** sit on
-> the orchestrator's **Budget & breaker** tab.
-> **Slack**: one bot answers in **All channels** it is in by default, or only the channels you tick, and in direct
-> messages; replies stay in the thread. Set the Slack app up from the manifest: press **Copy manifest** under
-> **How to get these**. Slack comes back by itself after a failed start.
-> **Token limits per period**: Every 5 hours, Daily, Weekly or Monthly, for the office and for each agent. They replace
-> the old token caps.
-> **Sign in and accounts in the app**: press **Open browser to sign in** and sign in there; the screen moves on by itself,
-> or you paste the code into **Code from the browser**. **Sign out** and **Switch to Teams** sit in the profile menu.
-> **Circuit breaker**: an agent that stopped as told is no longer constrained again, and the same warning is not sent twice
-> inside ten minutes.
-> **Fixes**: the window no longer hangs after hours, hooks work in Claude Code's auto mode, sign in works on a network with
-> its own certificate, a message to Codex no longer waits for Enter, the Windows folder name field shows the name and not
-> the whole path, the Dock click works the first time with the Stapler on, and Haiku 5.5 is in the model list.
-> New to it? The [install guide](https://munderdiffl.in/blog/how-to-install-and-use-munder-difflin/) and [your first hour](https://munderdiffl.in/blog/your-first-hour-with-munder-difflin/) cover every step.
+> **Status: v0.5.6. Capacidades, Integrações e Equipes, e menos tokens.**
+> **O Pro é grátis para todos até sábado, 24 de outubro de 2026**, como parte do lançamento: baixe o app e entre.
+> Estas notas descrevem o app 0.5.6 na [página de download](https://harnessmd.com/download).
+> **Capacidades (Pro)**: um marketplace de 2.347 servidores MCP, skills, plugins e ferramentas da lista pública
+> [HarnessMD/awesome-agent-capabilities](https://github.com/HarnessMD/awesome-agent-capabilities). Revisamos 622 deles;
+> o restante aparece como "Listado, não revisado por nós" e não tem botão Instalar. Uma mudança mesclada chega ao app sem
+> novo release, e o app usa a lista apenas quando ela carrega nossa assinatura.
+> **Integrações**: um único lugar para Slack, webhooks, os apps que seus agentes usam e suas chaves, cada um com um status simples e
+> as últimas 50 coisas que aconteceram. Nada é salvo até você pressionar Salvar.
+> **Equipes**: seu escritório conversa com os escritórios dos seus colegas. Um chat simples por colega, você escolhe quem responde cada um,
+> e arquivos e pastas vão como um link com senha, para um download.
+> **Menos tokens por padrão**: Compactar quando o contexto enche e Limpar ao trocar de trabalho estão ativados em toda nova instalação.
+> A limpeza roda quando o trabalho de um agente muda após uma sessão de 60 minutos, e um `handoff.md` na pasta do agente
+> carrega o fio da conversa. Uma nova instalação não tem standup por hora. Em uma repetição de um escritório de 13 agentes Claude ao longo de uma
+> semana, com essas duas mudanças, o uso de tokens caiu cerca de 37%. Isso é uma repetição, não uma medição ao vivo.
+> **Arquivos de agente (Pro)**: exporte um agente como arquivo e escolha o que entra; uma chave, um token ou o valor de um segredo nunca
+> entra. 36 modelos substituem os pacotes de papel.
+> **Temps**: qualquer agente duradouro pode iniciar um temp, um agente de curta duração para um trabalho, não apenas o orquestrador. Onde quer que você
+> escolha quem responde (Slack, um colega, um webhook, o "Envia para" de um agendamento, o "Enviar capturas para" do Stapler), você pode escolher
+> **Um temp** ou **Um temp, clone de** um dos seus agentes. **Temps por agente** (0 a 4) e **Máximo de temps ao mesmo tempo** ficam na
+> aba **Orçamento e disjuntor** do orquestrador.
+> **Slack**: um bot responde em **Todos os canais** em que está por padrão, ou apenas nos canais que você marcar, e em mensagens
+> diretas; as respostas ficam na thread. Configure o app Slack a partir do manifesto: pressione **Copiar manifesto** em
+> **Como obter estes**. O Slack volta sozinho após uma inicialização falha.
+> **Limites de tokens por período**: A cada 5 horas, Diário, Semanal ou Mensal, para o escritório e para cada agente. Eles substituem
+> os antigos tetos de tokens.
+> **Entrar e contas no app**: pressione **Abrir navegador para entrar** e entre por lá; a tela avança sozinha,
+> ou você cola o código em **Código do navegador**. **Sair** e **Mudar para Equipes** ficam no menu de perfil.
+> **Disjuntor**: um agente que parou conforme instruído não é mais restringido de novo, e o mesmo aviso não é enviado duas vezes
+> em dez minutos.
+> **Correções**: a janela não trava mais após horas, hooks funcionam no modo automático do Claude Code, o login funciona em uma rede com
+> certificado próprio, uma mensagem para o Codex não espera mais pelo Enter, o campo de nome de pasta do Windows mostra o nome e não
+> o caminho inteiro, o clique no Dock funciona na primeira vez com o Stapler ativado, e o Haiku 5.5 está na lista de modelos.
+> Novo por aqui? O [guia de instalação](https://munderdiffl.in/blog/how-to-install-and-use-munder-difflin/) e [sua primeira hora](https://munderdiffl.in/blog/your-first-hour-with-munder-difflin/) cobrem cada passo.
 >
-> **v0.5.3: Cancel your Granola and Wispr Flow subscriptions.**
-> The Stapler does both, all running locally, and every agent gets easier to start, restart and steer.
-> **Dictate into any app**: hold Option on the Mac (Microphone and Accessibility permissions), or
-> Control+Alt+Space on Windows and Linux X11, talk, and let go. Wayland says why it cannot.
-> **Meetings hear both sides** in Stapler, part of Pro: You and Them, on Mac, Windows and Linux,
-> transcribed locally, then corrected, described and sent to any of your agents.
-> **Transcription on your machine**: a bundled Whisper model by default, an optional 190 MB larger
-> model, Apple's on device recogniser on macOS 26, and Groq only if you add a key.
-> 0.5.3 transcribes English. The bundled model is English only; on macOS 26 dictation runs on Apple's engine, which follows the Mac's language and we have tested it in English. Other languages arrive as a model download in a later release.
-> **A missing CLI is a card, not an error**: install and sign in from inside the app for every
-> engine, with Set up manually when either fails. **Ask me** on every agent's Inbox, answered from
-> one box over the composer. **More than one floor**: File, New Floor (Shift+Command+N, or Control+Shift+N) runs another
-> office on its own folder, with its own agents, board and memory, and one licence covers every floor. **Send now** goes straight in, **Restart & Continue**
-> keeps the conversation for every engine, and **Opus 5.5** is the default Claude model.
-> **Settings, redesigned**: one Save for everything, inbound webhooks for GitHub, Linear, Telegram
-> and your own, each with the agent that answers it, and custom secrets stored encrypted beside
-> your provider keys. **Crashes keep your work**: a crashed agent keeps its uncommitted work. The IDE opens on Command+I with find and replace, the sidebar's reorder handle
-> sits on the right in Arabic, and code in the IDE reads left to right in every language.
-> Automatic compaction runs every 40 minutes at 30 percent of the context window, the same bar on
-> every model size, where the previous default was every two hours at 60 percent.
-> **Tasks you can follow**: every ticket gets a three letter key like V53-299, taken from the hive
-> folder's name or set in Settings, Autonomy. Each agent has a **Tasks** tab beside Inbox and
-> Terminal with what it did and when, the Tasks screen filters by Today, This week, This month or
-> All time, and a card drops anywhere in a column. Hover a ticket in the sidebar for its details.
-> **The Pro sidebar** is as wide as you drag it, and one setting shows only agents and notes. With
-> more than one floor open, each window and Dock icon carries the office's number.
-> **Stapler fixes**: the mic stops at the click, no words are lost at a pause, Record message never
-> gets stuck, the drag follows your pointer, Reset puts it in the middle of the screen, and it never
-> ends up off screen.
-> Fixes: a restarted agent's terminal takes the mouse again, the hive repository no longer swallows
-> agent git folders into its object database and the disk space comes back, and one hook event now
-> renders one sidebar row with the task ledger read once.
-> Not in this release: the Kimi scroll and queue bug, which we could not reproduce, and it is first
-> on the 0.5.4 list.
-> Before that, v0.4.6 brought a Simplified Chinese and Arabic interface with right to left support
-> and self hosted fonts, the update badge that runs the real download and restart, and the security
-> work on CLI name validation and analytics.
-> **If you're on 0.3.8, update:** that build's usage-limit guard never released the agents it held,
-> and it has been removed entirely.
-> macOS (signed & notarized), Windows, and Linux builds are on the
-> [download page](https://harnessmd.com/download). The open source build is on the
-> [releases page](https://github.com/HarnessMD/munder-difflin/releases).
+> **v0.5.3: Cancele suas assinaturas do Granola e do Wispr Flow.**
+> O Stapler faz as duas coisas, tudo rodando localmente, e todo agente fica mais fácil de iniciar, reiniciar e direcionar.
+> **Dite em qualquer app**: segure Option no Mac (permissões de Microfone e Acessibilidade), ou
+> Control+Alt+Space no Windows e Linux X11, fale e solte. O Wayland explica por que não consegue.
+> **As reuniões ouvem os dois lados** no Stapler, parte do Pro: Você e Eles, no Mac, Windows e Linux,
+> transcritas localmente, depois corrigidas, descritas e enviadas para qualquer um dos seus agentes.
+> **Transcrição na sua máquina**: um modelo Whisper incluído por padrão, um modelo maior opcional de 190 MB,
+> o reconhecedor on-device da Apple no macOS 26, e Groq apenas se você adicionar uma chave.
+> A 0.5.3 transcreve inglês. O modelo incluído é somente inglês; no macOS 26 o ditado roda no mecanismo da Apple, que segue o idioma do Mac e foi testado em inglês. Outros idiomas chegam como download de modelo em uma versão posterior.
+> **Uma CLI ausente é um cartão, não um erro**: instale e entre de dentro do app para cada
+> engine, com Configurar manualmente quando qualquer um falhar. **Pergunte-me** na Caixa de entrada de cada agente, respondido de
+> uma caixa acima do compositor. **Mais de um andar**: Arquivo, Novo andar (Shift+Command+N, ou Control+Shift+N) executa outro
+> escritório em sua própria pasta, com seus próprios agentes, quadro e memória, e uma licença cobre todos os andares. **Enviar agora** entra direto, **Reiniciar e continuar**
+> mantém a conversa para cada engine, e **Opus 5.5** é o modelo Claude padrão.
+> **Configurações, redesenhadas**: um único botão Salvar para tudo, webhooks de entrada para GitHub, Linear, Telegram
+> e os seus próprios, cada um com o agente que responde, e segredos personalizados armazenados criptografados ao lado
+> das suas chaves de provedor. **Falhas preservam seu trabalho**: um agente que falhou mantém o trabalho não commitado. A IDE abre com Command+I com localizar e substituir, a alça de reordenação da barra lateral
+> fica à direita em árabe, e o código na IDE é lido da esquerda para a direita em todos os idiomas.
+> A compactação automática roda a cada 40 minutos em 30 por cento da janela de contexto, a mesma barra em
+> todos os tamanhos de modelo, enquanto o padrão anterior era a cada duas horas em 60 por cento.
+> **Tarefas que você pode acompanhar**: cada ticket ganha uma chave de três letras como V53-299, tirada do nome
+> da pasta do hive ou definida em Configurações, Autonomia. Cada agente tem uma aba **Tarefas** ao lado de Caixa de entrada e
+> Terminal com o que fez e quando, a tela de Tarefas filtra por Hoje, Esta semana, Este mês ou
+> Todo o período, e um cartão cai em qualquer lugar de uma coluna. Passe o mouse sobre um ticket na barra lateral para ver detalhes.
+> **A barra lateral do Pro** tem a largura que você arrastar, e uma configuração mostra apenas agentes e notas. Com
+> mais de um andar aberto, cada janela e ícone do Dock carrega o número do escritório.
+> **Correções do Stapler**: o microfone para no clique, nenhuma palavra se perde em uma pausa, Gravar mensagem nunca
+> trava, o arrasto segue seu ponteiro, Redefinir o coloca no meio da tela, e ele nunca
+> fica fora da tela.
+> Correções: o terminal de um agente reiniciado volta a aceitar o mouse, o repositório do hive não engole mais
+> as pastas git dos agentes para dentro do seu banco de objetos e o espaço em disco volta, e um evento de hook agora
+> renderiza uma linha na barra lateral com o registro de tarefas lido uma vez.
+> Fora desta versão: o bug de rolagem e fila do Kimi, que não conseguimos reproduzir, e está em primeiro
+> na lista da 0.5.4.
+> Antes disso, a v0.4.6 trouxe uma interface em chinês simplificado e árabe com suporte da direita para a esquerda
+> e fontes auto-hospedadas, o selo de atualização que executa o download e a reinicialização reais, e o trabalho
+> de segurança na validação de nomes de CLI e analytics.
+> **Se você está na 0.3.8, atualize:** a proteção de limite de uso daquele build nunca liberava os agentes que segurava,
+> e ela foi removida por completo.
+> Builds de macOS (assinados e notarizados), Windows e Linux estão na
+> [página de download](https://harnessmd.com/download). O build open source está na
+> [página de releases](https://github.com/HarnessMD/munder-difflin/releases).
 
-<div align="right">(<a href="#munder-difflin">↑ back to top</a>)</div>
+<div align="right">(<a href="#munder-difflin">↑ voltar ao topo</a>)</div>
 
-## Getting started
+<a id="getting-started"></a>
+## Primeiros passos
 
-### Download the app
+### Baixe o app
 
-**Most people want this one.** Munder Difflin is free and open source. Signed and notarized macOS
-builds of 0.5.6, plus Windows and Linux, are on the [download page](https://harnessmd.com/download).
-The open source build is on the [GitHub releases page](https://github.com/HarnessMD/munder-difflin/releases). Install it,
-open it, and the wizard takes you the rest of the way. The [install guide](https://munderdiffl.in/blog/how-to-install-and-use-munder-difflin/) walks through
-every step and every fix. You do not need Node, a toolchain, or this
-repository.
+**A maioria das pessoas quer este.** O Munder Difflin é gratuito e open source. Builds assinados e notarizados de macOS
+da 0.5.6, além de Windows e Linux, estão na [página de download](https://harnessmd.com/download).
+O build open source está na [página de releases do GitHub](https://github.com/HarnessMD/munder-difflin/releases). Instale-o,
+abra-o, e o assistente leva você pelo resto. O [guia de instalação](https://munderdiffl.in/blog/how-to-install-and-use-munder-difflin/) percorre
+cada passo e cada correção. Você não precisa de Node, de uma toolchain nem deste
+repositório.
 
-You do still need at least one agent CLI on your machine. From 0.5.3 a missing CLI shows as a card
-in the agent's terminal: Install runs the command, you sign in inside the app, and the agent starts.
-**Settings → Prerequisites** lists the rest.
+Você ainda precisa de pelo menos uma CLI de agente na sua máquina. A partir da 0.5.3, uma CLI ausente aparece como um cartão
+no terminal do agente: Instalar executa o comando, você entra no app e o agente inicia.
+**Configurações → Pré-requisitos** lista o resto.
 
-**Pro** adds Capabilities, agent files, Stapler and the new sidebar. As part of the launch it is free for everyone
-until Saturday 24 October 2026. After that the annual plan is $150 USD, adjusted for purchasing power, as low as
-$100 a year.
-[Get Pro](https://app.harnessmd.com/console/license)
+**O Pro** adiciona Capacidades, arquivos de agente, Stapler e a nova barra lateral. Como parte do lançamento, é grátis para todos
+até sábado, 24 de outubro de 2026. Depois disso, o plano anual é US$ 150, ajustado pelo poder de compra, chegando a
+US$ 100 por ano.
+[Obter Pro](https://app.harnessmd.com/console/license)
 
-### Build from source
+### Compilar a partir do código-fonte
 
-Everything below is for contributors and for people who want to run an unreleased build.
+Tudo abaixo é para contribuidores e para pessoas que querem executar um build não lançado.
 
-### Prerequisites
+### Pré-requisitos
 
-- **macOS, Windows, or Linux**.
-- **Node.js 18+** and npm.
-- A **C/C++ toolchain** for `node-pty`'s native addon. On macOS, install Xcode Command Line Tools:
+- **macOS, Windows ou Linux**.
+- **Node.js 18+** e npm.
+- Uma **toolchain C/C++** para o addon nativo do `node-pty`. No macOS, instale as Xcode Command Line Tools:
   ```bash
   xcode-select --install
   ```
-- At least one supported agent CLI on your `PATH`, one of **[Claude Code](https://claude.com/claude-code)**
-  (`claude`, the default), **Antigravity** (`agy`), **OpenAI Codex** (`codex`), **xAI Grok** (`grok`),
+- Pelo menos uma CLI de agente suportada no seu `PATH`, uma entre **[Claude Code](https://claude.com/claude-code)**
+  (`claude`, o padrão), **Antigravity** (`agy`), **OpenAI Codex** (`codex`), **xAI Grok** (`grok`),
   **Kimi Code** (`kimi`), **Gemini CLI** (`gemini`), **Qwen** (`qwen`), **OpenCode** (`opencode`),
-  **Crush** (`crush`), **pi.dev** (`pi`), **GitHub Copilot** (`copilot`), or **Cursor** (`cursor-agent`).
-  Most missing CLIs self-heal: the harness runs the installer in the
-  terminal and continues into the new binary.
-- *Optional:* **your own API keys and local LLMs** in **Settings → AI Engines** (Ollama / LM Studio / vLLM).
-- *Optional:* the semantic memory index for instant cross-session recall. Markdown memory works without it.
+  **Crush** (`crush`), **pi.dev** (`pi`), **GitHub Copilot** (`copilot`) ou **Cursor** (`cursor-agent`).
+  A maioria das CLIs ausentes se auto-corrige: o harness executa o instalador no
+  terminal e continua no novo binário.
+- *Opcional:* **suas próprias chaves de API e LLMs locais** em **Configurações → Engines de IA** (Ollama / LM Studio / vLLM).
+- *Opcional:* o índice de memória semântica para recuperação instantânea entre sessões. A memória markdown funciona sem ele.
 
-### Install & run
+### Instalar e executar
 
 ```bash
 git clone https://github.com/chaitanyagiri/munder-difflin.git
@@ -452,10 +505,10 @@ npm install        # postinstall rebuilds node-pty against Electron's ABI
 npm run dev        # launches the Electron app with hot reload
 ```
 
-On first launch you'll go through the onboarding wizard, then land on the floor. Use **Add agent** to
-spawn your first session. The GOD agent seats itself in Michael's office automatically.
+Na primeira execução, você passa pelo assistente de onboarding e chega ao andar. Use **Adicionar agente** para
+criar sua primeira sessão. O agente GOD se acomoda automaticamente no escritório do Michael.
 
-### Other scripts
+### Outros scripts
 
 ```bash
 npm run build      # production build via electron-vite
@@ -463,109 +516,136 @@ npm run preview    # preview the production build
 npm run typecheck  # type-check the node (main/preload) and web (renderer) projects
 ```
 
-> If `node-pty` fails to load after an Electron upgrade, re-run `npm install` (the `postinstall` hook
-> runs `electron-rebuild` against the current Electron ABI).
+> Se o `node-pty` falhar ao carregar após uma atualização do Electron, execute `npm install` novamente (o hook `postinstall`
+> roda `electron-rebuild` contra a ABI atual do Electron).
 
-## Architecture
+## Build e release PT-BR
 
-Two data planes feed one renderer: a **terminal plane** that owns the PTYs, the filesystem and git,
-and an **event plane** that runs the hive, the hook server and the router. The renderer talks to
-both only through a typed bridge.
+A distribuição PT-BR compila instaladores nativos para **macOS Intel (x64)** e **Windows (x64)**:
 
-**The full diagrams, the module by module project structure, and the design system live in
-[`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md).** They moved out of this file so it can explain
-the product rather than the codebase. Also see [`HIVE.md`](./HIVE.md) for the multi-agent design,
-[`SPEC.md`](./SPEC.md) for the terminal and event plane, and [`DESIGN.md`](./DESIGN.md) for the
-visual system.
+```bash
+npm ci
+npm run typecheck      # main + preload + renderer
+npm test               # 972 testes (node:test)
+npm run build
 
-<div align="right">(<a href="#munder-difflin">↑ back to top</a>)</div>
+# macOS Intel: dist/Munder-Difflin-<versão>-mac-x64.dmg e .zip
+npm run dist:mac:x64
 
-## Roadmap
+# Windows x64: dist/Munder-Difflin-<versão>-win-x64-setup.exe e -portable.exe
+npm run dist:win:x64
+```
 
-Shipped through **v0.5.6**: Capabilities, Integrations and Teams, agent files with 36 templates, token limits per
-period, fewer tokens by default with a handoff file across a cleared session, temps that any
-agent can start and that can answer inbound messages, one Slack bot for every channel it is in, sign in and accounts
-inside the app, a quieter circuit breaker, local dictation into any app and meetings with both sides of the call,
-with the model in the installer, the new agent cards in the free build and a new Pro sidebar, a
-missing CLI you install and sign in to from inside the app, Ask me on every Inbox, more than one
-floor on one machine, ticket keys and a Tasks tab on every agent, redesigned Settings with inbound webhooks and custom secrets, Opus 5.5 as the default Claude
-model, one compaction bar for every model size, a Simplified Chinese and Arabic interface with right to left
-support
-and self-hosted fonts, twelve agent engines with BYOK keys and local LLMs, voice orchestration,
-the hive (memory · mailboxes · blackboard · event log), Command Center with kanban and weekday
-schedules, a built-in Monaco IDE with git rails, integrations registry + secret broker,
-Slack-spawned workers, shareable hires and the Agent Gallery, observability and the circuit
-breaker, durable persistence, session resume, multi-window floors, one click updates, a Skills
-browser, a live Prerequisites check, cost reporting folded from the ledger, semantic memory
-that works on Apple Silicon, and an updater that installs the build instead of pointing at it.
-Full history in [`CHANGELOG.md`](./CHANGELOG.md).
+O workflow [`.github/workflows/release-ptbr.yml`](./.github/workflows/release-ptbr.yml) executa a mesma
+sequência em runners nativos (`macos-13` para Intel e `windows-2022` para x64) e publica os artefatos.
+`node-pty` e `better-sqlite3` são módulos nativos: cada sistema compila o seu próprio binário, por isso
+não há cross-build de C++ entre macOS e Windows. Builds sem certificado Apple saem **não assinados** —
+o macOS pode pedir “Abrir mesmo assim” no primeiro lançamento.
 
-Next up:
+## Arquitetura
 
-- [ ] **More chat integrations**: Telegram and richer chat bridges that pipe a channel into Michael's queue and route replies back out.
-- [ ] **More engines & integration templates**: keep growing the engine roster and the integrations registry.
-- [ ] **Fuller avatar coverage**: drive the remaining station visits and tool-bubbles entirely from real hook events.
-- [ ] **Durable layout & command history**: extend persistence to agent layout and per-session history.
+Dois planos de dados alimentam um único renderer: um **plano de terminal** que possui os PTYs, o sistema de arquivos e o git,
+e um **plano de eventos** que executa o hive, o servidor de hooks e o roteador. O renderer fala com
+ambos apenas por uma ponte tipada.
 
-<div align="right">(<a href="#munder-difflin">↑ back to top</a>)</div>
+**Os diagramas completos, a estrutura do projeto módulo a módulo e o sistema de design ficam em
+[`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md).** Eles saíram deste arquivo para que ele possa explicar
+o produto em vez do código. Veja também [`HIVE.md`](./HIVE.md) para o design multiagente,
+[`SPEC.md`](./SPEC.md) para o plano de terminal e eventos, e [`DESIGN.md`](./DESIGN.md) para o
+sistema visual.
 
-## Contributing
+<div align="right">(<a href="#munder-difflin">↑ voltar ao topo</a>)</div>
 
-Contributions are welcome. This is pre-release software with a lot of surface area. Start with
-[`CONTRIBUTING.md`](./CONTRIBUTING.md). The short version: fork, `npm install && npm run dev`, keep
-`npm run typecheck` green, and **derive any new UI from [`DESIGN.md`](./DESIGN.md) tokens**. Good
-first areas: wiring real hook events, the add-agent flow, the config drawer, and cross-platform work.
+<a id="roadmap"></a>
+## Roteiro
+
+Lançado até a **v0.5.6**: Capacidades, Integrações e Equipes, arquivos de agente com 36 modelos, limites de tokens por
+período, menos tokens por padrão com um arquivo de handoff que atravessa uma sessão limpa, temps que qualquer
+agente pode iniciar e que podem responder mensagens de entrada, um bot Slack para cada canal em que está, login e contas
+dentro do app, um disjuntor mais silencioso, ditado local em qualquer app e reuniões com os dois lados da chamada,
+com o modelo no instalador, os novos cartões de agente no build gratuito e uma nova barra lateral Pro, uma
+CLI ausente que você instala e acessa de dentro do app, Pergunte-me em toda Caixa de entrada, mais de um
+andar em uma máquina, chaves de ticket e uma aba Tarefas em cada agente, Configurações redesenhadas com webhooks de entrada e segredos personalizados, Opus 5.5 como o modelo Claude
+padrão, uma barra de compactação para cada tamanho de modelo, uma interface em chinês simplificado e árabe com suporte da direita para a esquerda
+e fontes auto-hospedadas, doze engines de agente com chaves BYOK e LLMs locais, orquestração por voz,
+o hive (memória · caixas de correio · quadro · log de eventos), Central de Comando com kanban e agendamentos
+por dia da semana, uma IDE Monaco embutida com trilhos git, registro de integrações + broker de segredos,
+workers criados pelo Slack, contratações compartilháveis e a Galeria de Agentes, observabilidade e o disjuntor,
+persistência durável, retomada de sessão, andares em múltiplas janelas, atualizações em um clique, um navegador
+de Skills, uma verificação ao vivo de Pré-requisitos, relatórios de custo dobrados a partir do livro-razão, memória semântica
+que funciona em Apple Silicon, e um atualizador que instala o build em vez de apontar para ele.
+Histórico completo em [`CHANGELOG.md`](./CHANGELOG.md).
+
+A seguir:
+
+- [ ] **Mais integrações de chat**: Telegram e pontes de chat mais ricas que levam um canal para a fila do Michael e roteiam as respostas de volta.
+- [ ] **Mais engines e modelos de integração**: continuar crescendo o catálogo de engines e o registro de integrações.
+- [ ] **Cobertura de avatares mais completa**: conduzir as visitas restantes às estações e as bolhas de ferramentas inteiramente a partir de eventos de hook reais.
+- [ ] **Layout e histórico de comandos duráveis**: estender a persistência ao layout dos agentes e ao histórico por sessão.
+
+<div align="right">(<a href="#munder-difflin">↑ voltar ao topo</a>)</div>
+
+<a id="contributing"></a>
+## Contribuindo
+
+Contribuições são bem-vindas. Este é um software pré-lançamento com muita superfície. Comece com
+[`CONTRIBUTING.md`](./CONTRIBUTING.md). A versão curta: faça um fork, `npm install && npm run dev`, mantenha
+`npm run typecheck` verde, e **derive qualquer nova UI a partir dos tokens do [`DESIGN.md`](./DESIGN.md)**. Boas
+primeiras áreas: conectar eventos de hook reais, o fluxo de adicionar agente, a gaveta de configuração e trabalho multiplataforma.
 
 > [!IMPORTANT]
-> **Every pull request must show a before and an after**: screenshots, or a recording when the
-> thing moves, under the `### Before` and `### After` headings in the PR template. This is checked
-> automatically and a PR without it does not merge. "My change has no UI" is not an exemption; it
-> just changes what the evidence looks like. See
-> [Evidence is mandatory](./CONTRIBUTING.md#evidence-is-mandatory).
+> **Todo pull request precisa mostrar um antes e um depois**: capturas de tela, ou uma gravação quando a
+> coisa se move, sob os títulos `### Before` e `### After` no template de PR. Isso é verificado
+> automaticamente e um PR sem isso não é mesclado. "Minha mudança não tem UI" não é uma isenção; isso
+> apenas muda a aparência da evidência. Veja
+> [A evidência é obrigatória](./CONTRIBUTING.md#evidence-is-mandatory).
 
-Questions, bugs, or want to show off your office? Join the Discord: **<https://discord.gg/SEDzP5ZPk5>**. Add your Discord handle to a PR and you'll get the `employee of the month` role when it merges.
+Perguntas, bugs, ou quer exibir seu escritório? Entre no Discord: **<https://discord.gg/SEDzP5ZPk5>**. Adicione seu handle do Discord a um PR e você receberá o papel `employee of the month` quando ele for mesclado.
 
-**Looking for somewhere to start?** The
+**Procurando por onde começar?** A
 [`good first issue`](https://github.com/chaitanyagiri/munder-difflin/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
-list is kept stocked with small, self contained work that has a clear finish line.
+lista é mantida com trabalhos pequenos e autocontidos que têm uma linha de chegada clara.
 
-**Everyone whose code is in Munder Difflin is listed in [`CONTRIBUTORS.md`](./CONTRIBUTORS.md).**
-If that is you, it is yours to point at. The list is generated from the pull requests themselves and
-updates on its own, so you appear without having to ask. It also names the contributions that are in
-`main` but that GitHub shows as closed rather than merged, because that was our mistake to record
-and not theirs to explain.
+**Todos cujo código está no Munder Difflin aparecem em [`CONTRIBUTORS.md`](./CONTRIBUTORS.md).**
+Se esse é você, é sua para mostrar. A lista é gerada a partir dos próprios pull requests e
+se atualiza sozinha, então você aparece sem precisar pedir. Ela também nomeia as contribuições que estão em
+`main` mas que o GitHub mostra como fechadas em vez de mescladas, porque esse foi o nosso erro de registrar
+e não o deles de explicar.
 
 <a href="./CONTRIBUTORS.md">
-  <img src="https://contrib.rocks/image?repo=chaitanyagiri/munder-difflin" alt="Munder Difflin contributors">
+  <img src="https://contrib.rocks/image?repo=chaitanyagiri/munder-difflin" alt="Colaboradores do Munder Difflin">
 </a>
 
-## Telemetry
+<a id="telemetry"></a>
+## Telemetria
 
-Official builds send a **small set of anonymous usage events** (app opened, agent spawned, feature
-used), never prompts, code, file paths, or agent output. The complete event list, the anonymity
-guarantees, and the three ways to opt out (Settings toggle, `DO_NOT_TRACK`, or building from
-source, forks compile with no key and send nothing) are documented in
+Builds oficiais enviam um **pequeno conjunto de eventos de uso anônimos** (app aberto, agente criado, recurso
+usado), nunca prompts, código, caminhos de arquivo ou saída de agente. A lista completa de eventos, as garantias
+de anonimato e as três formas de desativar (alternância em Configurações, `DO_NOT_TRACK`, ou compilar a partir do
+código-fonte, forks compilam sem chave e não enviam nada) estão documentadas em
 [`TELEMETRY.md`](./TELEMETRY.md).
 
-## License
+<a id="license"></a>
+## Licença
 
 > [!IMPORTANT]
-> **Asset licensing.** The bundled pixel art (tilesets and maps) is **Modern Interiors - RPG Tileset
-> [16X16]** by [LimeZu](https://limezu.itch.io/moderninteriors), used under the **Complete Version
-> licence**, which permits editing and use in commercial and non-commercial projects. **Credit to
-> LimeZu is required by that licence** and must stay in place. The Office cast is not LimeZu art. It
-> is drawn procedurally in `portraitArt.ts`. See
+> **Licenciamento de assets.** O pixel art incluído (tilesets e mapas) é **Modern Interiors - RPG Tileset
+> [16X16]** de [LimeZu](https://limezu.itch.io/moderninteriors), usado sob a **Complete Version
+> licence**, que permite edição e uso em projetos comerciais e não comerciais. **O crédito a
+> LimeZu é exigido por essa licença** e deve permanecer. O elenco do Office não é arte da LimeZu. Ele
+> é desenhado proceduralmente em `portraitArt.ts`. Veja
 > [`src/renderer/src/assets/ATTRIBUTION.md`](./src/renderer/src/assets/ATTRIBUTION.md).
 
-The **source code** is licensed under the **MIT License**. See [`LICENSE`](./LICENSE). The MIT grant
-covers the code only; the bundled pixel art is licensed separately from LimeZu and is carved out in
-[`LICENSE-ASSETS`](./LICENSE-ASSETS). *Munder Difflin* is an affectionate parody and is not affiliated with NBC's *The Office* or
+O **código-fonte** está licenciado sob a **Licença MIT**. Veja [`LICENSE`](./LICENSE). A concessão MIT
+cobre apenas o código; o pixel art incluído é licenciado separadamente pela LimeZu e está isolado em
+[`LICENSE-ASSETS`](./LICENSE-ASSETS). *Munder Difflin* é uma paródia afetuosa e não é afiliado a *The Office* da NBC nem à
 Dunder Mifflin.
 
-## Acknowledgements
+<a id="acknowledgements"></a>
+## Agradecimentos
 
-- [LimeZu](https://limezu.itch.io/) for the *Modern Interiors* pixel-art tilesets (Complete Version licence).
-- [`shahar061/the-office`](https://github.com/shahar061/the-office) for the office tileset/map vendoring.
-- [Pixi.js](https://pixijs.com/) · [xterm.js](https://xtermjs.org/) · [node-pty](https://github.com/microsoft/node-pty) · [electron-vite](https://electron-vite.org/) · [CodeMirror](https://codemirror.net/) for the libraries this is built on.
-- [Remotion](https://www.remotion.dev/) for the landing page's animated "how it works" clips (`landing-remotion/`).
-- *The Office* (US) for Munder Difflin, Inc.
+- [LimeZu](https://limezu.itch.io/) pelos tilesets de pixel art *Modern Interiors* (licença Complete Version).
+- [`shahar061/the-office`](https://github.com/shahar061/the-office) pelo fornecimento do tileset/mapa do escritório.
+- [Pixi.js](https://pixijs.com/) · [xterm.js](https://xtermjs.org/) · [node-pty](https://github.com/microsoft/node-pty) · [electron-vite](https://electron-vite.org/) · [CodeMirror](https://codemirror.net/) pelas bibliotecas sobre as quais isto é construído.
+- [Remotion](https://www.remotion.dev/) pelos clipes animados de "como funciona" da landing page (`landing-remotion/`).
+- *The Office* (US) por Munder Difflin, Inc.

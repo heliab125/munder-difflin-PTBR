@@ -43,9 +43,9 @@ interface Draft {
 }
 
 const AUTH_LABEL: Record<IntegrationAuthType, string> = {
-  none: 'None (public API)',
-  bearer: 'Bearer token',
-  header: 'Custom header',
+  none: 'Nenhuma (API pública)',
+  bearer: 'Token Bearer',
+  header: 'Cabeçalho personalizado',
   github: 'GitHub'
 };
 // Auth types a user may pick for a custom-REST integration.
@@ -245,7 +245,7 @@ export function IntegrationsRegistry() {
   if (view === 'configure' && draft) {
     const g = glyphFor(draft.kind, draft.label);
     const tpl = templates.find((t) => t.kind === draft.kind);
-    const secretLabel = tpl?.secretLabel || 'Secret';
+    const secretLabel = tpl?.secretLabel || 'Segredo';
     const showSavedPill = !draft.isNew && draft.hasSecret && !replacing;
     const isUsable = usable(draft);
     return (
@@ -263,7 +263,7 @@ export function IntegrationsRegistry() {
         {/* Label */}
         <label style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
           <span style={fieldLabel}>{tr('integrations.label')}</span>
-          <input value={draft.label} onChange={(e) => patch({ label: e.target.value, ...(draft.isNew ? { id: slugify(e.target.value) } : {}) })} placeholder={`e.g. ${tpl?.label ?? 'My API'} (prod)`} style={inputStyle} />
+          <input value={draft.label} onChange={(e) => patch({ label: e.target.value, ...(draft.isNew ? { id: slugify(e.target.value) } : {}) })} placeholder={`ex.: ${tpl?.label ?? 'Minha API'} (prod)`} style={inputStyle} />
           <span style={hint}>{tr('integrations.labelHint')}: <code style={{ fontFamily: 'var(--cth-font-mono)' }}>{slugify(draft.id || draft.label) || '—'}</code>{draft.isNew ? '' : ` (${tr('integrations.fixed')})`}</span>
         </label>
 

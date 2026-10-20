@@ -21,6 +21,7 @@ import { OfficeThemePicker } from './OfficeThemePicker';
 import { McpDefaultsSettings } from './McpDefaultsSettings';
 import { IntegrationsRegistry } from './IntegrationsRegistry';
 import { AiEnginesSettings } from './AiEnginesSettings';
+import { SubscriptionSettings } from './SubscriptionSettings';
 import { REALTIME_MODEL } from '@shared/realtimePricing';
 import { RealtimeDevicePicker } from '@/realtime/DevicePicker';
 import { CostHud } from '@/realtime/CostHud';
@@ -90,65 +91,65 @@ const slackLabelStyle: CSSProperties = {
 /** The exact connect walkthrough shown behind the i icon. Steps 6 & 7 spell out
  *  the both-lists requirement: subscribe to message.channels / message.groups in
  *  BOTH "Subscribe to bot events" AND "Subscribe to events on behalf of users". */
-const SLACK_CONNECT_STEPS = `Connect Munder Difflin to Slack
+const SLACK_CONNECT_STEPS = `Conectar o Munder Difflin ao Slack
 
-1. api.slack.com/apps -> Create New App -> From scratch. Name it
-   "Munder Difflin" and pick your workspace.
-2. Basic Information -> Signing Secret -> copy it into the
-   "Signing secret" field here.
-3. OAuth & Permissions -> Bot Token Scopes: add
-     chat:write          (office replies in-thread)
-     channels:history    (read public-channel messages)
-     groups:history      (read private-channel messages)
-   Install to workspace, then copy the Bot User OAuth Token
-   (xoxb-...) into the "Bot token" field here.
-4. Press Start (below) to launch the webhook and get your
+1. api.slack.com/apps -> Create New App -> From scratch. Dê o nome
+   "Munder Difflin" e escolha seu workspace.
+2. Basic Information -> Signing Secret -> copie para o
+   campo "Signing secret" aqui.
+3. OAuth & Permissions -> Bot Token Scopes: adicione
+     chat:write          (respostas do escritório na thread)
+     channels:history    (ler mensagens de canais públicos)
+     groups:history      (ler mensagens de canais privados)
+   Instale no workspace e copie o Bot User OAuth Token
+   (xoxb-...) para o campo "Bot token" aqui.
+4. Pressione Iniciar (abaixo) para iniciar o webhook e obter sua
    Request URL.
-5. Event Subscriptions -> Enable Events -> Request URL: paste the
-   Request URL from here and wait for Slack's green check (Verified).
-6. Event Subscriptions -> "Subscribe to bot events": add
+5. Event Subscriptions -> Enable Events -> Request URL: cole a
+   Request URL daqui e aguarde o check verde do Slack (Verified).
+6. Event Subscriptions -> "Subscribe to bot events": adicione
      message.channels
      message.groups
 7. Event Subscriptions -> "Subscribe to events on behalf of users"
-   (add the matching User Token Scope channels:history / groups:history
-   first if Slack asks): add
+   (adicione primeiro o User Token Scope correspondente
+   channels:history / groups:history, se o Slack pedir): adicione
      message.channels
      message.groups
-8. Save Changes, reinstall if Slack prompts, then invite the bot
-   to your channel:  /invite @MunderDifflin`;
+8. Save Changes, reinstale se o Slack solicitar, e convide o bot
+   para seu canal:  /invite @MunderDifflin`;
 
 /** The request/response contract shown behind the webhook i icon. Every webhook
  *  shares one server and one tunnel and is told apart by its id in the path, so
  *  `<tunnel>` is the public base URL and `<webhookId>` picks the endpoint. The
  *  secret/token go in headers so they stay out of URLs and access logs. */
-const webhookApiDoc = (godName: string): string => `Webhook API
+const webhookApiDoc = (godName: string): string => `API de Webhooks
 
-Every webhook has its own URL, its own secret and its own mode. They share one
-server and one tunnel; the id in the path says which one you are calling.
+Cada webhook tem sua própria URL, seu próprio segredo e seu próprio modo. Todos
+compartilham um servidor e um túnel; o id no caminho indica qual você está chamando.
 
-Trigger work (POST <tunnel>/<webhookId>):
-  header  x-md-webhook-secret: <that webhook's secret>
-  body    {"message": "do X for me", "title": "optional short title",
-           "kind": "directive" | "communication", "from": "who is calling"}
-  -> 200  {"ok": true, "token": "<capability token>", "taskId": "<card id>"}
+Disparar trabalho (POST <tunnel>/<webhookId>):
+  header  x-md-webhook-secret: <segredo desse webhook>
+  body    {"message": "faça X para mim", "title": "título curto opcional",
+           "kind": "directive" | "communication", "from": "quem está chamando"}
+  -> 200  {"ok": true, "token": "<token de capacidade>", "taskId": "<id do cartão>"}
   -> 202  {"ok": true, "status": "awaiting approval"}
 
-Check status (GET <tunnel>/<webhookId>):
-  header  x-md-webhook-token: <token>     (or  ?token=<token>)
+Verificar status (GET <tunnel>/<webhookId>):
+  header  x-md-webhook-token: <token>     (ou  ?token=<token>)
   -> 200  {"ok": true, "status": "todo|doing|blocked|done",
-           "title": "...", "result": "<summary or null>"}
+           "title": "...", "result": "<resumo ou null>"}
 
-The mode decides which of the two answers you get:
-  allow all           routes straight through -> 200
-  communication only  chatter routes; a directive gets 202 awaiting approval
-  strict              everything gets 202 awaiting approval
+O modo decide qual das duas respostas você recebe:
+  allow all           encaminha direto -> 200
+  communication only  conversa é roteada; uma diretiva recebe 202 aguardando aprovação
+  strict              tudo recebe 202 aguardando aprovação
 
-A 202 means the message is parked in Trigger History until you approve it; the
-token you were handed still reads that task once it is routed. The secret
-authorizes new work, the token only reads one task's status. Keep both private.
+Um 202 significa que a mensagem fica retida no Histórico de Gatilhos até você aprová-la; o
+token que você recebeu ainda lê essa tarefa depois que ela for roteada. O segredo
+autoriza novo trabalho; o token apenas lê o status de uma tarefa. Mantenha ambos privados.
 
-Each webhook checks bodies against its own JSON schema — edit that in the
-Triggers tab of ${godName}'s Command Center.`;
+Cada webhook valida os corpos contra seu próprio esquema JSON — edite isso na
+aba Gatilhos da Central de Comando de ${godName}.`;
 
 /** Clear every renderer-side persisted key so a relaunch starts truly empty. */
 function clearLocalState(): void {
@@ -195,7 +196,7 @@ const NAV_SECTION_KEYS: Record<Section, string> = {
 
 export function SettingsModal({ config, onClose, initialSection }: SettingsModalProps) {
   const { t, i18n } = useTranslation();
-  const godName = useStore((s) => s.agents.find((a) => a.isGod)?.name) ?? 'the orchestrator';
+  const godName = useStore((s) => s.agents.find((a) => a.isGod)?.name) ?? 'o orquestrador';
   const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState(false);
   const [activeSection, setActiveSection] = useState<Section>(initialSection ?? 'General');
@@ -457,10 +458,10 @@ export function SettingsModal({ config, onClose, initialSection }: SettingsModal
     setKgBusy(true); setKgNote('');
     try {
       const res = await window.cth.kgAddFiles();
-      if (!res.ok) { setKgNote(res.error === 'cancelled' ? '' : (res.error ?? 'failed')); return; }
+      if (!res.ok) { setKgNote(res.error === 'cancelled' ? '' : (res.error ?? 'falhou')); return; }
       const added = res.results.filter((r) => r.ok).length;
       const failed = res.results.length - added;
-      setKgNote(`added ${added} document${added === 1 ? '' : 's'}${failed ? `, ${failed} failed` : ''}`);
+      setKgNote(`${added} documento${added === 1 ? '' : 's'} adicionado${added === 1 ? '' : 's'}${failed ? `, ${failed} com falha` : ''}`);
       await refreshKgStatus();
     } catch (e) { setKgNote(e instanceof Error ? e.message : String(e)); }
     finally { setKgBusy(false); }
@@ -605,7 +606,7 @@ export function SettingsModal({ config, onClose, initialSection }: SettingsModal
     setSlackBusy(true); setSlackNote('');
     try {
       await window.cth.slackSetConfig(slackPatch(slackEnabled));
-      setSlackNote('saved');
+      setSlackNote('salvo');
     } catch (e) {
       setSlackNote(e instanceof Error ? e.message : String(e));
     } finally { setSlackBusy(false); }
@@ -622,9 +623,9 @@ export function SettingsModal({ config, onClose, initialSection }: SettingsModal
         setRunning(true);
         // Keep the last URL if this start returned none (tunnel hiccup) - don't blank it.
         if (res.url) setTunnelUrl(res.url);
-        setSlackNote(res.url ? 'listening' : (res.error ?? 'started, but tunnel unavailable'));
+        setSlackNote(res.url ? 'escutando' : (res.error ?? 'iniciado, mas o túnel não está disponível'));
       } else {
-        setSlackNote(res.error ?? 'failed to start');
+        setSlackNote(res.error ?? 'falha ao iniciar');
       }
     } catch (e) {
       setSlackNote(e instanceof Error ? e.message : String(e));
@@ -636,7 +637,7 @@ export function SettingsModal({ config, onClose, initialSection }: SettingsModal
     // Keep the last Request URL visible (greyed) after Stop.
     // Mirror startSlack: main persists slackEnabled:false, this keeps the pill
     // honest without waiting for a Settings reopen.
-    try { await window.cth.slackStop(); setRunning(false); setSlackEnabled(false); setSlackNote('stopped'); }
+    try { await window.cth.slackStop(); setRunning(false); setSlackEnabled(false); setSlackNote('parado'); }
     catch (e) { setSlackNote(e instanceof Error ? e.message : String(e)); }
     finally { setSlackBusy(false); }
   };
@@ -651,8 +652,8 @@ export function SettingsModal({ config, onClose, initialSection }: SettingsModal
     setWebhookBusy(true); setWebhookNote('');
     try {
       const res = await triggersApi().saveWebhooks(list);
-      if (res && res.ok === false) { setWebhookNote(res.error ?? 'could not save'); return; }
-      setWebhookNote('saved');
+      if (res && res.ok === false) { setWebhookNote(res.error ?? 'não foi possível salvar'); return; }
+      setWebhookNote('salvo');
       setTimeout(() => setWebhookNote(''), 1500);
     } catch (e) {
       setWebhookNote(e instanceof Error ? e.message : String(e));
@@ -674,7 +675,7 @@ export function SettingsModal({ config, onClose, initialSection }: SettingsModal
     } catch (e) {
       setWebhookNote(e instanceof Error ? e.message : String(e));
     } finally { setWebhookBusy(false); }
-    if (!secret) { setWebhookNote('could not generate a secret'); return; }
+    if (!secret) { setWebhookNote('não foi possível gerar um segredo'); return; }
     const entry: WebhookTrigger = {
       id: newWebhookId(),
       name: `Webhook ${webhookTriggers.length + 1}`,
@@ -699,10 +700,10 @@ export function SettingsModal({ config, onClose, initialSection }: SettingsModal
     } catch (e) {
       setWebhookNote(e instanceof Error ? e.message : String(e));
     } finally { setWebhookBusy(false); }
-    if (!secret) { setWebhookNote('could not generate a secret'); return; }
+    if (!secret) { setWebhookNote('não foi possível gerar um segredo'); return; }
     setShownSecrets((s) => ({ ...s, [id]: true }));
     await patchWebhook(id, { secret });
-    setWebhookNote('new secret — copy it now');
+    setWebhookNote('novo segredo — copie agora');
   };
 
   const removeWebhook = async (id: string) => {
@@ -710,7 +711,7 @@ export function SettingsModal({ config, onClose, initialSection }: SettingsModal
     setWebhookBusy(true); setWebhookNote('');
     try {
       await triggersApi().deleteWebhook(id);
-      setWebhookNote('deleted');
+      setWebhookNote('excluído');
       setTimeout(() => setWebhookNote(''), 1500);
     } catch (e) {
       setWebhookNote(e instanceof Error ? e.message : String(e));
@@ -732,8 +733,8 @@ export function SettingsModal({ config, onClose, initialSection }: SettingsModal
     setOrgBusy(true); setOrgNote('');
     try {
       const res = await triggersApi().setOrgTrigger(next);
-      if (res && res.ok === false) { setOrgNote(res.error ?? 'could not save'); return; }
-      setOrgNote('saved');
+      if (res && res.ok === false) { setOrgNote(res.error ?? 'não foi possível salvar'); return; }
+      setOrgNote('salvo');
       setTimeout(() => setOrgNote(''), 1500);
     } catch (e) {
       setOrgNote(e instanceof Error ? e.message : String(e));
@@ -756,7 +757,7 @@ export function SettingsModal({ config, onClose, initialSection }: SettingsModal
       // Mirror boolean key-presence so the voice button enables/disables live
       // without an app restart (presence only — never the key value).
       setHasGroqKeyStore(!!groqKey.trim());
-      setFreeflowNote('saved');
+      setFreeflowNote('salvo');
     } catch (e) {
       setFreeflowNote(e instanceof Error ? e.message : String(e));
     } finally { setFreeflowBusy(false); }
@@ -799,7 +800,7 @@ export function SettingsModal({ config, onClose, initialSection }: SettingsModal
     if (changeMode === 'fresh') clearLocalState();
     try {
       const res = await window.cth.changeHome(changeHome, changeMode);
-      if (!res.ok) { setChangeErr(res.error ?? 'Could not change the home folder.'); setChangeBusy(false); }
+      if (!res.ok) { setChangeErr(res.error ?? 'Não foi possível alterar a pasta base.'); setChangeBusy(false); }
       // ok === true never returns (the process relaunches).
     } catch (e) {
       setChangeErr(e instanceof Error ? e.message : String(e));
@@ -1223,6 +1224,10 @@ export function SettingsModal({ config, onClose, initialSection }: SettingsModal
 
                       <div style={{ height: 1, background: 'var(--cth-ink-300)' }} />
 
+                      <SubscriptionSettings config={config} />
+
+                      <div style={{ height: 1, background: 'var(--cth-ink-300)' }} />
+
                       <AiEnginesSettings config={config} />
 
                       <div style={{ height: 1, background: 'var(--cth-ink-300)' }} />
@@ -1274,16 +1279,16 @@ export function SettingsModal({ config, onClose, initialSection }: SettingsModal
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                             <span style={{ fontSize: 13, lineHeight: '20px', color: 'var(--cth-ink-900)' }}>
-                              Who can add agents
+                              Quem pode adicionar agentes
                             </span>
                             <span style={{ fontSize: 12, lineHeight: '16px', color: 'var(--cth-ink-500)' }}>
                               {orchSpawnOn
-                                ? `${godName} can hire on his own. Every agent he starts spends tokens you did not approve.`
-                                : `Only you. ${godName} can still ask, and his request waits in the queue instead of failing.`}
+                                ? `${godName} pode contratar por conta própria. Cada agente que ele inicia gasta tokens que você não aprovou.`
+                                : `Somente você. ${godName} ainda pode pedir, e o pedido dele aguarda na fila em vez de falhar.`}
                             </span>
                           </div>
                           <PixelButton variant={orchSpawnOn ? 'primary' : 'secondary'} size="sm" onClick={toggleOrchSpawn}>
-                            {orchSpawnOn ? `me and ${godName}` : 'only me'}
+                            {orchSpawnOn ? `eu e ${godName}` : 'somente eu'}
                           </PixelButton>
                         </div>
                       </div>

@@ -173,7 +173,7 @@ export function IdePanel() {
     setDiffData((p) => ({ ...p, [rel]: { status: 'loading', head: '', working: '' } }));
     window.cth.gitDiff(root, rel).then((res) => {
       if (!('ok' in res) || res.ok !== true) {
-        const error = 'error' in res && typeof res.error === 'string' ? res.error : 'diff failed';
+        const error = 'error' in res && typeof res.error === 'string' ? res.error : 'falha no diff';
         setDiffData((p) => ({ ...p, [rel]: { status: 'error', head: '', working: '', error } }));
         return;
       }
@@ -224,7 +224,7 @@ export function IdePanel() {
       window.cth.gitShowFile(repo, revB, rel)
     ]).then(([a, b]) => {
       if (!a.ok || !b.ok) {
-        const error = (!a.ok ? a.error : !b.ok ? (b as { error: string }).error : 'diff failed');
+        const error = (!a.ok ? a.error : !b.ok ? (b as { error: string }).error : 'falha no diff');
         setDiffData((p) => ({ ...p, [key]: { status: 'error', head: '', working: '', error } }));
         return;
       }
@@ -399,7 +399,7 @@ export function IdePanel() {
               <span style={{
                 fontFamily: 'var(--cth-font-display)', fontSize: 7, padding: '1px 3px',
                 background: 'var(--cth-lilac-light)', color: 'var(--cth-ink-900)'
-              }}>god</span>
+              }}>orquestrador</span>
             )}
             {target.inferred && (
               // Never assert a name we had to guess at. One quiet word is enough
@@ -444,7 +444,7 @@ export function IdePanel() {
           flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
           textAlign: 'center', color: 'var(--cth-ink-500)', fontFamily: 'var(--cth-font-ui)', fontSize: 16
         }}>
-          No workspace available.<br />Spawn an agent first — the IDE opens on its working directory.
+          Nenhum workspace disponível.<br />Crie um agente primeiro — a IDE abre no diretório de trabalho dele.
         </div>
       ) : (
         <div style={{ flex: 1, minHeight: 0, display: 'flex' }}>
@@ -623,9 +623,9 @@ export function IdePanel() {
                   <div style={{
                     fontFamily: 'var(--cth-font-display)', fontSize: 8, textTransform: 'uppercase',
                     letterSpacing: 1, color: 'var(--cth-ink-700)'
-                  }}>nothing open</div>
+                  }}>nada aberto</div>
                   <div style={{ fontFamily: 'var(--cth-font-ui)', fontSize: 13 }}>
-                    Pick a file from the tree to edit, or a changed file to diff.
+                    Escolha um arquivo na árvore para editar, ou um arquivo alterado para ver o diff.
                   </div>
                   <ShortcutHint />
                 </div>
@@ -645,7 +645,7 @@ export function IdePanel() {
 
               {activeTab?.mode === 'edit' && (() => {
                 const buf = editBuffers[activeTab.rel];
-                if (!buf || buf.status === 'loading') return <Centered>loading…</Centered>;
+                if (!buf || buf.status === 'loading') return <Centered>carregando…</Centered>;
                 if (buf.status === 'error') return <Centered tone="error">{buf.error}</Centered>;
                 const md = isMarkdown(activeTab.rel);
                 const view: MdView = md ? (mdViews[activeTab.rel] ?? defaultMdView()) : 'code';
@@ -866,18 +866,18 @@ const IS_MAC = typeof navigator !== 'undefined' && /mac/i.test(navigator.userAge
 /** Monaco's own default bindings — do not invent entries here. */
 const EDITOR_SHORTCUTS: ReadonlyArray<readonly [string, string]> = IS_MAC
   ? [
-      ['⌘F', 'find in file'],
-      ['⌥⌘F', 'replace'],
-      ['F1', 'command palette'],
-      ['⌃G', 'go to line'],
-      ['⇧⌘O', 'go to symbol']
+      ['⌘F', 'buscar no arquivo'],
+      ['⌥⌘F', 'substituir'],
+      ['F1', 'paleta de comandos'],
+      ['⌃G', 'ir para a linha'],
+      ['⇧⌘O', 'ir para o símbolo']
     ]
   : [
-      ['Ctrl+F', 'find in file'],
-      ['Ctrl+H', 'replace'],
-      ['F1', 'command palette'],
-      ['Ctrl+G', 'go to line'],
-      ['Ctrl+Shift+O', 'go to symbol']
+      ['Ctrl+F', 'buscar no arquivo'],
+      ['Ctrl+H', 'substituir'],
+      ['F1', 'paleta de comandos'],
+      ['Ctrl+G', 'ir para a linha'],
+      ['Ctrl+Shift+O', 'ir para o símbolo']
     ];
 
 function Centered({ children, tone }: { children: React.ReactNode; tone?: 'error' }) {
