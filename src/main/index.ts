@@ -304,7 +304,11 @@ function subscriptionStatus(extraPending = 0): SubscriptionStatus {
     planLabel: plan?.label ?? 'Sem plano',
     priceLabel: planPriceLabel(plan),
     providerModel:
-      cfg.providerModel?.trim() || cfg.godModel?.trim() || profile?.models[0] || 'Modelo padrão da CLI',
+      cfg.providerModel?.trim()
+      || (profile?.id === 'opencode' ? opencode.defaultModel : null)
+      || cfg.godModel?.trim()
+      || profile?.models[0]
+      || 'Modelo padrão da CLI',
     baseUrl: cfg.providerBaseUrl?.trim() || profile?.defaultBaseUrl || '',
     apiKeyPresent,
     limit,
@@ -315,8 +319,10 @@ function subscriptionStatus(extraPending = 0): SubscriptionStatus {
     opencode: {
       found: opencode.found,
       version: opencode.version,
+      binaryPath: opencode.binaryPath,
       configPath: opencode.configPath,
       providers: opencode.providers,
+      models: opencode.models,
       defaultModel: opencode.defaultModel,
       mcpCount: opencode.mcpCount,
       authConfigured: opencode.authConfigured,
@@ -3391,6 +3397,7 @@ ipcMain.handle('subscription:set', (_evt, payload: unknown) => {
     customSubagentLimit?: unknown;
   };
   const cfgBefore = readConfig();
+  const detectedOpenCode = p.profileId === 'opencode' ? detectOpenCode() : null;
   const patch: Partial<HarnessConfig> = {};
   if (p.profileId === null || p.profileId === '') {
     patch.providerProfileId = undefined;
@@ -3405,7 +3412,11 @@ ipcMain.handle('subscription:set', (_evt, payload: unknown) => {
     patch.providerProfileId = p.profileId;
     // Trocar de provedor não deve herdar o modelo/URL do provedor anterior.
     if (cfgBefore.providerProfileId !== p.profileId) {
-      if (p.model === undefined) patch.providerModel = profile.models[0];
+      if (p.model === undefined) {
+        patch.providerModel = p.profileId === 'opencode'
+          ? (detectedOpenCode?.defaultModel ?? profile.models[0])
+          : profile.models[0];
+      }
       if (p.baseUrl === undefined) patch.providerBaseUrl = undefined;
     }
     if (p.planId !== undefined) {
@@ -3442,11 +3453,14 @@ ipcMain.handle('subscription:set', (_evt, payload: unknown) => {
   // provedores que NÃO são a própria CLI OpenCode.
   if (patch.providerProfileId) {
     const profile = providerProfile(patch.providerProfileId);
-    const model = patch.providerModel ?? profile?.models[0];
-    if (profile && profile.kind !== 'cli' && model) {
+    const detected = profile?.id === 'opencode' ? detectOpenCode() : null;
+    const model = patch.providerModel ?? detected?.defaultModel ?? profile?.models[0];
+    if (profile && model) {
       patch.providerDefaultModels = {
         ...(cfgBefore.providerDefaultModels ?? {}),
-        opencode: `${profile.id}/${model}`
+        // OpenCode já usa slugs `provider/model` da própria CLI. Os demais
+        // provedores do catálogo são injetados como `alibaba/modelo` etc.
+        opencode: profile.kind === 'cli' ? model : `${profile.id}/${model}`
       };
     }
   }
@@ -3459,8 +3473,10 @@ ipcMain.handle('opencode:status', () => {
   return {
     found: d.found,
     version: d.version,
+    binaryPath: d.binaryPath,
     configPath: d.configPath,
     providers: d.providers,
+    models: d.models,
     defaultModel: d.defaultModel,
     mcpCount: d.mcpCount,
     authConfigured: d.authConfigured,

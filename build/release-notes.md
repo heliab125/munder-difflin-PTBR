@@ -1,5 +1,5 @@
+- **OpenCode agora encontra a CLI no PATH do shell.**
+- **Modelos reais da CLI no seletor de agentes.**
 - **PRO redesenhado como na 0.5.7.**
-- **Tema profissional dark/light e skin Halloween.**
 - **Alibaba/OpenCode com trava real de subagentes.**
-- **Clássico e PRO na barra de título.**
 - **macOS Intel e Windows x64.**

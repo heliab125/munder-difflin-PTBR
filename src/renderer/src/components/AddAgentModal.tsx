@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState, type CSSProperties } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PixelPanel } from './PixelPanel';
 import { PixelButton } from './PixelButton';
@@ -226,6 +226,7 @@ export function AddAgentModal({ onClose, config, onConfigChange }: AddAgentModal
   // Retrato da assinatura para bloquear a criação ANTES de tentar o spawn. O
   // backend continua sendo a trava definitiva; isto só evita um erro tardio.
   const [quota, setQuota] = useState<SubscriptionStatus | null>(null);
+  const modelTouched = useRef(false);
 
   useEffect(() => {
     let alive = true;
@@ -239,6 +240,33 @@ export function AddAgentModal({ onClose, config, onConfigChange }: AddAgentModal
     const timer = setInterval(() => { void load(); }, 5_000);
     return () => { alive = false; clearInterval(timer); };
   }, []);
+
+  const opencodeModels = quota?.opencode.models ?? [];
+  // O motor OpenCode sempre usa os modelos da CLI do usuário. O plano
+  // (Alibaba/BytePlus/Z.ai) controla a quota e, se o usuário quiser, o endpoint
+  // injetado aparece como uma opção extra no seletor — nunca como único modelo.
+  const useCliModels = provider === 'opencode' && opencodeModels.length > 0;
+
+  // A CLI do usuário é a fonte da verdade para os modelos do OpenCode. Se o
+  // valor salvo é um default antigo (ou vazio), troca pelo modelo padrão que a
+  // própria CLI reporta. Um slug digitado pelo usuário que exista na lista é
+  // preservado; um slug desconhecido também é preservado para não surpreender.
+  useEffect(() => {
+    if (modelTouched.current || !useCliModels || provider !== 'opencode' || opencodeModels.length === 0) return;
+    const legacy = new Set(['', 'opencode/grok-code', 'opencode/claude-sonnet-4', 'opencode/gpt-5', 'alibaba/qwen-max', 'local/llama3']);
+    const current = (model ?? '').trim();
+    if (current && !legacy.has(current) && !opencodeModels.includes(current)) return;
+    if (current && opencodeModels.includes(current)) return;
+    const preferred = quota?.opencode.defaultModel && opencodeModels.includes(quota.opencode.defaultModel)
+      ? quota.opencode.defaultModel
+      : opencodeModels[0];
+    if (!preferred || preferred === current) return;
+    setModel(preferred);
+    setCommand(buildSpawnCommand(config, preferred, 'opencode'));
+    void window.cth.updateConfig({
+      providerDefaultModels: { ...(config.providerDefaultModels ?? {}), opencode: preferred }
+    });
+  }, [useCliModels, provider, opencodeModels, model, quota?.opencode.defaultModel, config]);
 
   const quotaFull = quota?.quota.state === 'full' && quota.limit !== null;
   const quotaMessage = quotaFull && quota
@@ -254,7 +282,13 @@ export function AddAgentModal({ onClose, config, onConfigChange }: AddAgentModal
   // Picking a model rebuilds the command; the command field stays editable for
   // power users (it's the source of truth for the actual spawn).
   const pickModel = (id?: string) => {
+    modelTouched.current = true;
     setModel(id);
+    if (provider === 'opencode' && id) {
+      void window.cth.updateConfig({
+        providerDefaultModels: { ...(config.providerDefaultModels ?? {}), opencode: id }
+      });
+    }
     setCommand(buildSpawnCommand(config, id, provider));
   };
   // Switching provider resets the model to that CLI's default and rebuilds the
@@ -262,6 +296,7 @@ export function AddAgentModal({ onClose, config, onConfigChange }: AddAgentModal
   // Codex spawns `codex`, not the configured `claude`). For 'custom' we keep the
   // user's typed command rather than blanking it.
   const pickProvider = (id: AgentProvider) => {
+    modelTouched.current = false;
     setProvider(id);
     // Seed the model: Claude from the global defaultModel; other engines from the
     // per-engine default set in Settings → AI Engines (providerDefaultModels), else
@@ -278,6 +313,11 @@ export function AddAgentModal({ onClose, config, onConfigChange }: AddAgentModal
       return;
     }
     setCommand(buildSpawnCommand(config, nextModel, id));
+    if (id === 'opencode' && nextModel) {
+      void window.cth.updateConfig({
+        providerDefaultModels: { ...(config.providerDefaultModels ?? {}), opencode: nextModel }
+      });
+    }
   };
   const preset = providerPreset(provider);
   const [goal, setGoal] = useState(pendingHire?.goal ?? '');
@@ -990,6 +1030,36 @@ export function AddAgentModal({ onClose, config, onConfigChange }: AddAgentModal
                         })}
                       </div>
                     </Row>}
+
+                    {useCliModels && provider === 'opencode' && opencodeModels.length > 0 && (
+                      <Row label="Modelos da CLI OpenCode">
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          <select
+                            value={model ?? ''}
+                            onChange={(e) => pickModel(e.target.value)}
+                            style={inputStyle}
+                          >
+                            {activePlanProfile && activePlanProfile.kind !== 'cli' && (() => {
+                              const planModel = `${activePlanProfile.id}/${config.providerModel?.trim() || activePlanProfile.models[0]}`;
+                              return (
+                                <option value={planModel}>
+                                  {planModel} · plano {activePlanProfile.label}
+                                </option>
+                              );
+                            })()}
+                            {model && !opencodeModels.includes(model) && (
+                              <option value={model}>{model} (não encontrado na CLI)</option>
+                            )}
+                            {opencodeModels.map((m) => (
+                              <option key={m} value={m}>{m}</option>
+                            ))}
+                          </select>
+                          <span style={{ fontFamily: 'var(--cth-font-ui)', fontSize: 12, color: 'var(--cth-ink-500)' }}>
+                            {opencodeModels.length} modelo(s) lidos da sua CLI. Nenhuma chave é exibida.
+                          </span>
+                        </div>
+                      </Row>
+                    )}
 
                     {/* OSS-model quick-picks (ondev-c) — local + third-party-provider
                         shortlists from the verified catalog. Clicking sets the

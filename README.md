@@ -30,7 +30,7 @@ visualizados como avatares trabalhando em um andar de escritório compartilhado.
 
 <p>
   <a href="./LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-F4D35E.svg?style=flat-square&labelColor=6E1423"></a>
-  <a href="./CHANGELOG.md"><img alt="Version: 0.5.7" src="https://img.shields.io/badge/version-0.5.7-F4D35E.svg?style=flat-square&labelColor=6E1423"></a>
+  <a href="./CHANGELOG.md"><img alt="Version: 0.5.8" src="https://img.shields.io/badge/version-0.5.8-F4D35E.svg?style=flat-square&labelColor=6E1423"></a>
   <a href="https://github.com/chaitanyagiri/munder-difflin/releases"><img alt="Downloads across all releases" src="https://img.shields.io/github/downloads/chaitanyagiri/munder-difflin/total?style=flat-square&label=downloads&color=F4D35E&labelColor=6E1423"></a>
   <img alt="Status: pre-release" src="https://img.shields.io/badge/status-pre--release-F4F1EA.svg?style=flat-square&labelColor=6E1423">
   <img alt="Platform: macOS | Windows | Linux" src="https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-F4F1EA.svg?style=flat-square&labelColor=6E1423">
@@ -48,7 +48,7 @@ visualizados como avatares trabalhando em um andar de escritório compartilhado.
 
 <br><br>
 
-**[⬇ Baixar 0.5.7 para macOS, Windows ou Linux](https://harnessmd.com/download)**
+**[⬇ Baixar 0.5.8 para macOS, Windows ou Linux](https://harnessmd.com/download)**
 
 <sub>Builds de macOS são assinados e notarizados. Você não precisa compilar a partir do código-fonte para usá-lo.
 O build open source está na <a href="https://github.com/HarnessMD/munder-difflin/releases">página de releases do GitHub</a>.</sub>
@@ -155,12 +155,14 @@ plano com limite de 4, o 5º subagente é bloqueado antes de o PTY ser criado.
 No painel inicial (modo PRO), você vê o provedor ativo, o plano reconhecido, o modelo principal e um medidor
 visual de subagentes no formato **X/limite**.
 
-### Novidades da 0.5.7
+### Novidades da 0.5.8
 
-A versão 0.5.7 traz o workspace **PRO** redesenhado: navegação lateral compacta, cards do orquestrador
+A versão 0.5.8 traz o workspace **PRO** redesenhado: navegação lateral compacta, cards do orquestrador
 com orçamento/disjuntor/tarefas/aguardando você, barra de comando integrada e uma grade de agentes no
 mesmo estilo do aplicativo oficial. O modo **Clássico** continua disponível no seletor da barra de título.
-Os planos Alibaba/OpenCode e a trava de subagentes seguem ativos no PRO.
+Os planos Alibaba/OpenCode e a trava de subagentes seguem ativos no PRO. A 0.5.8 também
+corrige a detecção do OpenCode no app empacotado: o app consulta o PATH do seu shell de login,
+encontra o binário em `~/.opencode/bin` e carrega no seletor os modelos reais da sua CLI.
 
 <a id="what-it-is"></a>
 ## O que é

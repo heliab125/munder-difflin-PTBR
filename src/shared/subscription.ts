@@ -12,8 +12,11 @@ export type QuotaState = 'unlimited' | 'ok' | 'warning' | 'full';
 export interface OpenCodeStatusPayload {
   found: boolean;
   version: string | null;
+  binaryPath: string | null;
   configPath: string | null;
   providers: string[];
+  /** Modelos `provedor/modelo` expostos pela CLI/config local. */
+  models: string[];
   defaultModel: string | null;
   mcpCount: number;
   authConfigured: boolean;

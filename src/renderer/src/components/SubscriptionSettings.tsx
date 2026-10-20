@@ -74,6 +74,8 @@ export function SubscriptionSettings({ config }: { config: HarnessConfig }) {
 
   const profile = providerProfile(profileId);
   const plan = profile ? providerPlan(profile.id, planId) : undefined;
+  const opencodeModels = status?.opencode.models ?? [];
+  const isOpenCodeProfile = profile?.id === 'opencode';
 
   const refresh = useCallback(async () => {
     try {
@@ -130,15 +132,20 @@ export function SubscriptionSettings({ config }: { config: HarnessConfig }) {
     }
     const nextProfile = providerProfile(nextId);
     const recommended = nextProfile?.plans.find((p) => p.recommended) ?? nextProfile?.plans[0];
+    const detected = nextId === 'opencode' && opencodeModels.length > 0
+      ? (status?.opencode.defaultModel && opencodeModels.includes(status.opencode.defaultModel)
+          ? status.opencode.defaultModel
+          : opencodeModels[0])
+      : nextProfile?.models[0];
     setPlanId(recommended?.id ?? '');
     setBaseUrl('');
-    setModel(nextProfile?.models[0] ?? '');
+    setModel(detected ?? '');
     setCustomLimit('');
     await save({
       profileId: nextId,
       planId: recommended?.id ?? null,
       baseUrl: null,
-      model: nextProfile?.models[0] ?? null,
+      model: detected ?? null,
       customSubagentLimit: null
     });
   };
@@ -195,6 +202,22 @@ export function SubscriptionSettings({ config }: { config: HarnessConfig }) {
     }
   };
 
+  // Um modelo antigo (opencode/grok-code) não existe na CLI do usuário. Assim
+  // que a detecção entrega a lista real, troca pelo padrão da CLI — só quando o
+  // valor atual é um dos defaults antigos, nunca um slug que o usuário digitou.
+  useEffect(() => {
+    if (!isOpenCodeProfile || opencodeModels.length === 0) return;
+    const legacy = new Set(['', 'opencode/grok-code', 'opencode/claude-sonnet-4', 'opencode/gpt-5', 'alibaba/qwen-max']);
+    if (!legacy.has(model.trim())) return;
+    const preferred = status?.opencode.defaultModel && opencodeModels.includes(status.opencode.defaultModel)
+      ? status.opencode.defaultModel
+      : opencodeModels[0];
+    if (!preferred || preferred === model) return;
+    setModel(preferred);
+    void save({ model: preferred });
+  }, [isOpenCodeProfile, opencodeModels, model, status?.opencode.defaultModel]);
+
+  const modelChoices = isOpenCodeProfile && opencodeModels.length > 0 ? opencodeModels : (profile?.models ?? []);
   const quota = status?.quota;
   const percent = quota?.percent ?? 0;
 
@@ -325,12 +348,21 @@ export function SubscriptionSettings({ config }: { config: HarnessConfig }) {
             {status?.opencode.configReadable
               ? ` · ${status.opencode.providers.length} provedor(es) · ${status.opencode.mcpCount} MCP(s)`
               : ''}
+            {status?.opencode.models.length
+              ? ` · ${status.opencode.models.length} modelo(s)`
+              : ''}
           </div>
+          {status?.opencode.binaryPath && (
+            <div style={hintStyle}>Binário: {status.opencode.binaryPath}</div>
+          )}
           {status?.opencode.configPath && (
             <div style={hintStyle}>Configuração: {status.opencode.configPath}</div>
           )}
           {status?.opencode.providers && status.opencode.providers.length > 0 && (
             <div style={hintStyle}>Provedores: {status.opencode.providers.join(', ')}</div>
+          )}
+          {status?.opencode.defaultModel && (
+            <div style={hintStyle}>Modelo padrão detectado: {status.opencode.defaultModel}</div>
           )}
           <div style={hintStyle}>
             Nenhuma chave é lida: apenas nomes de provedores, modelos e MCPs.
@@ -377,17 +409,39 @@ export function SubscriptionSettings({ config }: { config: HarnessConfig }) {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             <label style={labelStyle}>Modelo principal</label>
-            <input
-              list={`provider-models-${profile.id}`}
-              placeholder={profile.models[0] ?? 'modelo'}
-              value={model}
-              onChange={(e) => setModel(e.target.value)}
-              onBlur={() => { void save({ model: model.trim() || null }); }}
-              style={inputStyle}
-            />
-            <datalist id={`provider-models-${profile.id}`}>
-              {profile.models.map((m) => <option key={m} value={m} />)}
-            </datalist>
+            {isOpenCodeProfile && opencodeModels.length > 0 ? (
+              <>
+                <select
+                  value={model}
+                  onChange={(e) => {
+                    const next = e.target.value;
+                    setModel(next);
+                    void save({ model: next });
+                  }}
+                  style={inputStyle}
+                >
+                  {!opencodeModels.includes(model) && model && (
+                    <option value={model}>{model} (não encontrado na CLI)</option>
+                  )}
+                  {opencodeModels.map((m) => <option key={m} value={m}>{m}</option>)}
+                </select>
+                <span style={hintStyle}>{opencodeModels.length} modelo(s) lidos da sua CLI OpenCode.</span>
+              </>
+            ) : (
+              <>
+                <input
+                  list={`provider-models-${profile.id}`}
+                  placeholder={modelChoices[0] ?? 'modelo'}
+                  value={model}
+                  onChange={(e) => setModel(e.target.value)}
+                  onBlur={() => { void save({ model: model.trim() || null }); }}
+                  style={inputStyle}
+                />
+                <datalist id={`provider-models-${profile.id}`}>
+                  {modelChoices.map((m) => <option key={m} value={m} />)}
+                </datalist>
+              </>
+            )}
           </div>
         </div>
       )}

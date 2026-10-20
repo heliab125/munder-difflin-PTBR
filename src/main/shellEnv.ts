@@ -167,6 +167,8 @@ export function resolveCommand(command: string): string {
     `/opt/homebrew/bin/${command}`,
     `/usr/local/bin/${command}`,
     `${process.env.HOME ?? ''}/.local/bin/${command}`,
+    `${process.env.HOME ?? ''}/.opencode/bin/${command}`,
+    `${process.env.HOME ?? ''}/.bun/bin/${command}`,
     `${process.env.HOME ?? ''}/.claude/local/${command}`,
     `${process.env.HOME ?? ''}/.volta/bin/${command}`
   ];
