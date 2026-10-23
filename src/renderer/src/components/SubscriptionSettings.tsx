@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type CSSProperties } from 'react';
-import type { HarnessConfig } from '@/store/config';
+import { setDynamicModelsForProvider, type HarnessConfig } from '@/store/config';
 import {
   PROVIDER_PROFILES,
   providerProfile,
@@ -150,6 +150,20 @@ export function SubscriptionSettings({ config }: { config: HarnessConfig }) {
     });
   };
 
+  const refreshAll = async () => {
+    setBusy(true);
+    try {
+      const d = await window.cth.opencodeStatus(true);
+      if (d.models.length > 0) setDynamicModelsForProvider('opencode', d.models);
+      setStatus(await window.cth.subscriptionStatus());
+      setNote(d.found ? `OpenCode: ${d.models.length} modelo(s) detectados.` : 'OpenCode não encontrado no PATH.');
+    } catch (e) {
+      setNote(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const onPlanChange = async (nextPlan: string) => {
     setPlanId(nextPlan);
     await save({ planId: nextPlan });
@@ -194,6 +208,10 @@ export function SubscriptionSettings({ config }: { config: HarnessConfig }) {
         model: model.trim() || undefined
       });
       setNote(res.message);
+      if (profile?.kind === 'cli') {
+        const d = await window.cth.opencodeStatus();
+        if (d.models.length > 0) setDynamicModelsForProvider('opencode', d.models);
+      }
       await refresh();
     } catch (e) {
       setNote(e instanceof Error ? e.message : String(e));
@@ -362,7 +380,10 @@ export function SubscriptionSettings({ config }: { config: HarnessConfig }) {
             <div style={hintStyle}>Provedores: {status.opencode.providers.join(', ')}</div>
           )}
           {status?.opencode.defaultModel && (
-            <div style={hintStyle}>Modelo padrão detectado: {status.opencode.defaultModel}</div>
+            <>
+              <div style={hintStyle}>Padrão da CLI OpenCode: {status.opencode.defaultModel}</div>
+              <div style={hintStyle}>O agente usa o modelo de “Modelo principal” abaixo; o padrão da CLI só é usado quando o agente está em “CLI default”.</div>
+            </>
           )}
           <div style={hintStyle}>
             Nenhuma chave é lida: apenas nomes de provedores, modelos e MCPs.
@@ -473,7 +494,7 @@ export function SubscriptionSettings({ config }: { config: HarnessConfig }) {
           <PixelButton variant="secondary" size="sm" onClick={() => { void test(); }} disabled={busy}>
             Testar conexão
           </PixelButton>
-          <PixelButton variant="secondary" size="sm" onClick={() => { void refresh(); }} disabled={busy}>
+          <PixelButton variant="secondary" size="sm" onClick={() => { void refreshAll(); }} disabled={busy}>
             Atualizar status
           </PixelButton>
           {note && <span style={{ ...hintStyle, color: 'var(--cth-ink-900)' }}>{note}</span>}

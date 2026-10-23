@@ -555,6 +555,9 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                     {modelsForProvider(godProvider).map((m) => (
                       <option key={m.label} value={m.id ?? ''}>{m.label}</option>
                     ))}
+                    {godModel && !modelsForProvider(godProvider).some((m) => m.id === godModel) && (
+                      <option value={godModel}>{godModel} (atual)</option>
+                    )}
                   </select>
                   <div style={{ fontSize: 12, color: 'var(--cth-ink-500)' }}>
                     {t('onboarding.orchestrator.modelNote')}

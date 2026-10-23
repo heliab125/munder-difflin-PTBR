@@ -3214,7 +3214,12 @@ async function spawnAgentCore(opts: AgentSpawnOptions, owner: Electron.WebConten
       // resolva. A chave entra por REFERÊNCIA de ambiente, nunca em texto puro.
       const activeProfile = providerProfile(cfg.providerProfileId);
       const activeBase = cfg.providerBaseUrl?.trim() || activeProfile?.defaultBaseUrl;
-      if (activeProfile && activeProfile.kind !== 'cli' && activeBase) {
+      // Só injeta o provider do plano quando o modelo escolhido É um modelo
+      // desse provider (`alibaba/qwen-max`). Um slug da própria CLI
+      // (`alibaba-token-plan/...`, `verboo/...`, `coding-plan/...`) já existe
+      // na config do OpenCode e deve ser resolvido por ela, não sobrescrito.
+      const injectActive = !!activeProfile && !!modelSlug && modelSlug.startsWith(`${activeProfile.id}/`);
+      if (activeProfile && activeProfile.kind !== 'cli' && activeBase && injectActive) {
         providers[activeProfile.id] = {
           npm: '@ai-sdk/openai-compatible',
           name: activeProfile.label,
@@ -3468,8 +3473,8 @@ ipcMain.handle('subscription:set', (_evt, payload: unknown) => {
   return { ok: true, status: subscriptionStatus() };
 });
 
-ipcMain.handle('opencode:status', () => {
-  const d = detectOpenCode(true);
+ipcMain.handle('opencode:status', (_evt, force: unknown) => {
+  const d = detectOpenCode(force === true);
   return {
     found: d.found,
     version: d.version,

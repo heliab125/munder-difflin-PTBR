@@ -1320,8 +1320,8 @@ const api = {
     customSubagentLimit?: number | null;
   }): Promise<{ ok: boolean; error?: string; status?: SubscriptionStatus }> =>
     ipcRenderer.invoke('subscription:set', patch),
-  opencodeStatus: (): Promise<OpenCodeStatusPayload> =>
-    ipcRenderer.invoke('opencode:status'),
+  opencodeStatus: (force?: boolean): Promise<OpenCodeStatusPayload> =>
+    ipcRenderer.invoke('opencode:status', force === true),
   providerTest: (req?: { profileId?: string; baseUrl?: string; model?: string }): Promise<{ ok: boolean; status?: number; message: string }> =>
     ipcRenderer.invoke('provider:test', req ?? {}),
   // Realtime Michael (voice orchestrator) — MAIN mints a short-lived EPHEMERAL token

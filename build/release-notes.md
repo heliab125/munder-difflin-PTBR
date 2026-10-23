@@ -1,5 +1,5 @@
-- **OpenCode agora encontra a CLI no PATH do shell.**
-- **Modelos reais da CLI no seletor de agentes.**
-- **PRO redesenhado como na 0.5.7.**
-- **Alibaba/OpenCode com trava real de subagentes.**
+- **Modelo do orquestrador editável no PRO.**
+- **Modelos reais da CLI em todos os seletores.**
+- **OpenCode encontrado pelo PATH do shell.**
+- **Plano Alibaba com 4 subagentes mantido.**
 - **macOS Intel e Windows x64.**

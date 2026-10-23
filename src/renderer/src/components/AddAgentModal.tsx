@@ -996,7 +996,7 @@ export function AddAgentModal({ onClose, config, onConfigChange }: AddAgentModal
                       </div>
                     </Row>
 
-                    {preset.supportsModel && <Row label={tr('addAgent.model')}>
+                    {preset.supportsModel && !useCliModels && <Row label={tr('addAgent.model')}>
                       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                         {(() => {
                           // An imported hire may name a model newer than this picker's
@@ -1039,6 +1039,7 @@ export function AddAgentModal({ onClose, config, onConfigChange }: AddAgentModal
                             onChange={(e) => pickModel(e.target.value)}
                             style={inputStyle}
                           >
+                            <option value="">CLI default (usar o padrão da CLI)</option>
                             {activePlanProfile && activePlanProfile.kind !== 'cli' && (() => {
                               const planModel = `${activePlanProfile.id}/${config.providerModel?.trim() || activePlanProfile.models[0]}`;
                               return (

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useStore, selectedAgent } from '@/store/store';
 import { startMockLoop, stopMockLoop } from '@/store/mockEvents';
 import type { HarnessConfig } from '@/store/config';
+import { MODEL_CATALOG_EVENT, setDynamicModelsForProvider } from '@/store/config';
 import { DEFAULT_ORG_TRIGGER } from '@shared/triggers';
 import { OfficeFloor } from '@/scene/office/OfficeFloor';
 import { useHive } from '@/hooks/useHive';
@@ -69,6 +70,29 @@ export function App() {
     setUiMode(next);
     try { window.localStorage.setItem('cth.mode', next); } catch { /* best-effort */ }
   };
+  // OpenCode's own model list is runtime data, not a baked catalog. Load it
+  // once, refresh on the same 5-minute cache the detector uses, and bump a
+  // counter so every open picker re-reads modelsForProvider(). The event also
+  // carries remote catalog refreshes.
+  const [, bumpModelCatalog] = useState(0);
+  useEffect(() => {
+    const bump = () => bumpModelCatalog((v) => v + 1);
+    window.addEventListener(MODEL_CATALOG_EVENT, bump);
+    let alive = true;
+    const load = async () => {
+      try {
+        const d = await window.cth.opencodeStatus();
+        if (alive && d.models.length > 0) setDynamicModelsForProvider('opencode', d.models);
+      } catch { /* detection is best-effort; the static catalog stays */ }
+    };
+    void load();
+    const timer = setInterval(() => { void load(); }, 5 * 60_000);
+    return () => {
+      alive = false;
+      clearInterval(timer);
+      window.removeEventListener(MODEL_CATALOG_EVENT, bump);
+    };
+  }, []);
   // Whether the user has passed the launch-time hive picker this session. Starts
   // true (skip the picker) right after a hive SWITCH — changeHome relaunches and
   // leaves a one-shot localStorage flag so we don't bounce back onto the picker for
@@ -424,6 +448,11 @@ export function App() {
           onOpenSettings={() => { setSettingsSection('Agents & Models'); setSettingsOpen(true); }}
           onOpenAgent={(id) => {
             useStore.getState().select(id);
+            setMode('classic');
+          }}
+          onConfigureModel={(id) => {
+            useStore.getState().select(id);
+            useStore.getState().requestCommandCenterTab('floor');
             setMode('classic');
           }}
           onClassic={() => setMode('classic')}

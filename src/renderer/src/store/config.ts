@@ -330,6 +330,30 @@ function offeredAtVersion(model: CatalogModel, appVersion: string): boolean {
   return true;
 }
 
+/** Models discovered at runtime from an engine's own CLI (currently OpenCode).
+ *  They override the static catalog for that provider so a picker can never
+ *  offer a model the CLI does not actually have. */
+const DYNAMIC_MODELS = new Map<AgentProvider, ModelOption[]>();
+
+export function setDynamicModelsForProvider(provider: AgentProvider, models: readonly string[]): boolean {
+  const seen = new Set<string>();
+  const next = models
+    .map((id) => id.trim())
+    .filter((id) => {
+      if (!id || seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    })
+    .map((id) => ({ id, label: id }));
+  const before = DYNAMIC_MODELS.get(provider) ?? [];
+  if (before.length === next.length && before.every((m, i) => m.id === next[i]?.id)) return false;
+  DYNAMIC_MODELS.set(provider, next);
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent(MODEL_CATALOG_EVENT));
+  }
+  return true;
+}
+
 /** The model preset list for a provider's picker, as of a given app version.
  *  `providers` is injectable so the version filter can be exercised against
  *  bounded entries — the shipped catalog is deliberately all-unbounded. */
@@ -338,12 +362,21 @@ export function modelsForProviderAtVersion(
   appVersion: string,
   providers: Record<string, CatalogModel[]> = CATALOG.providers
 ): ModelOption[] {
+  const dynamic = DYNAMIC_MODELS.get(provider) ?? [];
+  // For a CLI engine, the CLI's own list is authoritative. Keeping the baked
+  // `opencode/grok-code`-style suggestions beside it is exactly the conflict
+  // this replaces: a stale slug looks selectable but fails at spawn.
+  if (provider === 'opencode' && dynamic.length > 0) {
+    return [{ label: 'CLI default' }, ...dynamic];
+  }
   // An unknown provider falls back to the Claude list, as the hardcoded dispatch
   // did. 'custom' is a real key holding an empty list, not a missing one.
   const entries = providers[provider] ?? providers.claude ?? [];
-  return entries
+  const base = entries
     .filter((model) => offeredAtVersion(model, appVersion))
     .map((model) => (model.id === undefined ? { label: model.label } : { id: model.id, label: model.label }));
+  const extras = dynamic.filter((d) => !base.some((b) => b.id === d.id));
+  return [...base, ...extras];
 }
 
 // tokenizeCommand moved to src/shared/commandLine.ts so main's spawn-request

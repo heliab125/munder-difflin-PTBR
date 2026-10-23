@@ -303,11 +303,13 @@ export function ProDashboard({
   config,
   onOpenSettings,
   onOpenAgent,
+  onConfigureModel,
   onClassic
 }: {
   config: HarnessConfig;
   onOpenSettings: () => void;
   onOpenAgent: (id: string) => void;
+  onConfigureModel: (id: string) => void;
   onClassic: () => void;
 }) {
   const agents = useStore((s) => s.agents);
@@ -724,6 +726,18 @@ export function ProDashboard({
                         <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {agentEngine(god, status)} · {configured ? `${status?.profileLabel}` : 'Local · OpenAI-compatible'}
                         </span>
+                        <button
+                          type="button"
+                          onClick={() => onConfigureModel(god.id)}
+                          style={{
+                            border: 'none', background: 'transparent', padding: 0,
+                            color: 'var(--cth-accent-text)', fontFamily: 'inherit',
+                            fontSize: 11, cursor: 'pointer', textDecoration: 'underline',
+                            flexShrink: 0
+                          }}
+                        >
+                          Alterar modelo
+                        </button>
                       </div>
                     </div>
                     <span style={{ flex: 1 }} />

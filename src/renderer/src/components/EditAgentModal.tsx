@@ -88,6 +88,11 @@ export function EditAgentModal({ agent, onClose }: EditAgentModalProps) {
       description: trimmedDescription,
       goal: trimmedGoal || undefined
     });
+    if (provider === 'opencode' && model && config) {
+      void window.cth.updateConfig({
+        providerDefaultModels: { ...(config.providerDefaultModels ?? {}), opencode: model }
+      });
+    }
     onClose();
   };
 
@@ -218,35 +223,51 @@ export function EditAgentModal({ agent, onClose }: EditAgentModalProps) {
 
               {preset.supportsModel && (
                 <Row label="Modelo">
-                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                    {(() => {
-                      const known = modelsForProvider(provider);
-                      return model && !known.some((m) => m.id === model)
-                        ? [...known, { id: model, label: `${model} (atual)` }]
-                        : known;
-                    })().map((m) => {
-                      const active = (model ?? '') === (m.id ?? '');
-                      return (
-                        <button
-                          key={m.label}
-                          type="button"
-                          onClick={() => setModel(m.id)}
-                          title={m.id ?? 'Modelo padrão do CLI'}
-                          style={{
-                            padding: '3px 8px 1px',
-                            background: active ? `var(--cth-${accent}-light)` : 'var(--cth-cream-100)',
-                            boxShadow: active
-                              ? 'inset 0 0 0 1.5px var(--cth-ink-500)'
-                              : 'inset 0 0 0 1px var(--cth-ink-100)',
-                            fontFamily: 'var(--cth-font-ui)', fontSize: 12,
-                            color: 'var(--cth-ink-900)', cursor: 'pointer', border: 'none'
-                          }}
-                        >
-                          {m.label}
-                        </button>
-                      );
-                    })}
-                  </div>
+                  {provider === 'opencode' ? (
+                    <select
+                      value={model ?? ''}
+                      onChange={(e) => setModel(e.target.value || undefined)}
+                      style={inputStyle}
+                    >
+                      <option value="">CLI default (usar o padrão da CLI)</option>
+                      {modelsForProvider('opencode')
+                        .filter((m) => !!m.id)
+                        .map((m) => <option key={m.id} value={m.id}>{m.label}</option>)}
+                      {model && !modelsForProvider('opencode').some((m) => m.id === model) && (
+                        <option value={model}>{model} (atual · não encontrado na CLI)</option>
+                      )}
+                    </select>
+                  ) : (
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                      {(() => {
+                        const known = modelsForProvider(provider);
+                        return model && !known.some((m) => m.id === model)
+                          ? [...known, { id: model, label: `${model} (atual)` }]
+                          : known;
+                      })().map((m) => {
+                        const active = (model ?? '') === (m.id ?? '');
+                        return (
+                          <button
+                            key={m.label}
+                            type="button"
+                            onClick={() => setModel(m.id)}
+                            title={m.id ?? 'Modelo padrão do CLI'}
+                            style={{
+                              padding: '3px 8px 1px',
+                              background: active ? `var(--cth-${accent}-light)` : 'var(--cth-cream-100)',
+                              boxShadow: active
+                                ? 'inset 0 0 0 1.5px var(--cth-ink-500)'
+                                : 'inset 0 0 0 1px var(--cth-ink-100)',
+                              fontFamily: 'var(--cth-font-ui)', fontSize: 12,
+                              color: 'var(--cth-ink-900)', cursor: 'pointer', border: 'none'
+                            }}
+                          >
+                            {m.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
                 </Row>
               )}
 

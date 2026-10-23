@@ -543,6 +543,14 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
               action: provider === previousProvider ? 'reiniciando…' : `alternando para ${providerPreset(provider).label}…`
             };
         updateAgent(a.id, patch);
+        // O modelo escolhido para o orquestrador vira também o padrão do motor
+        // OpenCode para os próximos agentes. Sem isto o Add Agent voltaria ao
+        // default da CLI (verboo/...) mesmo depois de você trocar o principal.
+        if (provider === 'opencode' && model) {
+          await window.cth.updateConfig({
+            providerDefaultModels: { ...(cfg.providerDefaultModels ?? {}), opencode: model }
+          });
+        }
       }
     } catch (error) {
       setRestartErrors((errors) => ({
@@ -902,7 +910,15 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
                   {modelsForProvider(engineProvider).map((m) => (
                     <option key={m.label} value={m.id ?? ''}>{m.label}</option>
                   ))}
+                  {engineModel && !modelsForProvider(engineProvider).some((m) => m.id === engineModel) && (
+                    <option value={engineModel}>{engineModel} (atual · não encontrado na CLI)</option>
+                  )}
                 </Select>
+                {engineProvider === 'opencode' && engineModel && !modelsForProvider('opencode').some((m) => m.id === engineModel) && (
+                  <span style={{ fontSize: 10.5, color: 'var(--cth-coral)', flexBasis: '100%' }}>
+                    O modelo atual não está disponível na CLI OpenCode. Escolha um modelo da lista antes de aplicar.
+                  </span>
+                )}
                 <PixelButton
                   variant="secondary"
                   size="sm"
